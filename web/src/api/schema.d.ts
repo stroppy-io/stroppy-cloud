@@ -3665,10 +3665,28 @@ export interface components {
                 metrics?: {
                     [key: string]: components["schemas"]["MetricValue"];
                 };
+                /** @description What Stroppy logged as errors and warnings, grouped by level, message, error and class; the most frequent first, at most 20. */
+                error_log?: components["schemas"]["RunErrorLogEntry"][];
             }[];
             artifacts?: string[];
             baseline?: components["schemas"]["RunBaselineResult"];
             summary?: components["schemas"]["PipelineSummary"];
+        };
+        RunErrorLogEntry: {
+            /** @description Log level: error, warn, dpanic, panic or fatal. */
+            level: string;
+            message?: string;
+            error?: string;
+            /** @description Stroppy's error class (serialization */
+            class?: string;
+            /** Format: int64 */
+            count: number;
+            /** Format: date-time */
+            first_at?: string;
+            /** Format: date-time */
+            last_at?: string;
+            /** @description One statement that failed this way. */
+            sql?: string;
         };
         RunSegmentErrors: {
             /** Format: int64 */

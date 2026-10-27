@@ -23495,6 +23495,101 @@ func (s *RunConnectivitySnapshotsItem) SetArtifactID(val string) {
 	s.ArtifactID = val
 }
 
+// Ref: #/components/schemas/RunErrorLogEntry
+type RunErrorLogEntry struct {
+	// Log level: error, warn, dpanic, panic or fatal.
+	Level   string    `json:"level"`
+	Message OptString `json:"message"`
+	Error   OptString `json:"error"`
+	// Stroppy's error class (serialization.
+	Class   OptString   `json:"class"`
+	Count   int64       `json:"count"`
+	FirstAt OptDateTime `json:"first_at"`
+	LastAt  OptDateTime `json:"last_at"`
+	// One statement that failed this way.
+	SQL OptString `json:"sql"`
+}
+
+// GetLevel returns the value of Level.
+func (s *RunErrorLogEntry) GetLevel() string {
+	return s.Level
+}
+
+// GetMessage returns the value of Message.
+func (s *RunErrorLogEntry) GetMessage() OptString {
+	return s.Message
+}
+
+// GetError returns the value of Error.
+func (s *RunErrorLogEntry) GetError() OptString {
+	return s.Error
+}
+
+// GetClass returns the value of Class.
+func (s *RunErrorLogEntry) GetClass() OptString {
+	return s.Class
+}
+
+// GetCount returns the value of Count.
+func (s *RunErrorLogEntry) GetCount() int64 {
+	return s.Count
+}
+
+// GetFirstAt returns the value of FirstAt.
+func (s *RunErrorLogEntry) GetFirstAt() OptDateTime {
+	return s.FirstAt
+}
+
+// GetLastAt returns the value of LastAt.
+func (s *RunErrorLogEntry) GetLastAt() OptDateTime {
+	return s.LastAt
+}
+
+// GetSQL returns the value of SQL.
+func (s *RunErrorLogEntry) GetSQL() OptString {
+	return s.SQL
+}
+
+// SetLevel sets the value of Level.
+func (s *RunErrorLogEntry) SetLevel(val string) {
+	s.Level = val
+}
+
+// SetMessage sets the value of Message.
+func (s *RunErrorLogEntry) SetMessage(val OptString) {
+	s.Message = val
+}
+
+// SetError sets the value of Error.
+func (s *RunErrorLogEntry) SetError(val OptString) {
+	s.Error = val
+}
+
+// SetClass sets the value of Class.
+func (s *RunErrorLogEntry) SetClass(val OptString) {
+	s.Class = val
+}
+
+// SetCount sets the value of Count.
+func (s *RunErrorLogEntry) SetCount(val int64) {
+	s.Count = val
+}
+
+// SetFirstAt sets the value of FirstAt.
+func (s *RunErrorLogEntry) SetFirstAt(val OptDateTime) {
+	s.FirstAt = val
+}
+
+// SetLastAt sets the value of LastAt.
+func (s *RunErrorLogEntry) SetLastAt(val OptDateTime) {
+	s.LastAt = val
+}
+
+// SetSQL sets the value of SQL.
+func (s *RunErrorLogEntry) SetSQL(val OptString) {
+	s.SQL = val
+}
+
 // Ref: #/components/schemas/RunEvent
 type RunEvent struct {
 	ID    string       `json:"id"`
@@ -26113,6 +26208,9 @@ type RunResultSegmentsItem struct {
 	// Reason the complete report is available only as an artifact (inline size limit).
 	ReportOmitted OptString                       `json:"report_omitted"`
 	Metrics       OptRunResultSegmentsItemMetrics `json:"metrics"`
+	// What Stroppy logged as errors and warnings, grouped by level, message, error and class; the most
+	// frequent first, at most 20.
+	ErrorLog []RunErrorLogEntry `json:"error_log"`
 }
 
 // GetName returns the value of Name.
@@ -26175,6 +26273,11 @@ func (s *RunResultSegmentsItem) GetMetrics() OptRunResultSegmentsItemMetrics {
 	return s.Metrics
 }
 
+// GetErrorLog returns the value of ErrorLog.
+func (s *RunResultSegmentsItem) GetErrorLog() []RunErrorLogEntry {
+	return s.ErrorLog
+}
+
 // SetName sets the value of Name.
 func (s *RunResultSegmentsItem) SetName(val string) {
 	s.Name = val
@@ -26233,6 +26336,11 @@ func (s *RunResultSegmentsItem) SetReportOmitted(val OptString) {
 // SetMetrics sets the value of Metrics.
 func (s *RunResultSegmentsItem) SetMetrics(val OptRunResultSegmentsItemMetrics) {
 	s.Metrics = val
+}
+
+// SetErrorLog sets the value of ErrorLog.
+func (s *RunResultSegmentsItem) SetErrorLog(val []RunErrorLogEntry) {
+	s.ErrorLog = val
 }
 
 type RunResultSegmentsItemMetrics map[string]MetricValue

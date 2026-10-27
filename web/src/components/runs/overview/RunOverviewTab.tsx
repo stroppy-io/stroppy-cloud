@@ -212,7 +212,18 @@ export function RunOverviewTab({ id }: { id: string }) {
         <ResultStats run={run} />
         <section className={styles.panel}>
           <LatencyPanel segments={run.result?.segments as ResultSegment[] | undefined} />
-          <ErrorsPanel segments={run.result?.segments as ResultSegment[] | undefined} />
+          <ErrorsPanel
+            segments={run.result?.segments as ResultSegment[] | undefined}
+            logsLink={(segment) => (
+              <AppLink
+                to="/t/$slug/runs/$id/logs"
+                params={{ slug, id: run.id }}
+                search={{ level: ['error', 'warn'], segment, role: ['runner'] }}
+              >
+                {t('report.errors.openLogs')}
+              </AppLink>
+            )}
+          />
           <RunSetup
             kind={run.snapshot.database.kind}
             version={run.snapshot.database.version}

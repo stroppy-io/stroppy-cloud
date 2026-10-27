@@ -140,6 +140,12 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		res.ReportPath = reportPath
 	}
 	res.Result.Status, res.Result.Error = segmentOutcome(ctx, &seg, &out, &res.Result)
+	if out.LogPath != "" {
+		if f, err := os.Open(out.LogPath); err == nil {
+			res.Result.ErrorLog = stroppycfg.ErrorLog(f)
+			_ = f.Close()
+		}
+	}
 	return res, nil
 }
 

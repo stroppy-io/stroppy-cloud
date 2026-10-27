@@ -32,7 +32,14 @@
     "failed": "Failed transactions",
     "failedQueries": "Failed queries",
     "retries": "Retries",
-    "rollbacks": "TPC-C rollbacks"
+    "rollbacks": "TPC-C rollbacks",
+    "kinds": "Which errors · {{segment}}",
+    "noLog": "This run is older than the error log: Stroppy's error classes and the transactions they happened in.",
+    "count": "Count",
+    "error": "Error",
+    "class": "Class",
+    "when": "When",
+    "openLogs": "Open in logs"
   },
   "config": {
     "title": "Database configuration",

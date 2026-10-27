@@ -242,6 +242,81 @@
                       "maxLen": "4096"
                     },
                     "title": "Error"
+                  },
+                  {
+                    "description": "Error and warning lines of the Stroppy log grouped by level, message, error and class; the most frequent first, at most 20.",
+                    "group": "Result",
+                    "list": {
+                      "items": [
+                        {
+                          "object": {
+                            "schema": {
+                              "fields": [
+                                {
+                                  "name": "level",
+                                  "required": true,
+                                  "string": {
+                                    "maxLen": "16"
+                                  },
+                                  "title": "Level"
+                                },
+                                {
+                                  "name": "message",
+                                  "string": {
+                                    "maxLen": "512"
+                                  },
+                                  "title": "Message"
+                                },
+                                {
+                                  "name": "error",
+                                  "string": {
+                                    "maxLen": "1024"
+                                  },
+                                  "title": "Error"
+                                },
+                                {
+                                  "name": "class",
+                                  "string": {
+                                    "maxLen": "64"
+                                  },
+                                  "title": "Error class"
+                                },
+                                {
+                                  "int64": {
+                                    "gte": "1"
+                                  },
+                                  "name": "count",
+                                  "required": true,
+                                  "title": "Count"
+                                },
+                                {
+                                  "name": "first_at",
+                                  "timestamp": {},
+                                  "title": "First seen"
+                                },
+                                {
+                                  "name": "last_at",
+                                  "timestamp": {},
+                                  "title": "Last seen"
+                                },
+                                {
+                                  "description": "One statement that failed this way.",
+                                  "name": "sql",
+                                  "string": {
+                                    "maxLen": "1024"
+                                  },
+                                  "title": "Statement"
+                                }
+                              ],
+                              "strict": true
+                            }
+                          }
+                        }
+                      ],
+                      "maxItems": "20"
+                    },
+                    "name": "error_log",
+                    "title": "Error log"
                   }
                 ],
                 "rules": [

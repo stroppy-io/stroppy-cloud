@@ -77,6 +77,22 @@ type SegmentResult struct {
 	// ReportOmitted explains why the envelope is available only as an artifact.
 	ReportOmitted string `json:"report_omitted,omitempty"`
 	Error         string `json:"error,omitempty"`
+	// ErrorLog is what Stroppy logged as errors and warnings, grouped.
+	ErrorLog []ErrorLogEntry `json:"error_log,omitempty"`
+}
+
+// ErrorLogEntry is one kind of error a segment logged: the same level,
+// message, error text and class, with how often and when it happened.
+type ErrorLogEntry struct {
+	Level   string    `json:"level"`
+	Message string    `json:"message,omitempty"`
+	Error   string    `json:"error,omitempty"`
+	Class   string    `json:"class,omitempty"`
+	Count   int64     `json:"count"`
+	FirstAt time.Time `json:"first_at,omitzero"`
+	LastAt  time.Time `json:"last_at,omitzero"`
+	// SQL is one statement that failed this way, cut to 512 bytes.
+	SQL string `json:"sql,omitempty"`
 }
 
 // Summary is the headline of a run.

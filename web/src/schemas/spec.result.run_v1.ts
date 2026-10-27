@@ -42,6 +42,26 @@ export interface SpecResultRun1ItemErrors {
 }
 
 /** object  */
+export interface SpecResultRun1ItemItem {
+  /** Level. */
+  level: string;
+  /** Message. */
+  message?: string;
+  /** Error. */
+  error?: string;
+  /** Error class. */
+  class?: string;
+  /** Count. */
+  count: number | string;
+  /** First seen. */
+  first_at?: string;
+  /** Last seen. */
+  last_at?: string;
+  /** Statement. One statement that failed this way. */
+  sql?: string;
+}
+
+/** object  */
 export interface SpecResultRun1Item {
   /** Segment. Name of the workload segment. */
   name: string;
@@ -67,6 +87,8 @@ export interface SpecResultRun1Item {
   report_omitted?: string;
   /** Error. Failure text; set when the status is failed. */
   error?: string;
+  /** Error log. Error and warning lines of the Stroppy log grouped by level, message, error and class; the most frequent first, at most 20. */
+  error_log?: Array<SpecResultRun1ItemItem>;
 }
 
 /** object  */

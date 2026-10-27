@@ -32298,6 +32298,221 @@ func (s *RunConnectivitySnapshotsItem) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *RunErrorLogEntry) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunErrorLogEntry) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("level")
+		e.Str(s.Level)
+	}
+	{
+		if s.Message.Set {
+			e.FieldStart("message")
+			s.Message.Encode(e)
+		}
+	}
+	{
+		if s.Error.Set {
+			e.FieldStart("error")
+			s.Error.Encode(e)
+		}
+	}
+	{
+		if s.Class.Set {
+			e.FieldStart("class")
+			s.Class.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("count")
+		e.Int64(s.Count)
+	}
+	{
+		if s.FirstAt.Set {
+			e.FieldStart("first_at")
+			s.FirstAt.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
+		if s.LastAt.Set {
+			e.FieldStart("last_at")
+			s.LastAt.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
+		if s.SQL.Set {
+			e.FieldStart("sql")
+			s.SQL.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfRunErrorLogEntry = [8]string{
+	0: "level",
+	1: "message",
+	2: "error",
+	3: "class",
+	4: "count",
+	5: "first_at",
+	6: "last_at",
+	7: "sql",
+}
+
+// Decode decodes RunErrorLogEntry from json.
+func (s *RunErrorLogEntry) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunErrorLogEntry to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "level":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Level = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"level\"")
+			}
+		case "message":
+			if err := func() error {
+				s.Message.Reset()
+				if err := s.Message.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"message\"")
+			}
+		case "error":
+			if err := func() error {
+				s.Error.Reset()
+				if err := s.Error.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"error\"")
+			}
+		case "class":
+			if err := func() error {
+				s.Class.Reset()
+				if err := s.Class.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"class\"")
+			}
+		case "count":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Int64()
+				s.Count = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"count\"")
+			}
+		case "first_at":
+			if err := func() error {
+				s.FirstAt.Reset()
+				if err := s.FirstAt.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"first_at\"")
+			}
+		case "last_at":
+			if err := func() error {
+				s.LastAt.Reset()
+				if err := s.LastAt.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_at\"")
+			}
+		case "sql":
+			if err := func() error {
+				s.SQL.Reset()
+				if err := s.SQL.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sql\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunErrorLogEntry")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00010001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunErrorLogEntry) {
+					name = jsonFieldsNameOfRunErrorLogEntry[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunErrorLogEntry) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunErrorLogEntry) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *RunEvent) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -38082,9 +38297,19 @@ func (s *RunResultSegmentsItem) encodeFields(e *jx.Encoder) {
 			s.Metrics.Encode(e)
 		}
 	}
+	{
+		if s.ErrorLog != nil {
+			e.FieldStart("error_log")
+			e.ArrStart()
+			for _, elem := range s.ErrorLog {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
 }
 
-var jsonFieldsNameOfRunResultSegmentsItem = [12]string{
+var jsonFieldsNameOfRunResultSegmentsItem = [13]string{
 	0:  "name",
 	1:  "status",
 	2:  "started_at",
@@ -38097,6 +38322,7 @@ var jsonFieldsNameOfRunResultSegmentsItem = [12]string{
 	9:  "report_artifact",
 	10: "report_omitted",
 	11: "metrics",
+	12: "error_log",
 }
 
 // Decode decodes RunResultSegmentsItem from json.
@@ -38231,6 +38457,23 @@ func (s *RunResultSegmentsItem) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"metrics\"")
+			}
+		case "error_log":
+			if err := func() error {
+				s.ErrorLog = make([]RunErrorLogEntry, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem RunErrorLogEntry
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.ErrorLog = append(s.ErrorLog, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"error_log\"")
 			}
 		default:
 			return d.Skip()

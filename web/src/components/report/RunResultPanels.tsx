@@ -2,9 +2,11 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, useStyles2 } from '@grafana/ui'
 import { formatMetric, formatNumber, formatPercent } from '@helpers/format'
+import { formatTime } from '@helpers/time'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SimpleTable, SubTitle } from './ReportPrimitives'
-import { clientWait, latencyRows, type ResultSegment } from './segment-metrics'
+import { clientWait, errorKinds, latencyRows, type ResultSegment } from './segment-metrics'
 
 const getStyles = (theme: GrafanaTheme2) => ({
   hint: css({
@@ -14,6 +16,25 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   segment: css({ margin: theme.spacing(2, 0, 0.5) }),
   lead: css({ fontWeight: theme.typography.fontWeightMedium }),
+  kindsHead: css({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: theme.spacing(2),
+    margin: theme.spacing(2, 0, 0.5),
+    fontWeight: theme.typography.fontWeightMedium,
+  }),
+  warn: css({ color: theme.colors.warning.text }),
+  sub: css({ color: theme.colors.text.secondary, fontSize: theme.typography.bodySmall.fontSize }),
+  sql: css({
+    display: 'block',
+    marginTop: theme.spacing(0.5),
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.bodySmall.fontSize,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+  }),
+  when: css({ whiteSpace: 'nowrap', color: theme.colors.text.secondary }),
 })
 
 /** Latency per segment and transaction type, with the time the client spent outside the database. */
@@ -80,12 +101,23 @@ export function LatencyPanel({ segments }: { segments?: ResultSegment[] }) {
   )
 }
 
-/** Failed transactions, retries and the rollbacks TPC-C makes on purpose, per segment. */
-export function ErrorsPanel({ segments }: { segments?: ResultSegment[] }) {
+/**
+ * Failed transactions, retries and the rollbacks TPC-C makes on purpose,
+ * per segment, then which errors those were. logsLink renders a link to
+ * the segment's error lines where the viewer can read logs (the run page).
+ */
+export function ErrorsPanel({
+  segments,
+  logsLink,
+}: {
+  segments?: ResultSegment[]
+  logsLink?: (segment: string) => ReactNode
+}) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const rows = (segments ?? []).filter((s) => s.errors || s.metrics?.tpcc_rollback_done)
   if (!rows.length) return null
+  const kinds = rows.map((s) => ({ s, kinds: errorKinds(s) })).filter((x) => x.kinds.length > 0)
   return (
     <>
       <SubTitle>{t('report.errors.title')}</SubTitle>
@@ -112,6 +144,47 @@ export function ErrorsPanel({ segments }: { segments?: ResultSegment[] }) {
           ))}
         </tbody>
       </SimpleTable>
+      {kinds.map(({ s, kinds: list }) => (
+        <div key={s.name}>
+          <div className={styles.kindsHead}>
+            <span>{t('report.errors.kinds', { segment: s.name })}</span>
+            {logsLink?.(s.name)}
+          </div>
+          {!s.error_log?.length && <p className={styles.hint}>{t('report.errors.noLog')}</p>}
+          <SimpleTable>
+            <thead>
+              <tr>
+                <th className="num">{t('report.errors.count')}</th>
+                <th>{t('report.errors.error')}</th>
+                <th>{t('report.errors.class')}</th>
+                <th>{t('report.errors.when')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((k) => (
+                <tr key={`${k.level}/${k.message}/${k.error}/${k.class}`}>
+                  <td className="num">{formatNumber(k.count)}</td>
+                  <td>
+                    <div className={k.level === 'error' ? undefined : styles.warn}>
+                      {k.error || k.message || '—'}
+                    </div>
+                    {k.error && k.message && <div className={styles.sub}>{k.message}</div>}
+                    {k.sql && <code className={styles.sql}>{k.sql}</code>}
+                  </td>
+                  <td className="mono">{k.class || '—'}</td>
+                  <td className={styles.when}>
+                    {k.first_at
+                      ? k.last_at && k.last_at !== k.first_at
+                        ? `${formatTime(k.first_at)} – ${formatTime(k.last_at)}`
+                        : formatTime(k.first_at)
+                      : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </SimpleTable>
+        </div>
+      ))}
     </>
   )
 }

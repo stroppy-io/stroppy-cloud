@@ -16,6 +16,50 @@ export interface ResultSegment {
     failed_queries: number
     retry_attempts: number
   }
+  /** What Stroppy logged as errors, grouped (runs from after the error log). */
+  error_log?: ErrorKind[]
+}
+
+/** One kind of error a segment hit. */
+export interface ErrorKind {
+  level: string
+  message?: string
+  error?: string
+  class?: string
+  count: number
+  first_at?: string
+  last_at?: string
+  sql?: string
+}
+
+interface ReportErrors {
+  errors?: { groups?: Array<{ class?: string; operation?: string; count?: number }> }
+  metrics?: Record<
+    string,
+    { series?: Array<{ total?: number; attributes?: Record<string, string> }> } | undefined
+  >
+}
+
+/**
+ * The kinds of error a segment hit: the error log when the run has one;
+ * for older runs, Stroppy's error groups (class, operation) with the
+ * transactions they happened in.
+ */
+export function errorKinds(seg: ResultSegment): ErrorKind[] {
+  if (seg.error_log?.length) return seg.error_log
+  const report = seg.report as ReportErrors | undefined
+  const txs = (report?.metrics?.tx_errors_total?.series ?? [])
+    .filter((x) => x.total && x.attributes?.tx_name)
+    .map((x) => `${x.attributes?.tx_name} ${x.attributes?.tx_action ?? ''}`.trim())
+  return (report?.errors?.groups ?? [])
+    .filter((g) => (g.count ?? 0) > 0)
+    .map((g) => ({
+      level: 'error',
+      message: g.operation,
+      error: txs.length ? txs.join(', ') : undefined,
+      class: g.class,
+      count: g.count ?? 0,
+    }))
 }
 
 export interface LatencyRow {

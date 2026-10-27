@@ -77,6 +77,21 @@ func ResultRun() *schemapb.Schema {
 						Desc("Reason the complete envelope was not included inline; read the original artifact.").MaxLen(256),
 					schemapb.Str("error").Title("Error").
 						Desc("Failure text; set when the status is failed.").MaxLen(4096),
+					// What Stroppy logged as errors and warnings, grouped, so a
+					// reader sees which errors the counts are made of.
+					schemapb.List("error_log",
+						schemapb.Object("",
+							schemapb.Str("level").Title("Level").MaxLen(16).Required(),
+							schemapb.Str("message").Title("Message").MaxLen(512),
+							schemapb.Str("error").Title("Error").MaxLen(1024),
+							schemapb.Str("class").Title("Error class").MaxLen(64),
+							schemapb.Int64("count").Title("Count").Gte(1).Required(),
+							schemapb.Timestamp("first_at").Title("First seen"),
+							schemapb.Timestamp("last_at").Title("Last seen"),
+							schemapb.Str("sql").Title("Statement").Desc("One statement that failed this way.").MaxLen(1024),
+						).Strict(),
+					).Title("Error log").Group("Result").
+						Desc("Error and warning lines of the Stroppy log grouped by level, message, error and class; the most frequent first, at most 20.").MaxItems(20),
 				).Strict().Rule(schemapb.Rule(
 					`!("status" in this) || this.status != "failed" || ("error" in this)`,
 					"a failed segment must carry an error",

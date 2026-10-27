@@ -8080,6 +8080,12 @@ components:
                 type: object
                 additionalProperties:
                   $ref: '#/components/schemas/MetricValue'
+              error_log:
+                type: array
+                description: What Stroppy logged as errors and warnings, grouped by level, message, error
+                  and class; the most frequent first, at most 20.
+                items:
+                  $ref: '#/components/schemas/RunErrorLogEntry'
         artifacts:
           type: array
           items:
@@ -8089,6 +8095,36 @@ components:
           $ref: '#/components/schemas/RunBaselineResult'
         summary:
           $ref: '#/components/schemas/PipelineSummary'
+    RunErrorLogEntry:
+      type: object
+      required:
+      - level
+      - count
+      properties:
+        level:
+          type: string
+          description: 'Log level: error, warn, dpanic, panic or fatal.'
+        message:
+          type: string
+        error:
+          type: string
+        class:
+          type: string
+          description: Stroppy's error class (serialization
+          deadlock: null
+          unknown…).: null
+        count:
+          type: integer
+          format: int64
+        first_at:
+          type: string
+          format: date-time
+        last_at:
+          type: string
+          format: date-time
+        sql:
+          type: string
+          description: One statement that failed this way.
     RunSegmentErrors:
       type: object
       required:
