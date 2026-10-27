@@ -389,6 +389,7 @@ func (c *compilation) workload() error {
 		}
 		driver[camel(k)] = v
 	}
+	url = c.tuneDriver(driver, driverType, url)
 	w := spec.Workload{RunnerRole: topology.RoleRunner, StroppyImage: image, DriverType: driverType, URL: url, Driver: driver, Segments: baked.Segments}
 	if ca, ok := baked.Connection["ca_cert"].(string); ok && ca != "" {
 		w.CACert = ca

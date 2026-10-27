@@ -71,7 +71,7 @@ func (c *compilation) pgCluster(oriole bool) pgCounters {
 	// Every virtual user holds a connection; +20 for exporters, Patroni and
 	// a psql, rounded up to 50 and never below the upstream 100.
 	// doc: runtime-config-connection.html#GUC-MAX-CONNECTIONS
-	out := pgCounters{MaxConnections: max(100, ceilTo(c.peakVUs()+20, 50)), MaxWorkers: max(8, cpu)}
+	out := pgCounters{MaxConnections: max(100, ceilTo(c.peakConnections()+20, 50)), MaxWorkers: max(8, cpu)}
 	if oriole {
 		// OrioleDB's bgwriters and recovery pools take worker slots too; with
 		// too few it silently falls back to single-process recovery.
@@ -340,7 +340,7 @@ func (c *compilation) tunePgBouncer(role, schemaID string, overlay map[string]an
 	t := c.tune(role, schemaID, overlay)
 	effective := c.effective(role, schemaID)
 	// Every virtual user is a client connection; fewer slots refuse them.
-	t.set("max_client_conn", max(1000, 4*c.peakVUs()))
+	t.set("max_client_conn", max(1000, 4*c.peakConnections()))
 	cpu := 0
 	for _, m := range c.machinesOf(topology.RoleDB) {
 		cpu = max(cpu, c.hostOf(m).CPU)

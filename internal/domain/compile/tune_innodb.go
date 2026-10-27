@@ -89,7 +89,7 @@ func (c *compilation) tuneInnoDB(s innodbServer, overlay map[string]any) {
 	c.tuneIOCapacity(t, h, eff)
 	t.set("innodb_log_buffer_size", autoLogBufferMB)
 
-	conns := innodbMaxConnections(c.peakVUs(), maria)
+	conns := innodbMaxConnections(c.peakConnections(), maria)
 	t.set("max_connections", conns)
 	if t.has("max_connections") {
 		conns = int(numberOf(eff["max_connections"]))

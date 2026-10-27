@@ -84,7 +84,26 @@ io_uring не поднимается и InnoDB молча уходит с native
 влезает в 256 символов опции). Диск данных монтируется ext4
 `defaults,noatime,nodiratime`.
 
-### 1.4 Отчёт прогона
+### 1.4 Клиент (драйвер stroppy)
+
+Под `auto` компилятор (`compile/tune_driver.go`) даёт пулу соединений
+stroppy по соединению на каждого виртуального пользователя и каждый поток
+загрузки: `peakConnections` = max(VU, `load_workers`) по сегментам. Без этого
+pgx держит max(4, CPU runner'а) соединений, а `database/sql` — два простаивающих,
+и прогон меряет очередь клиента: 256 VU на 16 соединениях runner'а L дают
+потолок 16 / латентность транзакции.
+
+- PostgreSQL, OrioleDB, Picodata, pg-noop: `pool.maxConns = minConns`;
+- MySQL, MariaDB, YDB: `pool.maxOpenConns = maxIdleConns`;
+- CockroachDB: `pool_max_conns` и `pool_min_conns` в URL — stroppy 6.2.1
+  отбрасывает блоки `pool`/`postgres` для `driverType: crdb`
+  (stroppy-io/stroppy#234).
+
+Ключ пула, заданный в workload, побеждает. `stock` оставляет дефолты драйвера.
+Серверные лимиты соединений (`max_connections` PG, MySQL/MariaDB,
+`max_client_conn` PgBouncer) считаются от того же `peakConnections`.
+
+### 1.5 Отчёт прогона
 
 Снапшот (`run.Snapshot.Tuning`, `compile/summary.go`): режим тюнинга и
 надёжность коммита — `fsync_each_commit` или `relaxed` (контракт:
