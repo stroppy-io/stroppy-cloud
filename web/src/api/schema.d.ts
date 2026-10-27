@@ -7401,7 +7401,8 @@ export interface operations {
                 role?: string[];
                 machine?: string[];
                 container?: string[];
-                stream?: ("stdout" | "stderr" | "journal" | "pipeline")[];
+                /** @description Streams as Graphene's agent names them (stdout, stderr, stroppy, container, pull…); the facets list a run's streams. */
+                stream?: string[];
                 phase?: string[];
                 segment?: string;
                 level?: components["schemas"]["LogLevel"][];

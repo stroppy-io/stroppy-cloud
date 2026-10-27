@@ -26303,15 +26303,17 @@ type QueryRunLogsParams struct {
 	// Tenant slug.
 	Slug      string
 	ID        uuid.UUID
-	Role      []string                 `json:",omitempty"`
-	Machine   []string                 `json:",omitempty"`
-	Container []string                 `json:",omitempty"`
-	Stream    []QueryRunLogsStreamItem `json:",omitempty"`
-	Phase     []string                 `json:",omitempty"`
-	Segment   OptString                `json:",omitempty,omitzero"`
-	Level     []LogLevel               `json:",omitempty"`
-	Start     OptDateTime              `json:",omitempty,omitzero"`
-	End       OptDateTime              `json:",omitempty,omitzero"`
+	Role      []string `json:",omitempty"`
+	Machine   []string `json:",omitempty"`
+	Container []string `json:",omitempty"`
+	// Streams as Graphene's agent names them (stdout, stderr, stroppy, container, pull…); the facets
+	// list a run's streams.
+	Stream  []string    `json:",omitempty"`
+	Phase   []string    `json:",omitempty"`
+	Segment OptString   `json:",omitempty,omitzero"`
+	Level   []LogLevel  `json:",omitempty"`
+	Start   OptDateTime `json:",omitempty,omitzero"`
+	End     OptDateTime `json:",omitempty,omitzero"`
 	// Substring / phrase search.
 	Q OptString `json:",omitempty,omitzero"`
 	// Opaque (`_time`+`seq`).
@@ -26368,7 +26370,7 @@ func unpackQueryRunLogsParams(packed middleware.Parameters) (params QueryRunLogs
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Stream = v.([]QueryRunLogsStreamItem)
+			params.Stream = v.([]string)
 		}
 	}
 	{
@@ -26707,7 +26709,7 @@ func decodeQueryRunLogsParams(args [2]string, argsEscaped bool, r *http.Request)
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
 				return d.DecodeArray(func(d uri.Decoder) error {
-					var paramsDotStreamVal QueryRunLogsStreamItem
+					var paramsDotStreamVal string
 					if err := func() error {
 						val, err := d.DecodeValue()
 						if err != nil {
@@ -26719,7 +26721,7 @@ func decodeQueryRunLogsParams(args [2]string, argsEscaped bool, r *http.Request)
 							return err
 						}
 
-						paramsDotStreamVal = QueryRunLogsStreamItem(c)
+						paramsDotStreamVal = c
 						return nil
 					}(); err != nil {
 						return err
@@ -26734,8 +26736,20 @@ func decodeQueryRunLogsParams(args [2]string, argsEscaped bool, r *http.Request)
 				var failures []validate.FieldError
 				for i, elem := range params.Stream {
 					if err := func() error {
-						if err := elem.Validate(); err != nil {
-							return err
+						if err := (validate.String{
+							MinLength:     0,
+							MinLengthSet:  false,
+							MaxLength:     64,
+							MaxLengthSet:  true,
+							Email:         false,
+							Hostname:      false,
+							Regex:         nil,
+							MinNumeric:    0,
+							MinNumericSet: false,
+							MaxNumeric:    0,
+							MaxNumericSet: false,
+						}).Validate(string(elem)); err != nil {
+							return errors.Wrap(err, "string")
 						}
 						return nil
 					}(); err != nil {

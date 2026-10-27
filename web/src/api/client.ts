@@ -35,6 +35,10 @@ export const api = createClient<Paths>({
   baseUrl: '',
   fetch: apiMode === 'mock' ? lazyMockFetch : undefined,
   bodySerializer: (body) => stringifyRequest(body),
+  // Every list query parameter in the contract is `style: form, explode:
+  // false` (`level=error,warn`); the server rejects the repeated-key form
+  // openapi-fetch sends by default.
+  querySerializer: { array: { style: 'form', explode: false } },
 })
 api.use(auth)
 

@@ -21476,61 +21476,6 @@ func (s *QueryRunLogsRawReq) SetLimit(val OptInt) {
 	s.Limit = val
 }
 
-type QueryRunLogsStreamItem string
-
-const (
-	QueryRunLogsStreamItemStdout   QueryRunLogsStreamItem = "stdout"
-	QueryRunLogsStreamItemStderr   QueryRunLogsStreamItem = "stderr"
-	QueryRunLogsStreamItemJournal  QueryRunLogsStreamItem = "journal"
-	QueryRunLogsStreamItemPipeline QueryRunLogsStreamItem = "pipeline"
-)
-
-// AllValues returns all QueryRunLogsStreamItem values.
-func (QueryRunLogsStreamItem) AllValues() []QueryRunLogsStreamItem {
-	return []QueryRunLogsStreamItem{
-		QueryRunLogsStreamItemStdout,
-		QueryRunLogsStreamItemStderr,
-		QueryRunLogsStreamItemJournal,
-		QueryRunLogsStreamItemPipeline,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s QueryRunLogsStreamItem) MarshalText() ([]byte, error) {
-	switch s {
-	case QueryRunLogsStreamItemStdout:
-		return []byte(s), nil
-	case QueryRunLogsStreamItemStderr:
-		return []byte(s), nil
-	case QueryRunLogsStreamItemJournal:
-		return []byte(s), nil
-	case QueryRunLogsStreamItemPipeline:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *QueryRunLogsStreamItem) UnmarshalText(data []byte) error {
-	switch QueryRunLogsStreamItem(data) {
-	case QueryRunLogsStreamItemStdout:
-		*s = QueryRunLogsStreamItemStdout
-		return nil
-	case QueryRunLogsStreamItemStderr:
-		*s = QueryRunLogsStreamItemStderr
-		return nil
-	case QueryRunLogsStreamItemJournal:
-		*s = QueryRunLogsStreamItemJournal
-		return nil
-	case QueryRunLogsStreamItemPipeline:
-		*s = QueryRunLogsStreamItemPipeline
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 type QueryRunMetricsRawOK map[string]jx.Raw
 
 func (s *QueryRunMetricsRawOK) init() QueryRunMetricsRawOK {

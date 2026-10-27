@@ -2665,11 +2665,9 @@ paths:
           type: array
           items:
             type: string
-            enum:
-            - stdout
-            - stderr
-            - journal
-            - pipeline
+            maxLength: 64
+        description: Streams as Graphene's agent names them (stdout, stderr, stroppy, container, pull…);
+          the facets list a run's streams.
       - name: phase
         in: query
         style: form

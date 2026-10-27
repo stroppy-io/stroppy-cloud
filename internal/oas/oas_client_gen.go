@@ -26609,7 +26609,7 @@ func (c *Client) sendQueryRunLogs(ctx context.Context, params QueryRunLogsParams
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Stream {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							return e.EncodeValue(conv.StringToString(item))
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}

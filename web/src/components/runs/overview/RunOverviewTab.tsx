@@ -218,7 +218,9 @@ export function RunOverviewTab({ id }: { id: string }) {
               <AppLink
                 to="/t/$slug/runs/$id/logs"
                 params={{ slug, id: run.id }}
-                search={{ level: ['error', 'warn'], segment, role: ['runner'] }}
+                // Stroppy's JSON lines all reach the log store as info for now,
+                // so the link searches its stream for error lines instead.
+                search={{ stream: ['stroppy'], segment, q: '"level":"error"' }}
               >
                 {t('report.errors.openLogs')}
               </AppLink>

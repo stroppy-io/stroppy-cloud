@@ -177,7 +177,7 @@ paths:
         - { name: role, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: machine, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: container, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
-        - { name: stream, in: query, style: form, explode: false, schema: { type: array, items: { type: string, enum: [stdout, stderr, journal, pipeline] } } }
+        - { name: stream, in: query, style: form, explode: false, schema: { type: array, items: { type: string, maxLength: 64 } }, description: "Streams as Graphene's agent names them (stdout, stderr, stroppy, container, pull…); the facets list a run's streams." }
         - { name: phase, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: segment, in: query, schema: { type: string } }
         - { name: level, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/LogLevel' } } }

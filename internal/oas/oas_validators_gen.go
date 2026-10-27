@@ -6443,21 +6443,6 @@ func (s *QueryRunLogsRawReq) Validate() error {
 	return nil
 }
 
-func (s QueryRunLogsStreamItem) Validate() error {
-	switch s {
-	case "stdout":
-		return nil
-	case "stderr":
-		return nil
-	case "journal":
-		return nil
-	case "pipeline":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
-	}
-}
-
 func (s *QueryRunMetricsRawReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
