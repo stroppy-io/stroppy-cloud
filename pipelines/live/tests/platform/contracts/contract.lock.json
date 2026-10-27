@@ -2,7 +2,7 @@
   "version": "0.7.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "c23761f141b37bf92725158a7968f393d315f635c19399a605665e779c4e5da5",
+    "openapi/openapi.yaml": "e6ecb16a4f6b0618422f83facb0787457c078d555a9e9bdae1a798ad5cebf882",
     "pipelines/go.mod": "d491cea3e7d1d4bb77b34be1fc33719f43a79b96d0da7fd0dd392f6833c28f13",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
@@ -87,7 +87,7 @@
     "pipelines/stroppycfg/testdata/stroppy-run.schema.json": "1a518ee7a46c1c7850bcd17cc87df5e87ffa3ac20b1173f46183c018138c71e6",
     "web/src/api/enums.ts": "f283458c5870d97500763b27d6881176139df32655ed517f09f7f253b2d31c3f",
     "web/src/api/json.ts": "fa18ed250071e855612c04227f3f6f20c79875811bbe1d2a95a2d42f1c84d341",
-    "web/src/api/schema.d.ts": "cf78048374f84841825ebb8dc69a06395678e2a4a674ec3c32bbd987bb8c037d",
+    "web/src/api/schema.d.ts": "084c1a2e76d2e741e78770fbbf6900956c62c283d635e60b6e5750efd0b46b8b",
     "web/src/schemas/cfg.cockroach.flags_v24.json": "ec2ddec106a25d078149532a363fe1b09ceec6912dd906bff3768dfe2b77cef9",
     "web/src/schemas/cfg.cockroach.flags_v24.ts": "7387515f9669fc1f52d6c83bcbb1cb57094c81c212c50bdc399697bea0026a36",
     "web/src/schemas/cfg.cockroach.flags_v25.json": "b3a1f7403aeed307e0e542d6f21aabbb02bc45d4a5405c819294dce42978fbae",

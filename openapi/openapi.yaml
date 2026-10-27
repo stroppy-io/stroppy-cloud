@@ -7944,56 +7944,85 @@ components:
         machines:
           type: array
           items:
-            type: object
-            required:
-            - name
-            - role
-            - size
-            properties:
-              name:
-                type: string
-              role:
-                $ref: '#/components/schemas/TopologyRole'
-              size:
-                $ref: '#/components/schemas/Size'
-              cpu:
-                type: integer
-              memory_gb:
-                type: integer
-              disk_gb:
-                type: integer
-              disk_type:
-                type: string
-              instance_type:
-                type: string
-              location:
-                type: string
-              cache_mb:
-                type: integer
-                description: The database engine's own cache on this machine, MB (buffer pool, shared
-                  buffers, block cache, memtx arena).
-              disk_read_iops:
-                type: integer
-                description: Provider read IOPS limit of the data disk.
-              disk_write_iops:
-                type: integer
-                description: Provider write IOPS limit of the data disk.
-              disk_read_mbps:
-                type: integer
-                description: Provider read bandwidth limit of the data disk
-                MB/s.: null
-              disk_write_mbps:
-                type: integer
-                description: Provider write bandwidth limit of the data disk
-                MB/s.: null
+            $ref: '#/components/schemas/RunMachine'
         tuning:
+          $ref: '#/components/schemas/RunTuning'
+    RunMachine:
+      type: object
+      required:
+      - name
+      - role
+      - size
+      properties:
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/TopologyRole'
+        size:
+          $ref: '#/components/schemas/Size'
+        cpu:
+          type: integer
+        memory_gb:
+          type: integer
+        disk_gb:
+          type: integer
+        disk_type:
+          type: string
+        instance_type:
+          type: string
+        location:
+          type: string
+        cache_mb:
+          type: integer
+          description: The database engine's own cache on this machine, MB (buffer pool, shared buffers,
+            block cache, memtx arena).
+        disk_read_iops:
+          type: integer
+          description: Provider read IOPS limit of the data disk.
+        disk_write_iops:
+          type: integer
+          description: Provider write IOPS limit of the data disk.
+        disk_read_mbps:
+          type: integer
+          description: Provider read bandwidth limit of the data disk
+          MB/s.: null
+        disk_write_mbps:
+          type: integer
+          description: Provider write bandwidth limit of the data disk
+          MB/s.: null
+    RunTuning:
+      type: object
+      description: How the database and the load client were set up; absent for runs from before it.
+      properties:
+        mode:
+          $ref: '#/components/schemas/TuningMode'
+        durability:
+          $ref: '#/components/schemas/CommitDurability'
+        auto:
           type: object
-          description: How the database was set up; absent for runs from before it.
+          description: Every value auto tuning set — role → config schema id → key → value. Empty under
+            stock tuning and for runs from before it.
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+              additionalProperties: {}
+        client:
+          type: object
+          description: The stroppy driver the workload ran with.
           properties:
-            mode:
-              $ref: '#/components/schemas/TuningMode'
-            durability:
-              $ref: '#/components/schemas/CommitDurability'
+            driver_type:
+              type: string
+            settings:
+              type: object
+              description: Driver options of stroppy's config (pool, bulkSize…), the connection URL left
+                out.
+              additionalProperties: {}
+            auto:
+              type: array
+              description: Settings auto tuning chose, as dotted paths (pool.maxConns).
+              items:
+                type: string
     RunResult:
       type: object
       description: Typed result from the pipeline (`RunResult`).
@@ -9803,26 +9832,9 @@ components:
         machines:
           type: array
           items:
-            type: object
-            properties:
-              name:
-                type: string
-              role:
-                type: string
-              size:
-                $ref: '#/components/schemas/Size'
-              cpu:
-                type: integer
-              memory_gb:
-                type: integer
-              disk_gb:
-                type: integer
-              disk_type:
-                type: string
-              instance_type:
-                type: string
-              location:
-                type: string
+            $ref: '#/components/schemas/RunMachine'
+        tuning:
+          $ref: '#/components/schemas/RunTuning'
         configs:
           type: object
           description: Scope `configs` — rendered files per role (secret fields masked).

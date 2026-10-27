@@ -349,18 +349,8 @@ components:
               items: { $ref: '#/components/schemas/SchemaValue' }
         machines:
           type: array
-          items:
-            type: object
-            properties:
-              name: { type: string }
-              role: { type: string }
-              size: { $ref: '#/components/schemas/Size' }
-              cpu: { type: integer }
-              memory_gb: { type: integer }
-              disk_gb: { type: integer }
-              disk_type: { type: string }
-              instance_type: { type: string }
-              location: { type: string }
+          items: { $ref: '#/components/schemas/RunMachine' }
+        tuning: { $ref: '#/components/schemas/RunTuning' }
         configs:
           type: object
           description: Scope `configs` — rendered files per role (secret fields masked).

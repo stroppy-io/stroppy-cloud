@@ -243,7 +243,7 @@ func (h *Handler) RevokeShare(ctx context.Context, params oas.RevokeShareParams)
 func sharedRunOf(r share.SharedRun) oas.SharedRun {
 	out := oas.SharedRun{
 		Name: r.Name, Status: oas.RunStatus(r.Status), Summary: summaryOf(r.Summary), Result: resultOf(r.Result), Timeline: make([]oas.RunEvent, 0, len(r.Timeline)),
-		Machines: make([]oas.SharedRunMachinesItem, 0, len(r.Machines)), WorkloadSegments: []oas.SharedRunWorkloadSegmentsItem{},
+		Machines: make([]oas.RunMachine, 0, len(r.Machines)), WorkloadSegments: []oas.SharedRunWorkloadSegmentsItem{},
 		Database: oas.NewOptSharedRunDatabase(oas.SharedRunDatabase{Kind: oas.NewOptDatabaseKind(oas.DatabaseKind(r.Database.Kind)), Version: oas.NewOptString(r.Database.Version)}),
 		Workload: oas.NewOptSharedRunWorkload(oas.SharedRunWorkload{StroppyVersion: oas.NewOptString(r.Workload.StroppyVersion), Protocol: oas.NewOptProtocol(oas.Protocol(r.Workload.Protocol)), Segments: segmentsTo(r.Workload.Segments)}),
 	}
@@ -272,7 +272,10 @@ func sharedRunOf(r share.SharedRun) oas.SharedRun {
 		}
 	}
 	for _, m := range r.Machines {
-		out.Machines = append(out.Machines, oas.SharedRunMachinesItem{Name: oas.NewOptString(m.Name), Role: oas.NewOptString(m.Role), Size: oas.NewOptSize(oas.Size(m.Size)), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB), DiskGB: oas.NewOptInt(m.DiskGB), DiskType: oas.NewOptString(m.DiskType), InstanceType: oas.NewOptString(m.InstanceType), Location: oas.NewOptString(m.Location)})
+		out.Machines = append(out.Machines, machineOf(m))
+	}
+	if t, ok := tuningOf(r.Tuning); ok {
+		out.Tuning = oas.NewOptRunTuning(t)
 	}
 	for _, s := range r.Segments {
 		item := oas.SharedRunWorkloadSegmentsItem{Name: oas.NewOptString(s.Name)}

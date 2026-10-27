@@ -101,10 +101,28 @@ type Snapshot struct {
 type Tuning struct {
 	Mode       TuningMode       `json:"mode,omitempty"`
 	Durability CommitDurability `json:"durability,omitempty"`
+	// Auto is every value auto tuning put on top of the database's configs:
+	// role → config schema id → key → value (empty for stock and for runs
+	// from before it).
+	Auto map[string]map[string]map[string]any `json:"auto,omitempty"`
+	// Client is the stroppy driver the workload ran with.
+	Client *ClientSetup `json:"client,omitempty"`
+}
+
+// ClientSetup is the stroppy driver of a run as the runner got it.
+type ClientSetup struct {
+	DriverType string `json:"driver_type,omitempty"`
+	// Settings are the driver options of stroppy's config (pool, bulkSize…),
+	// the connection URL left out.
+	Settings map[string]any `json:"settings,omitempty"`
+	// Auto are the settings auto tuning chose, as dotted paths (pool.maxConns).
+	Auto []string `json:"auto,omitempty"`
 }
 
 // IsZero reports a run without a tuning record.
-func (t Tuning) IsZero() bool { return t == Tuning{} }
+func (t Tuning) IsZero() bool {
+	return t.Mode == "" && t.Durability == "" && len(t.Auto) == 0 && t.Client == nil
+}
 
 // TuningMode is the database's tuning parameter.
 type TuningMode string

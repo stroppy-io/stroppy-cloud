@@ -23079,39 +23079,6 @@ func (s *OptRunSnapshotEffectiveConfigs) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes RunSnapshotTuning as json.
-func (o OptRunSnapshotTuning) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	o.Value.Encode(e)
-}
-
-// Decode decodes RunSnapshotTuning from json.
-func (o *OptRunSnapshotTuning) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptRunSnapshotTuning to nil")
-	}
-	o.Set = true
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptRunSnapshotTuning) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptRunSnapshotTuning) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes RunStatus as json.
 func (o OptRunStatus) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -23274,6 +23241,140 @@ func (s OptRunTriggerRef) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptRunTriggerRef) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RunTuning as json.
+func (o OptRunTuning) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunTuning from json.
+func (o *OptRunTuning) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunTuning to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunTuning) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunTuning) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RunTuningAuto as json.
+func (o OptRunTuningAuto) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunTuningAuto from json.
+func (o *OptRunTuningAuto) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunTuningAuto to nil")
+	}
+	o.Set = true
+	o.Value = make(RunTuningAuto)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunTuningAuto) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunTuningAuto) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RunTuningClient as json.
+func (o OptRunTuningClient) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunTuningClient from json.
+func (o *OptRunTuningClient) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunTuningClient to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunTuningClient) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunTuningClient) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RunTuningClientSettings as json.
+func (o OptRunTuningClientSettings) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunTuningClientSettings from json.
+func (o *OptRunTuningClientSettings) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunTuningClientSettings to nil")
+	}
+	o.Set = true
+	o.Value = make(RunTuningClientSettings)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunTuningClientSettings) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunTuningClientSettings) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -32872,6 +32973,320 @@ func (s *RunLabels) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *RunMachine) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunMachine) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+		e.FieldStart("role")
+		s.Role.Encode(e)
+	}
+	{
+		e.FieldStart("size")
+		s.Size.Encode(e)
+	}
+	{
+		if s.CPU.Set {
+			e.FieldStart("cpu")
+			s.CPU.Encode(e)
+		}
+	}
+	{
+		if s.MemoryGB.Set {
+			e.FieldStart("memory_gb")
+			s.MemoryGB.Encode(e)
+		}
+	}
+	{
+		if s.DiskGB.Set {
+			e.FieldStart("disk_gb")
+			s.DiskGB.Encode(e)
+		}
+	}
+	{
+		if s.DiskType.Set {
+			e.FieldStart("disk_type")
+			s.DiskType.Encode(e)
+		}
+	}
+	{
+		if s.InstanceType.Set {
+			e.FieldStart("instance_type")
+			s.InstanceType.Encode(e)
+		}
+	}
+	{
+		if s.Location.Set {
+			e.FieldStart("location")
+			s.Location.Encode(e)
+		}
+	}
+	{
+		if s.CacheMB.Set {
+			e.FieldStart("cache_mb")
+			s.CacheMB.Encode(e)
+		}
+	}
+	{
+		if s.DiskReadIops.Set {
+			e.FieldStart("disk_read_iops")
+			s.DiskReadIops.Encode(e)
+		}
+	}
+	{
+		if s.DiskWriteIops.Set {
+			e.FieldStart("disk_write_iops")
+			s.DiskWriteIops.Encode(e)
+		}
+	}
+	{
+		if s.DiskReadMbps.Set {
+			e.FieldStart("disk_read_mbps")
+			s.DiskReadMbps.Encode(e)
+		}
+	}
+	{
+		if s.DiskWriteMbps.Set {
+			e.FieldStart("disk_write_mbps")
+			s.DiskWriteMbps.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfRunMachine = [14]string{
+	0:  "name",
+	1:  "role",
+	2:  "size",
+	3:  "cpu",
+	4:  "memory_gb",
+	5:  "disk_gb",
+	6:  "disk_type",
+	7:  "instance_type",
+	8:  "location",
+	9:  "cache_mb",
+	10: "disk_read_iops",
+	11: "disk_write_iops",
+	12: "disk_read_mbps",
+	13: "disk_write_mbps",
+}
+
+// Decode decodes RunMachine from json.
+func (s *RunMachine) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunMachine to nil")
+	}
+	var requiredBitSet [2]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "name":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "role":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				if err := s.Role.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"role\"")
+			}
+		case "size":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				if err := s.Size.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"size\"")
+			}
+		case "cpu":
+			if err := func() error {
+				s.CPU.Reset()
+				if err := s.CPU.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cpu\"")
+			}
+		case "memory_gb":
+			if err := func() error {
+				s.MemoryGB.Reset()
+				if err := s.MemoryGB.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"memory_gb\"")
+			}
+		case "disk_gb":
+			if err := func() error {
+				s.DiskGB.Reset()
+				if err := s.DiskGB.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_gb\"")
+			}
+		case "disk_type":
+			if err := func() error {
+				s.DiskType.Reset()
+				if err := s.DiskType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_type\"")
+			}
+		case "instance_type":
+			if err := func() error {
+				s.InstanceType.Reset()
+				if err := s.InstanceType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"instance_type\"")
+			}
+		case "location":
+			if err := func() error {
+				s.Location.Reset()
+				if err := s.Location.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"location\"")
+			}
+		case "cache_mb":
+			if err := func() error {
+				s.CacheMB.Reset()
+				if err := s.CacheMB.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cache_mb\"")
+			}
+		case "disk_read_iops":
+			if err := func() error {
+				s.DiskReadIops.Reset()
+				if err := s.DiskReadIops.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_read_iops\"")
+			}
+		case "disk_write_iops":
+			if err := func() error {
+				s.DiskWriteIops.Reset()
+				if err := s.DiskWriteIops.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_write_iops\"")
+			}
+		case "disk_read_mbps":
+			if err := func() error {
+				s.DiskReadMbps.Reset()
+				if err := s.DiskReadMbps.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_read_mbps\"")
+			}
+		case "disk_write_mbps":
+			if err := func() error {
+				s.DiskWriteMbps.Reset()
+				if err := s.DiskWriteMbps.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_write_mbps\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunMachine")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [2]uint8{
+		0b00000111,
+		0b00000000,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunMachine) {
+					name = jsonFieldsNameOfRunMachine[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunMachine) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunMachine) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *RunMetricNames) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -38307,9 +38722,9 @@ func (s *RunSnapshot) Decode(d *jx.Decoder) error {
 			}
 		case "machines":
 			if err := func() error {
-				s.Machines = make([]RunSnapshotMachinesItem, 0)
+				s.Machines = make([]RunMachine, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem RunSnapshotMachinesItem
+					var elem RunMachine
 					if err := elem.Decode(d); err != nil {
 						return err
 					}
@@ -38493,400 +38908,6 @@ func (s RunSnapshotEffectiveConfigsItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunSnapshotEffectiveConfigsItem) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *RunSnapshotMachinesItem) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *RunSnapshotMachinesItem) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("name")
-		e.Str(s.Name)
-	}
-	{
-		e.FieldStart("role")
-		s.Role.Encode(e)
-	}
-	{
-		e.FieldStart("size")
-		s.Size.Encode(e)
-	}
-	{
-		if s.CPU.Set {
-			e.FieldStart("cpu")
-			s.CPU.Encode(e)
-		}
-	}
-	{
-		if s.MemoryGB.Set {
-			e.FieldStart("memory_gb")
-			s.MemoryGB.Encode(e)
-		}
-	}
-	{
-		if s.DiskGB.Set {
-			e.FieldStart("disk_gb")
-			s.DiskGB.Encode(e)
-		}
-	}
-	{
-		if s.DiskType.Set {
-			e.FieldStart("disk_type")
-			s.DiskType.Encode(e)
-		}
-	}
-	{
-		if s.InstanceType.Set {
-			e.FieldStart("instance_type")
-			s.InstanceType.Encode(e)
-		}
-	}
-	{
-		if s.Location.Set {
-			e.FieldStart("location")
-			s.Location.Encode(e)
-		}
-	}
-	{
-		if s.CacheMB.Set {
-			e.FieldStart("cache_mb")
-			s.CacheMB.Encode(e)
-		}
-	}
-	{
-		if s.DiskReadIops.Set {
-			e.FieldStart("disk_read_iops")
-			s.DiskReadIops.Encode(e)
-		}
-	}
-	{
-		if s.DiskWriteIops.Set {
-			e.FieldStart("disk_write_iops")
-			s.DiskWriteIops.Encode(e)
-		}
-	}
-	{
-		if s.DiskReadMbps.Set {
-			e.FieldStart("disk_read_mbps")
-			s.DiskReadMbps.Encode(e)
-		}
-	}
-	{
-		if s.DiskWriteMbps.Set {
-			e.FieldStart("disk_write_mbps")
-			s.DiskWriteMbps.Encode(e)
-		}
-	}
-}
-
-var jsonFieldsNameOfRunSnapshotMachinesItem = [14]string{
-	0:  "name",
-	1:  "role",
-	2:  "size",
-	3:  "cpu",
-	4:  "memory_gb",
-	5:  "disk_gb",
-	6:  "disk_type",
-	7:  "instance_type",
-	8:  "location",
-	9:  "cache_mb",
-	10: "disk_read_iops",
-	11: "disk_write_iops",
-	12: "disk_read_mbps",
-	13: "disk_write_mbps",
-}
-
-// Decode decodes RunSnapshotMachinesItem from json.
-func (s *RunSnapshotMachinesItem) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode RunSnapshotMachinesItem to nil")
-	}
-	var requiredBitSet [2]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "name":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				v, err := d.Str()
-				s.Name = string(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"name\"")
-			}
-		case "role":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				if err := s.Role.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"role\"")
-			}
-		case "size":
-			requiredBitSet[0] |= 1 << 2
-			if err := func() error {
-				if err := s.Size.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"size\"")
-			}
-		case "cpu":
-			if err := func() error {
-				s.CPU.Reset()
-				if err := s.CPU.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"cpu\"")
-			}
-		case "memory_gb":
-			if err := func() error {
-				s.MemoryGB.Reset()
-				if err := s.MemoryGB.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"memory_gb\"")
-			}
-		case "disk_gb":
-			if err := func() error {
-				s.DiskGB.Reset()
-				if err := s.DiskGB.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_gb\"")
-			}
-		case "disk_type":
-			if err := func() error {
-				s.DiskType.Reset()
-				if err := s.DiskType.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_type\"")
-			}
-		case "instance_type":
-			if err := func() error {
-				s.InstanceType.Reset()
-				if err := s.InstanceType.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"instance_type\"")
-			}
-		case "location":
-			if err := func() error {
-				s.Location.Reset()
-				if err := s.Location.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"location\"")
-			}
-		case "cache_mb":
-			if err := func() error {
-				s.CacheMB.Reset()
-				if err := s.CacheMB.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"cache_mb\"")
-			}
-		case "disk_read_iops":
-			if err := func() error {
-				s.DiskReadIops.Reset()
-				if err := s.DiskReadIops.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_read_iops\"")
-			}
-		case "disk_write_iops":
-			if err := func() error {
-				s.DiskWriteIops.Reset()
-				if err := s.DiskWriteIops.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_write_iops\"")
-			}
-		case "disk_read_mbps":
-			if err := func() error {
-				s.DiskReadMbps.Reset()
-				if err := s.DiskReadMbps.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_read_mbps\"")
-			}
-		case "disk_write_mbps":
-			if err := func() error {
-				s.DiskWriteMbps.Reset()
-				if err := s.DiskWriteMbps.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_write_mbps\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode RunSnapshotMachinesItem")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [2]uint8{
-		0b00000111,
-		0b00000000,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfRunSnapshotMachinesItem) {
-					name = jsonFieldsNameOfRunSnapshotMachinesItem[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *RunSnapshotMachinesItem) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *RunSnapshotMachinesItem) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *RunSnapshotTuning) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *RunSnapshotTuning) encodeFields(e *jx.Encoder) {
-	{
-		if s.Mode.Set {
-			e.FieldStart("mode")
-			s.Mode.Encode(e)
-		}
-	}
-	{
-		if s.Durability.Set {
-			e.FieldStart("durability")
-			s.Durability.Encode(e)
-		}
-	}
-}
-
-var jsonFieldsNameOfRunSnapshotTuning = [2]string{
-	0: "mode",
-	1: "durability",
-}
-
-// Decode decodes RunSnapshotTuning from json.
-func (s *RunSnapshotTuning) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode RunSnapshotTuning to nil")
-	}
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "mode":
-			if err := func() error {
-				s.Mode.Reset()
-				if err := s.Mode.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"mode\"")
-			}
-		case "durability":
-			if err := func() error {
-				s.Durability.Reset()
-				if err := s.Durability.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"durability\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode RunSnapshotTuning")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *RunSnapshotTuning) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *RunSnapshotTuning) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -39749,6 +39770,454 @@ func (s *RunTriggerRef) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunTriggerRef) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunTuning) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunTuning) encodeFields(e *jx.Encoder) {
+	{
+		if s.Mode.Set {
+			e.FieldStart("mode")
+			s.Mode.Encode(e)
+		}
+	}
+	{
+		if s.Durability.Set {
+			e.FieldStart("durability")
+			s.Durability.Encode(e)
+		}
+	}
+	{
+		if s.Auto.Set {
+			e.FieldStart("auto")
+			s.Auto.Encode(e)
+		}
+	}
+	{
+		if s.Client.Set {
+			e.FieldStart("client")
+			s.Client.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfRunTuning = [4]string{
+	0: "mode",
+	1: "durability",
+	2: "auto",
+	3: "client",
+}
+
+// Decode decodes RunTuning from json.
+func (s *RunTuning) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuning to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "mode":
+			if err := func() error {
+				s.Mode.Reset()
+				if err := s.Mode.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"mode\"")
+			}
+		case "durability":
+			if err := func() error {
+				s.Durability.Reset()
+				if err := s.Durability.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"durability\"")
+			}
+		case "auto":
+			if err := func() error {
+				s.Auto.Reset()
+				if err := s.Auto.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"auto\"")
+			}
+		case "client":
+			if err := func() error {
+				s.Client.Reset()
+				if err := s.Client.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"client\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuning")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunTuning) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuning) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RunTuningAuto) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RunTuningAuto) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		elem.Encode(e)
+	}
+}
+
+// Decode decodes RunTuningAuto from json.
+func (s *RunTuningAuto) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuningAuto to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem RunTuningAutoItem
+		if err := func() error {
+			if err := elem.Decode(d); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuningAuto")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RunTuningAuto) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuningAuto) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RunTuningAutoItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RunTuningAutoItem) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		elem.Encode(e)
+	}
+}
+
+// Decode decodes RunTuningAutoItem from json.
+func (s *RunTuningAutoItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuningAutoItem to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem RunTuningAutoItemItem
+		if err := func() error {
+			if err := elem.Decode(d); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuningAutoItem")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RunTuningAutoItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuningAutoItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RunTuningAutoItemItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RunTuningAutoItemItem) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
+
+// Decode decodes RunTuningAutoItemItem from json.
+func (s *RunTuningAutoItemItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuningAutoItemItem to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuningAutoItemItem")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RunTuningAutoItemItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuningAutoItemItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunTuningClient) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunTuningClient) encodeFields(e *jx.Encoder) {
+	{
+		if s.DriverType.Set {
+			e.FieldStart("driver_type")
+			s.DriverType.Encode(e)
+		}
+	}
+	{
+		if s.Settings.Set {
+			e.FieldStart("settings")
+			s.Settings.Encode(e)
+		}
+	}
+	{
+		if s.Auto != nil {
+			e.FieldStart("auto")
+			e.ArrStart()
+			for _, elem := range s.Auto {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
+	}
+}
+
+var jsonFieldsNameOfRunTuningClient = [3]string{
+	0: "driver_type",
+	1: "settings",
+	2: "auto",
+}
+
+// Decode decodes RunTuningClient from json.
+func (s *RunTuningClient) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuningClient to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "driver_type":
+			if err := func() error {
+				s.DriverType.Reset()
+				if err := s.DriverType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"driver_type\"")
+			}
+		case "settings":
+			if err := func() error {
+				s.Settings.Reset()
+				if err := s.Settings.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"settings\"")
+			}
+		case "auto":
+			if err := func() error {
+				s.Auto = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.Auto = append(s.Auto, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"auto\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuningClient")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunTuningClient) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuningClient) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RunTuningClientSettings) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RunTuningClientSettings) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
+
+// Decode decodes RunTuningClientSettings from json.
+func (s *RunTuningClientSettings) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunTuningClientSettings to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunTuningClientSettings")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RunTuningClientSettings) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunTuningClientSettings) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -42756,6 +43225,12 @@ func (s *SharedRun) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Tuning.Set {
+			e.FieldStart("tuning")
+			s.Tuning.Encode(e)
+		}
+	}
+	{
 		if s.Configs.Set {
 			e.FieldStart("configs")
 			s.Configs.Encode(e)
@@ -42779,7 +43254,7 @@ func (s *SharedRun) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSharedRun = [15]string{
+var jsonFieldsNameOfSharedRun = [16]string{
 	0:  "name",
 	1:  "status",
 	2:  "started_at",
@@ -42792,9 +43267,10 @@ var jsonFieldsNameOfSharedRun = [15]string{
 	9:  "database",
 	10: "workload",
 	11: "machines",
-	12: "configs",
-	13: "metrics",
-	14: "workload_segments",
+	12: "tuning",
+	13: "configs",
+	14: "metrics",
+	15: "workload_segments",
 }
 
 // Decode decodes SharedRun from json.
@@ -42928,9 +43404,9 @@ func (s *SharedRun) Decode(d *jx.Decoder) error {
 			}
 		case "machines":
 			if err := func() error {
-				s.Machines = make([]SharedRunMachinesItem, 0)
+				s.Machines = make([]RunMachine, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem SharedRunMachinesItem
+					var elem RunMachine
 					if err := elem.Decode(d); err != nil {
 						return err
 					}
@@ -42942,6 +43418,16 @@ func (s *SharedRun) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"machines\"")
+			}
+		case "tuning":
+			if err := func() error {
+				s.Tuning.Reset()
+				if err := s.Tuning.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tuning\"")
 			}
 		case "configs":
 			if err := func() error {
@@ -43257,205 +43743,6 @@ func (s *SharedRunDatabase) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *SharedRunDatabase) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *SharedRunMachinesItem) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *SharedRunMachinesItem) encodeFields(e *jx.Encoder) {
-	{
-		if s.Name.Set {
-			e.FieldStart("name")
-			s.Name.Encode(e)
-		}
-	}
-	{
-		if s.Role.Set {
-			e.FieldStart("role")
-			s.Role.Encode(e)
-		}
-	}
-	{
-		if s.Size.Set {
-			e.FieldStart("size")
-			s.Size.Encode(e)
-		}
-	}
-	{
-		if s.CPU.Set {
-			e.FieldStart("cpu")
-			s.CPU.Encode(e)
-		}
-	}
-	{
-		if s.MemoryGB.Set {
-			e.FieldStart("memory_gb")
-			s.MemoryGB.Encode(e)
-		}
-	}
-	{
-		if s.DiskGB.Set {
-			e.FieldStart("disk_gb")
-			s.DiskGB.Encode(e)
-		}
-	}
-	{
-		if s.DiskType.Set {
-			e.FieldStart("disk_type")
-			s.DiskType.Encode(e)
-		}
-	}
-	{
-		if s.InstanceType.Set {
-			e.FieldStart("instance_type")
-			s.InstanceType.Encode(e)
-		}
-	}
-	{
-		if s.Location.Set {
-			e.FieldStart("location")
-			s.Location.Encode(e)
-		}
-	}
-}
-
-var jsonFieldsNameOfSharedRunMachinesItem = [9]string{
-	0: "name",
-	1: "role",
-	2: "size",
-	3: "cpu",
-	4: "memory_gb",
-	5: "disk_gb",
-	6: "disk_type",
-	7: "instance_type",
-	8: "location",
-}
-
-// Decode decodes SharedRunMachinesItem from json.
-func (s *SharedRunMachinesItem) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SharedRunMachinesItem to nil")
-	}
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "name":
-			if err := func() error {
-				s.Name.Reset()
-				if err := s.Name.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"name\"")
-			}
-		case "role":
-			if err := func() error {
-				s.Role.Reset()
-				if err := s.Role.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"role\"")
-			}
-		case "size":
-			if err := func() error {
-				s.Size.Reset()
-				if err := s.Size.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"size\"")
-			}
-		case "cpu":
-			if err := func() error {
-				s.CPU.Reset()
-				if err := s.CPU.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"cpu\"")
-			}
-		case "memory_gb":
-			if err := func() error {
-				s.MemoryGB.Reset()
-				if err := s.MemoryGB.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"memory_gb\"")
-			}
-		case "disk_gb":
-			if err := func() error {
-				s.DiskGB.Reset()
-				if err := s.DiskGB.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_gb\"")
-			}
-		case "disk_type":
-			if err := func() error {
-				s.DiskType.Reset()
-				if err := s.DiskType.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"disk_type\"")
-			}
-		case "instance_type":
-			if err := func() error {
-				s.InstanceType.Reset()
-				if err := s.InstanceType.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"instance_type\"")
-			}
-		case "location":
-			if err := func() error {
-				s.Location.Reset()
-				if err := s.Location.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"location\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode SharedRunMachinesItem")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *SharedRunMachinesItem) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SharedRunMachinesItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

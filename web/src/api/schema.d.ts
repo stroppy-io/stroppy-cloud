@@ -3589,31 +3589,51 @@ export interface components {
                     [key: string]: components["schemas"]["BakedValue"];
                 };
             };
-            machines?: {
-                name: string;
-                role: components["schemas"]["TopologyRole"];
-                size: components["schemas"]["Size"];
-                cpu?: number;
-                memory_gb?: number;
-                disk_gb?: number;
-                disk_type?: string;
-                instance_type?: string;
-                location?: string;
-                /** @description The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache, memtx arena). */
-                cache_mb?: number;
-                /** @description Provider read IOPS limit of the data disk. */
-                disk_read_iops?: number;
-                /** @description Provider write IOPS limit of the data disk. */
-                disk_write_iops?: number;
-                /** @description Provider read bandwidth limit of the data disk */
-                disk_read_mbps?: number;
-                /** @description Provider write bandwidth limit of the data disk */
-                disk_write_mbps?: number;
-            }[];
-            /** @description How the database was set up; absent for runs from before it. */
-            tuning?: {
-                mode?: components["schemas"]["TuningMode"];
-                durability?: components["schemas"]["CommitDurability"];
+            machines?: components["schemas"]["RunMachine"][];
+            tuning?: components["schemas"]["RunTuning"];
+        };
+        RunMachine: {
+            name: string;
+            role: components["schemas"]["TopologyRole"];
+            size: components["schemas"]["Size"];
+            cpu?: number;
+            memory_gb?: number;
+            disk_gb?: number;
+            disk_type?: string;
+            instance_type?: string;
+            location?: string;
+            /** @description The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache, memtx arena). */
+            cache_mb?: number;
+            /** @description Provider read IOPS limit of the data disk. */
+            disk_read_iops?: number;
+            /** @description Provider write IOPS limit of the data disk. */
+            disk_write_iops?: number;
+            /** @description Provider read bandwidth limit of the data disk */
+            disk_read_mbps?: number;
+            /** @description Provider write bandwidth limit of the data disk */
+            disk_write_mbps?: number;
+        };
+        /** @description How the database and the load client were set up; absent for runs from before it. */
+        RunTuning: {
+            mode?: components["schemas"]["TuningMode"];
+            durability?: components["schemas"]["CommitDurability"];
+            /** @description Every value auto tuning set — role → config schema id → key → value. Empty under stock tuning and for runs from before it. */
+            auto?: {
+                [key: string]: {
+                    [key: string]: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description The stroppy driver the workload ran with. */
+            client?: {
+                driver_type?: string;
+                /** @description Driver options of stroppy's config (pool, bulkSize…), the connection URL left out. */
+                settings?: {
+                    [key: string]: unknown;
+                };
+                /** @description Settings auto tuning chose, as dotted paths (pool.maxConns). */
+                auto?: string[];
             };
         };
         /** @description Typed result from the pipeline (`RunResult`). */
@@ -4416,17 +4436,8 @@ export interface components {
                 protocol?: components["schemas"]["Protocol"];
                 segments?: components["schemas"]["SchemaValue"][];
             };
-            machines?: {
-                name?: string;
-                role?: string;
-                size?: components["schemas"]["Size"];
-                cpu?: number;
-                memory_gb?: number;
-                disk_gb?: number;
-                disk_type?: string;
-                instance_type?: string;
-                location?: string;
-            }[];
+            machines?: components["schemas"]["RunMachine"][];
+            tuning?: components["schemas"]["RunTuning"];
             /** @description Scope `configs` — rendered files per role (secret fields masked). */
             configs?: {
                 [key: string]: {

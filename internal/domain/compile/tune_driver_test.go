@@ -48,3 +48,17 @@ func TestTuneDriverSizesThePoolForTheWorkload(t *testing.T) {
 		t.Fatalf("stock tuning keeps the driver defaults: %v", stock)
 	}
 }
+
+func TestClientSetupLeavesCredentialsOut(t *testing.T) {
+	c := &compilation{}
+	c.out.Spec.Workload.DriverType = "postgres"
+	c.out.Spec.Workload.URL = "postgres://u:secret@h/db"
+	c.out.Spec.Workload.Driver = map[string]any{
+		"pool": map[string]any{"maxConns": 64}, "bulkSize": 2500,
+		"authUser": "u", "authPassword": "secret", "authToken": "t", "serviceAccountKeyFile": "/k", "caCert": "pem",
+	}
+	got := c.clientSetup().Settings
+	if len(got) != 2 || got["pool"] == nil || got["bulkSize"] == nil {
+		t.Fatalf("only pool and bulkSize may be reported: %v", got)
+	}
+}

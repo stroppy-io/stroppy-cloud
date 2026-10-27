@@ -146,6 +146,8 @@ type compilation struct {
 	machinesByRole map[string][]string
 	// hosts: machine → the recipe's kernel wishes (prepareDatabaseHosts).
 	hosts map[string]hostTuning
+	// clientAuto: the driver settings auto tuning chose (tuneDriver).
+	clientAuto []string
 }
 
 // --- machines ---------------------------------------------------------------

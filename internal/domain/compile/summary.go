@@ -11,12 +11,13 @@ import (
 )
 
 // summarize fills what the run's report shows about the setup: the tuning
-// mode, whether a commit waits for the disk, and per database machine the
-// engine's cache and the data disk's limits. Everything is read back from
+// mode, the values auto tuning set, the stroppy driver, whether a commit
+// waits for the disk, and per database machine the engine's cache and the
+// data disk's limits. Everything is read back from
 // the effective configs the containers were rendered from.
 func (c *compilation) summarize() {
 	effective := EffectiveWithTuned(c.in.EffectiveConfigs, c.out.Tuned)
-	c.out.Tuning = run.Tuning{Mode: run.TuningMode(c.tuning())}
+	c.out.Tuning = run.Tuning{Mode: run.TuningMode(c.tuning()), Auto: c.out.Tuned, Client: c.clientSetup()}
 	if d, ok := c.durability(effective); ok {
 		c.out.Tuning.Durability = d
 	}

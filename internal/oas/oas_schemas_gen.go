@@ -16583,52 +16583,6 @@ func (o OptRunSnapshotEffectiveConfigs) Or(d RunSnapshotEffectiveConfigs) RunSna
 	return d
 }
 
-// NewOptRunSnapshotTuning returns new OptRunSnapshotTuning with value set to v.
-func NewOptRunSnapshotTuning(v RunSnapshotTuning) OptRunSnapshotTuning {
-	return OptRunSnapshotTuning{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptRunSnapshotTuning is optional RunSnapshotTuning.
-type OptRunSnapshotTuning struct {
-	Value RunSnapshotTuning
-	Set   bool
-}
-
-// IsSet returns true if OptRunSnapshotTuning was set.
-func (o OptRunSnapshotTuning) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptRunSnapshotTuning) Reset() {
-	var v RunSnapshotTuning
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptRunSnapshotTuning) SetTo(v RunSnapshotTuning) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptRunSnapshotTuning) Get() (v RunSnapshotTuning, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptRunSnapshotTuning) Or(d RunSnapshotTuning) RunSnapshotTuning {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptRunStatus returns new OptRunStatus with value set to v.
 func NewOptRunStatus(v RunStatus) OptRunStatus {
 	return OptRunStatus{
@@ -16853,6 +16807,190 @@ func (o OptRunTriggerRef) Get() (v RunTriggerRef, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptRunTriggerRef) Or(d RunTriggerRef) RunTriggerRef {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunTuning returns new OptRunTuning with value set to v.
+func NewOptRunTuning(v RunTuning) OptRunTuning {
+	return OptRunTuning{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunTuning is optional RunTuning.
+type OptRunTuning struct {
+	Value RunTuning
+	Set   bool
+}
+
+// IsSet returns true if OptRunTuning was set.
+func (o OptRunTuning) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunTuning) Reset() {
+	var v RunTuning
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunTuning) SetTo(v RunTuning) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunTuning) Get() (v RunTuning, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunTuning) Or(d RunTuning) RunTuning {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunTuningAuto returns new OptRunTuningAuto with value set to v.
+func NewOptRunTuningAuto(v RunTuningAuto) OptRunTuningAuto {
+	return OptRunTuningAuto{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunTuningAuto is optional RunTuningAuto.
+type OptRunTuningAuto struct {
+	Value RunTuningAuto
+	Set   bool
+}
+
+// IsSet returns true if OptRunTuningAuto was set.
+func (o OptRunTuningAuto) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunTuningAuto) Reset() {
+	var v RunTuningAuto
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunTuningAuto) SetTo(v RunTuningAuto) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunTuningAuto) Get() (v RunTuningAuto, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunTuningAuto) Or(d RunTuningAuto) RunTuningAuto {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunTuningClient returns new OptRunTuningClient with value set to v.
+func NewOptRunTuningClient(v RunTuningClient) OptRunTuningClient {
+	return OptRunTuningClient{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunTuningClient is optional RunTuningClient.
+type OptRunTuningClient struct {
+	Value RunTuningClient
+	Set   bool
+}
+
+// IsSet returns true if OptRunTuningClient was set.
+func (o OptRunTuningClient) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunTuningClient) Reset() {
+	var v RunTuningClient
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunTuningClient) SetTo(v RunTuningClient) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunTuningClient) Get() (v RunTuningClient, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunTuningClient) Or(d RunTuningClient) RunTuningClient {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunTuningClientSettings returns new OptRunTuningClientSettings with value set to v.
+func NewOptRunTuningClientSettings(v RunTuningClientSettings) OptRunTuningClientSettings {
+	return OptRunTuningClientSettings{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunTuningClientSettings is optional RunTuningClientSettings.
+type OptRunTuningClientSettings struct {
+	Value RunTuningClientSettings
+	Set   bool
+}
+
+// IsSet returns true if OptRunTuningClientSettings was set.
+func (o OptRunTuningClientSettings) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunTuningClientSettings) Reset() {
+	var v RunTuningClientSettings
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunTuningClientSettings) SetTo(v RunTuningClientSettings) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunTuningClientSettings) Get() (v RunTuningClientSettings, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunTuningClientSettings) Or(d RunTuningClientSettings) RunTuningClientSettings {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -23745,6 +23883,170 @@ func (s *RunLabels) init() RunLabels {
 	return m
 }
 
+// Ref: #/components/schemas/RunMachine
+type RunMachine struct {
+	Name         string       `json:"name"`
+	Role         TopologyRole `json:"role"`
+	Size         Size         `json:"size"`
+	CPU          OptInt       `json:"cpu"`
+	MemoryGB     OptInt       `json:"memory_gb"`
+	DiskGB       OptInt       `json:"disk_gb"`
+	DiskType     OptString    `json:"disk_type"`
+	InstanceType OptString    `json:"instance_type"`
+	Location     OptString    `json:"location"`
+	// The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache,
+	// memtx arena).
+	CacheMB OptInt `json:"cache_mb"`
+	// Provider read IOPS limit of the data disk.
+	DiskReadIops OptInt `json:"disk_read_iops"`
+	// Provider write IOPS limit of the data disk.
+	DiskWriteIops OptInt `json:"disk_write_iops"`
+	// Provider read bandwidth limit of the data disk.
+	DiskReadMbps OptInt `json:"disk_read_mbps"`
+	// Provider write bandwidth limit of the data disk.
+	DiskWriteMbps OptInt `json:"disk_write_mbps"`
+}
+
+// GetName returns the value of Name.
+func (s *RunMachine) GetName() string {
+	return s.Name
+}
+
+// GetRole returns the value of Role.
+func (s *RunMachine) GetRole() TopologyRole {
+	return s.Role
+}
+
+// GetSize returns the value of Size.
+func (s *RunMachine) GetSize() Size {
+	return s.Size
+}
+
+// GetCPU returns the value of CPU.
+func (s *RunMachine) GetCPU() OptInt {
+	return s.CPU
+}
+
+// GetMemoryGB returns the value of MemoryGB.
+func (s *RunMachine) GetMemoryGB() OptInt {
+	return s.MemoryGB
+}
+
+// GetDiskGB returns the value of DiskGB.
+func (s *RunMachine) GetDiskGB() OptInt {
+	return s.DiskGB
+}
+
+// GetDiskType returns the value of DiskType.
+func (s *RunMachine) GetDiskType() OptString {
+	return s.DiskType
+}
+
+// GetInstanceType returns the value of InstanceType.
+func (s *RunMachine) GetInstanceType() OptString {
+	return s.InstanceType
+}
+
+// GetLocation returns the value of Location.
+func (s *RunMachine) GetLocation() OptString {
+	return s.Location
+}
+
+// GetCacheMB returns the value of CacheMB.
+func (s *RunMachine) GetCacheMB() OptInt {
+	return s.CacheMB
+}
+
+// GetDiskReadIops returns the value of DiskReadIops.
+func (s *RunMachine) GetDiskReadIops() OptInt {
+	return s.DiskReadIops
+}
+
+// GetDiskWriteIops returns the value of DiskWriteIops.
+func (s *RunMachine) GetDiskWriteIops() OptInt {
+	return s.DiskWriteIops
+}
+
+// GetDiskReadMbps returns the value of DiskReadMbps.
+func (s *RunMachine) GetDiskReadMbps() OptInt {
+	return s.DiskReadMbps
+}
+
+// GetDiskWriteMbps returns the value of DiskWriteMbps.
+func (s *RunMachine) GetDiskWriteMbps() OptInt {
+	return s.DiskWriteMbps
+}
+
+// SetName sets the value of Name.
+func (s *RunMachine) SetName(val string) {
+	s.Name = val
+}
+
+// SetRole sets the value of Role.
+func (s *RunMachine) SetRole(val TopologyRole) {
+	s.Role = val
+}
+
+// SetSize sets the value of Size.
+func (s *RunMachine) SetSize(val Size) {
+	s.Size = val
+}
+
+// SetCPU sets the value of CPU.
+func (s *RunMachine) SetCPU(val OptInt) {
+	s.CPU = val
+}
+
+// SetMemoryGB sets the value of MemoryGB.
+func (s *RunMachine) SetMemoryGB(val OptInt) {
+	s.MemoryGB = val
+}
+
+// SetDiskGB sets the value of DiskGB.
+func (s *RunMachine) SetDiskGB(val OptInt) {
+	s.DiskGB = val
+}
+
+// SetDiskType sets the value of DiskType.
+func (s *RunMachine) SetDiskType(val OptString) {
+	s.DiskType = val
+}
+
+// SetInstanceType sets the value of InstanceType.
+func (s *RunMachine) SetInstanceType(val OptString) {
+	s.InstanceType = val
+}
+
+// SetLocation sets the value of Location.
+func (s *RunMachine) SetLocation(val OptString) {
+	s.Location = val
+}
+
+// SetCacheMB sets the value of CacheMB.
+func (s *RunMachine) SetCacheMB(val OptInt) {
+	s.CacheMB = val
+}
+
+// SetDiskReadIops sets the value of DiskReadIops.
+func (s *RunMachine) SetDiskReadIops(val OptInt) {
+	s.DiskReadIops = val
+}
+
+// SetDiskWriteIops sets the value of DiskWriteIops.
+func (s *RunMachine) SetDiskWriteIops(val OptInt) {
+	s.DiskWriteIops = val
+}
+
+// SetDiskReadMbps sets the value of DiskReadMbps.
+func (s *RunMachine) SetDiskReadMbps(val OptInt) {
+	s.DiskReadMbps = val
+}
+
+// SetDiskWriteMbps sets the value of DiskWriteMbps.
+func (s *RunMachine) SetDiskWriteMbps(val OptInt) {
+	s.DiskWriteMbps = val
+}
+
 // Ref: #/components/schemas/RunMetricNames
 type RunMetricNames struct {
 	Window RunMetricNamesWindow     `json:"window"`
@@ -26061,9 +26363,8 @@ type RunSnapshot struct {
 	Keep            OptString      `json:"keep"`
 	// Per role → config schema id → Baked value that was rendered.
 	EffectiveConfigs OptRunSnapshotEffectiveConfigs `json:"effective_configs"`
-	Machines         []RunSnapshotMachinesItem      `json:"machines"`
-	// How the database was set up; absent for runs from before it.
-	Tuning OptRunSnapshotTuning `json:"tuning"`
+	Machines         []RunMachine                   `json:"machines"`
+	Tuning           OptRunTuning                   `json:"tuning"`
 }
 
 // GetExecution returns the value of Execution.
@@ -26112,12 +26413,12 @@ func (s *RunSnapshot) GetEffectiveConfigs() OptRunSnapshotEffectiveConfigs {
 }
 
 // GetMachines returns the value of Machines.
-func (s *RunSnapshot) GetMachines() []RunSnapshotMachinesItem {
+func (s *RunSnapshot) GetMachines() []RunMachine {
 	return s.Machines
 }
 
 // GetTuning returns the value of Tuning.
-func (s *RunSnapshot) GetTuning() OptRunSnapshotTuning {
+func (s *RunSnapshot) GetTuning() OptRunTuning {
 	return s.Tuning
 }
 
@@ -26167,12 +26468,12 @@ func (s *RunSnapshot) SetEffectiveConfigs(val OptRunSnapshotEffectiveConfigs) {
 }
 
 // SetMachines sets the value of Machines.
-func (s *RunSnapshot) SetMachines(val []RunSnapshotMachinesItem) {
+func (s *RunSnapshot) SetMachines(val []RunMachine) {
 	s.Machines = val
 }
 
 // SetTuning sets the value of Tuning.
-func (s *RunSnapshot) SetTuning(val OptRunSnapshotTuning) {
+func (s *RunSnapshot) SetTuning(val OptRunTuning) {
 	s.Tuning = val
 }
 
@@ -26197,195 +26498,6 @@ func (s *RunSnapshotEffectiveConfigsItem) init() RunSnapshotEffectiveConfigsItem
 		*s = m
 	}
 	return m
-}
-
-type RunSnapshotMachinesItem struct {
-	Name         string       `json:"name"`
-	Role         TopologyRole `json:"role"`
-	Size         Size         `json:"size"`
-	CPU          OptInt       `json:"cpu"`
-	MemoryGB     OptInt       `json:"memory_gb"`
-	DiskGB       OptInt       `json:"disk_gb"`
-	DiskType     OptString    `json:"disk_type"`
-	InstanceType OptString    `json:"instance_type"`
-	Location     OptString    `json:"location"`
-	// The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache,
-	// memtx arena).
-	CacheMB OptInt `json:"cache_mb"`
-	// Provider read IOPS limit of the data disk.
-	DiskReadIops OptInt `json:"disk_read_iops"`
-	// Provider write IOPS limit of the data disk.
-	DiskWriteIops OptInt `json:"disk_write_iops"`
-	// Provider read bandwidth limit of the data disk.
-	DiskReadMbps OptInt `json:"disk_read_mbps"`
-	// Provider write bandwidth limit of the data disk.
-	DiskWriteMbps OptInt `json:"disk_write_mbps"`
-}
-
-// GetName returns the value of Name.
-func (s *RunSnapshotMachinesItem) GetName() string {
-	return s.Name
-}
-
-// GetRole returns the value of Role.
-func (s *RunSnapshotMachinesItem) GetRole() TopologyRole {
-	return s.Role
-}
-
-// GetSize returns the value of Size.
-func (s *RunSnapshotMachinesItem) GetSize() Size {
-	return s.Size
-}
-
-// GetCPU returns the value of CPU.
-func (s *RunSnapshotMachinesItem) GetCPU() OptInt {
-	return s.CPU
-}
-
-// GetMemoryGB returns the value of MemoryGB.
-func (s *RunSnapshotMachinesItem) GetMemoryGB() OptInt {
-	return s.MemoryGB
-}
-
-// GetDiskGB returns the value of DiskGB.
-func (s *RunSnapshotMachinesItem) GetDiskGB() OptInt {
-	return s.DiskGB
-}
-
-// GetDiskType returns the value of DiskType.
-func (s *RunSnapshotMachinesItem) GetDiskType() OptString {
-	return s.DiskType
-}
-
-// GetInstanceType returns the value of InstanceType.
-func (s *RunSnapshotMachinesItem) GetInstanceType() OptString {
-	return s.InstanceType
-}
-
-// GetLocation returns the value of Location.
-func (s *RunSnapshotMachinesItem) GetLocation() OptString {
-	return s.Location
-}
-
-// GetCacheMB returns the value of CacheMB.
-func (s *RunSnapshotMachinesItem) GetCacheMB() OptInt {
-	return s.CacheMB
-}
-
-// GetDiskReadIops returns the value of DiskReadIops.
-func (s *RunSnapshotMachinesItem) GetDiskReadIops() OptInt {
-	return s.DiskReadIops
-}
-
-// GetDiskWriteIops returns the value of DiskWriteIops.
-func (s *RunSnapshotMachinesItem) GetDiskWriteIops() OptInt {
-	return s.DiskWriteIops
-}
-
-// GetDiskReadMbps returns the value of DiskReadMbps.
-func (s *RunSnapshotMachinesItem) GetDiskReadMbps() OptInt {
-	return s.DiskReadMbps
-}
-
-// GetDiskWriteMbps returns the value of DiskWriteMbps.
-func (s *RunSnapshotMachinesItem) GetDiskWriteMbps() OptInt {
-	return s.DiskWriteMbps
-}
-
-// SetName sets the value of Name.
-func (s *RunSnapshotMachinesItem) SetName(val string) {
-	s.Name = val
-}
-
-// SetRole sets the value of Role.
-func (s *RunSnapshotMachinesItem) SetRole(val TopologyRole) {
-	s.Role = val
-}
-
-// SetSize sets the value of Size.
-func (s *RunSnapshotMachinesItem) SetSize(val Size) {
-	s.Size = val
-}
-
-// SetCPU sets the value of CPU.
-func (s *RunSnapshotMachinesItem) SetCPU(val OptInt) {
-	s.CPU = val
-}
-
-// SetMemoryGB sets the value of MemoryGB.
-func (s *RunSnapshotMachinesItem) SetMemoryGB(val OptInt) {
-	s.MemoryGB = val
-}
-
-// SetDiskGB sets the value of DiskGB.
-func (s *RunSnapshotMachinesItem) SetDiskGB(val OptInt) {
-	s.DiskGB = val
-}
-
-// SetDiskType sets the value of DiskType.
-func (s *RunSnapshotMachinesItem) SetDiskType(val OptString) {
-	s.DiskType = val
-}
-
-// SetInstanceType sets the value of InstanceType.
-func (s *RunSnapshotMachinesItem) SetInstanceType(val OptString) {
-	s.InstanceType = val
-}
-
-// SetLocation sets the value of Location.
-func (s *RunSnapshotMachinesItem) SetLocation(val OptString) {
-	s.Location = val
-}
-
-// SetCacheMB sets the value of CacheMB.
-func (s *RunSnapshotMachinesItem) SetCacheMB(val OptInt) {
-	s.CacheMB = val
-}
-
-// SetDiskReadIops sets the value of DiskReadIops.
-func (s *RunSnapshotMachinesItem) SetDiskReadIops(val OptInt) {
-	s.DiskReadIops = val
-}
-
-// SetDiskWriteIops sets the value of DiskWriteIops.
-func (s *RunSnapshotMachinesItem) SetDiskWriteIops(val OptInt) {
-	s.DiskWriteIops = val
-}
-
-// SetDiskReadMbps sets the value of DiskReadMbps.
-func (s *RunSnapshotMachinesItem) SetDiskReadMbps(val OptInt) {
-	s.DiskReadMbps = val
-}
-
-// SetDiskWriteMbps sets the value of DiskWriteMbps.
-func (s *RunSnapshotMachinesItem) SetDiskWriteMbps(val OptInt) {
-	s.DiskWriteMbps = val
-}
-
-// How the database was set up; absent for runs from before it.
-type RunSnapshotTuning struct {
-	Mode       OptTuningMode       `json:"mode"`
-	Durability OptCommitDurability `json:"durability"`
-}
-
-// GetMode returns the value of Mode.
-func (s *RunSnapshotTuning) GetMode() OptTuningMode {
-	return s.Mode
-}
-
-// GetDurability returns the value of Durability.
-func (s *RunSnapshotTuning) GetDurability() OptCommitDurability {
-	return s.Durability
-}
-
-// SetMode sets the value of Mode.
-func (s *RunSnapshotTuning) SetMode(val OptTuningMode) {
-	s.Mode = val
-}
-
-// SetDurability sets the value of Durability.
-func (s *RunSnapshotTuning) SetDurability(val OptCommitDurability) {
-	s.Durability = val
 }
 
 // What a running workload segment does: `preparing` — stroppy prepares the data (schema, load,
@@ -26853,6 +26965,144 @@ func (s *RunTriggerRef) SetCellID(val OptString) {
 // SetParentRunID sets the value of ParentRunID.
 func (s *RunTriggerRef) SetParentRunID(val OptUUID) {
 	s.ParentRunID = val
+}
+
+// How the database and the load client were set up; absent for runs from before it.
+// Ref: #/components/schemas/RunTuning
+type RunTuning struct {
+	Mode       OptTuningMode       `json:"mode"`
+	Durability OptCommitDurability `json:"durability"`
+	// Every value auto tuning set — role → config schema id → key → value. Empty under stock
+	// tuning and for runs from before it.
+	Auto OptRunTuningAuto `json:"auto"`
+	// The stroppy driver the workload ran with.
+	Client OptRunTuningClient `json:"client"`
+}
+
+// GetMode returns the value of Mode.
+func (s *RunTuning) GetMode() OptTuningMode {
+	return s.Mode
+}
+
+// GetDurability returns the value of Durability.
+func (s *RunTuning) GetDurability() OptCommitDurability {
+	return s.Durability
+}
+
+// GetAuto returns the value of Auto.
+func (s *RunTuning) GetAuto() OptRunTuningAuto {
+	return s.Auto
+}
+
+// GetClient returns the value of Client.
+func (s *RunTuning) GetClient() OptRunTuningClient {
+	return s.Client
+}
+
+// SetMode sets the value of Mode.
+func (s *RunTuning) SetMode(val OptTuningMode) {
+	s.Mode = val
+}
+
+// SetDurability sets the value of Durability.
+func (s *RunTuning) SetDurability(val OptCommitDurability) {
+	s.Durability = val
+}
+
+// SetAuto sets the value of Auto.
+func (s *RunTuning) SetAuto(val OptRunTuningAuto) {
+	s.Auto = val
+}
+
+// SetClient sets the value of Client.
+func (s *RunTuning) SetClient(val OptRunTuningClient) {
+	s.Client = val
+}
+
+// Every value auto tuning set — role → config schema id → key → value. Empty under stock
+// tuning and for runs from before it.
+type RunTuningAuto map[string]RunTuningAutoItem
+
+func (s *RunTuningAuto) init() RunTuningAuto {
+	m := *s
+	if m == nil {
+		m = map[string]RunTuningAutoItem{}
+		*s = m
+	}
+	return m
+}
+
+type RunTuningAutoItem map[string]RunTuningAutoItemItem
+
+func (s *RunTuningAutoItem) init() RunTuningAutoItem {
+	m := *s
+	if m == nil {
+		m = map[string]RunTuningAutoItemItem{}
+		*s = m
+	}
+	return m
+}
+
+type RunTuningAutoItemItem map[string]jx.Raw
+
+func (s *RunTuningAutoItemItem) init() RunTuningAutoItemItem {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
+
+// The stroppy driver the workload ran with.
+type RunTuningClient struct {
+	DriverType OptString `json:"driver_type"`
+	// Driver options of stroppy's config (pool, bulkSize…), the connection URL left out.
+	Settings OptRunTuningClientSettings `json:"settings"`
+	// Settings auto tuning chose, as dotted paths (pool.maxConns).
+	Auto []string `json:"auto"`
+}
+
+// GetDriverType returns the value of DriverType.
+func (s *RunTuningClient) GetDriverType() OptString {
+	return s.DriverType
+}
+
+// GetSettings returns the value of Settings.
+func (s *RunTuningClient) GetSettings() OptRunTuningClientSettings {
+	return s.Settings
+}
+
+// GetAuto returns the value of Auto.
+func (s *RunTuningClient) GetAuto() []string {
+	return s.Auto
+}
+
+// SetDriverType sets the value of DriverType.
+func (s *RunTuningClient) SetDriverType(val OptString) {
+	s.DriverType = val
+}
+
+// SetSettings sets the value of Settings.
+func (s *RunTuningClient) SetSettings(val OptRunTuningClientSettings) {
+	s.Settings = val
+}
+
+// SetAuto sets the value of Auto.
+func (s *RunTuningClient) SetAuto(val []string) {
+	s.Auto = val
+}
+
+// Driver options of stroppy's config (pool, bulkSize…), the connection URL left out.
+type RunTuningClientSettings map[string]jx.Raw
+
+func (s *RunTuningClientSettings) init() RunTuningClientSettings {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
 }
 
 // Pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot —
@@ -28227,18 +28477,19 @@ func (s *ShareTargetKind) UnmarshalText(data []byte) error {
 // Allowlisted projection of a run — never carries secrets.
 // Ref: #/components/schemas/SharedRun
 type SharedRun struct {
-	Name       string                  `json:"name"`
-	Status     RunStatus               `json:"status"`
-	StartedAt  OptDateTime             `json:"started_at"`
-	FinishedAt OptDateTime             `json:"finished_at"`
-	Duration   OptString               `json:"duration"`
-	Summary    RunSummary              `json:"summary"`
-	Result     OptRunResult            `json:"result"`
-	Timeline   []RunEvent              `json:"timeline"`
-	Topology   OptTopologyPreview      `json:"topology"`
-	Database   OptSharedRunDatabase    `json:"database"`
-	Workload   OptSharedRunWorkload    `json:"workload"`
-	Machines   []SharedRunMachinesItem `json:"machines"`
+	Name       string               `json:"name"`
+	Status     RunStatus            `json:"status"`
+	StartedAt  OptDateTime          `json:"started_at"`
+	FinishedAt OptDateTime          `json:"finished_at"`
+	Duration   OptString            `json:"duration"`
+	Summary    RunSummary           `json:"summary"`
+	Result     OptRunResult         `json:"result"`
+	Timeline   []RunEvent           `json:"timeline"`
+	Topology   OptTopologyPreview   `json:"topology"`
+	Database   OptSharedRunDatabase `json:"database"`
+	Workload   OptSharedRunWorkload `json:"workload"`
+	Machines   []RunMachine         `json:"machines"`
+	Tuning     OptRunTuning         `json:"tuning"`
 	// Scope `configs` — rendered files per role (secret fields masked).
 	Configs          OptSharedRunConfigs             `json:"configs"`
 	Metrics          OptRunMetrics                   `json:"metrics"`
@@ -28301,8 +28552,13 @@ func (s *SharedRun) GetWorkload() OptSharedRunWorkload {
 }
 
 // GetMachines returns the value of Machines.
-func (s *SharedRun) GetMachines() []SharedRunMachinesItem {
+func (s *SharedRun) GetMachines() []RunMachine {
 	return s.Machines
+}
+
+// GetTuning returns the value of Tuning.
+func (s *SharedRun) GetTuning() OptRunTuning {
+	return s.Tuning
 }
 
 // GetConfigs returns the value of Configs.
@@ -28376,8 +28632,13 @@ func (s *SharedRun) SetWorkload(val OptSharedRunWorkload) {
 }
 
 // SetMachines sets the value of Machines.
-func (s *SharedRun) SetMachines(val []SharedRunMachinesItem) {
+func (s *SharedRun) SetMachines(val []RunMachine) {
 	s.Machines = val
+}
+
+// SetTuning sets the value of Tuning.
+func (s *SharedRun) SetTuning(val OptRunTuning) {
+	s.Tuning = val
 }
 
 // SetConfigs sets the value of Configs.
@@ -28463,108 +28724,6 @@ func (s *SharedRunDatabase) SetImage(val OptString) {
 // SetParams sets the value of Params.
 func (s *SharedRunDatabase) SetParams(val OptSchemaValue) {
 	s.Params = val
-}
-
-type SharedRunMachinesItem struct {
-	Name         OptString `json:"name"`
-	Role         OptString `json:"role"`
-	Size         OptSize   `json:"size"`
-	CPU          OptInt    `json:"cpu"`
-	MemoryGB     OptInt    `json:"memory_gb"`
-	DiskGB       OptInt    `json:"disk_gb"`
-	DiskType     OptString `json:"disk_type"`
-	InstanceType OptString `json:"instance_type"`
-	Location     OptString `json:"location"`
-}
-
-// GetName returns the value of Name.
-func (s *SharedRunMachinesItem) GetName() OptString {
-	return s.Name
-}
-
-// GetRole returns the value of Role.
-func (s *SharedRunMachinesItem) GetRole() OptString {
-	return s.Role
-}
-
-// GetSize returns the value of Size.
-func (s *SharedRunMachinesItem) GetSize() OptSize {
-	return s.Size
-}
-
-// GetCPU returns the value of CPU.
-func (s *SharedRunMachinesItem) GetCPU() OptInt {
-	return s.CPU
-}
-
-// GetMemoryGB returns the value of MemoryGB.
-func (s *SharedRunMachinesItem) GetMemoryGB() OptInt {
-	return s.MemoryGB
-}
-
-// GetDiskGB returns the value of DiskGB.
-func (s *SharedRunMachinesItem) GetDiskGB() OptInt {
-	return s.DiskGB
-}
-
-// GetDiskType returns the value of DiskType.
-func (s *SharedRunMachinesItem) GetDiskType() OptString {
-	return s.DiskType
-}
-
-// GetInstanceType returns the value of InstanceType.
-func (s *SharedRunMachinesItem) GetInstanceType() OptString {
-	return s.InstanceType
-}
-
-// GetLocation returns the value of Location.
-func (s *SharedRunMachinesItem) GetLocation() OptString {
-	return s.Location
-}
-
-// SetName sets the value of Name.
-func (s *SharedRunMachinesItem) SetName(val OptString) {
-	s.Name = val
-}
-
-// SetRole sets the value of Role.
-func (s *SharedRunMachinesItem) SetRole(val OptString) {
-	s.Role = val
-}
-
-// SetSize sets the value of Size.
-func (s *SharedRunMachinesItem) SetSize(val OptSize) {
-	s.Size = val
-}
-
-// SetCPU sets the value of CPU.
-func (s *SharedRunMachinesItem) SetCPU(val OptInt) {
-	s.CPU = val
-}
-
-// SetMemoryGB sets the value of MemoryGB.
-func (s *SharedRunMachinesItem) SetMemoryGB(val OptInt) {
-	s.MemoryGB = val
-}
-
-// SetDiskGB sets the value of DiskGB.
-func (s *SharedRunMachinesItem) SetDiskGB(val OptInt) {
-	s.DiskGB = val
-}
-
-// SetDiskType sets the value of DiskType.
-func (s *SharedRunMachinesItem) SetDiskType(val OptString) {
-	s.DiskType = val
-}
-
-// SetInstanceType sets the value of InstanceType.
-func (s *SharedRunMachinesItem) SetInstanceType(val OptString) {
-	s.InstanceType = val
-}
-
-// SetLocation sets the value of Location.
-func (s *SharedRunMachinesItem) SetLocation(val OptString) {
-	s.Location = val
 }
 
 type SharedRunWorkload struct {

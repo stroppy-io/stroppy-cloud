@@ -96,6 +96,7 @@ type SharedRun struct {
 	Database    SharedDatabase               `json:"database"`
 	Workload    SharedWorkload               `json:"workload"`
 	Machines    []run.MachineSnapshot        `json:"machines"`
+	Tuning      run.Tuning                   `json:"tuning,omitzero"`
 	Configs     map[string]map[string]string `json:"configs,omitempty"`
 	Segments    []run.SegmentState           `json:"segments,omitempty"`
 	RunSpecView map[string]any               `json:"-"`
@@ -367,7 +368,7 @@ func (s *Service) project(ctx context.Context, r run.Run, scope Scope) (SharedRu
 		ID: r.ID, Name: r.Name, Status: r.Status, StartedAt: r.StartedAt, FinishedAt: r.FinishedAt, Duration: r.DurationSeconds, Summary: r.Summary, Result: r.Result, Timeline: events,
 		Database: SharedDatabase{Kind: string(r.Snapshot.Database.Kind), Version: r.Snapshot.Database.Version, Image: r.Snapshot.Database.Image, Params: r.Snapshot.Database.Params},
 		Workload: SharedWorkload{StroppyVersion: r.Snapshot.Workload.StroppyVersion, Protocol: string(r.Snapshot.Workload.Protocol), Segments: r.Snapshot.Workload.Segments},
-		Machines: r.Snapshot.Machines, Segments: r.State.Segments,
+		Machines: r.Snapshot.Machines, Tuning: r.Snapshot.Tuning, Segments: r.State.Segments,
 	}
 	if out.Machines == nil {
 		out.Machines = []run.MachineSnapshot{}
@@ -421,10 +422,11 @@ func (s *Service) OfTarget(ctx context.Context, kind Kind, id uuid.UUID) []run.R
 }
 
 // RatingTokenOf is the public link a global-rating row opens: the run's
-// newest share when it is active, else — when the run was never shared — an
-// overview share created now on the author's behalf (publishing to the rating
-// is consent to show the overview). A share the author revoked or let expire
-// is not replaced: no link then.
+// newest share when it is active, else — when the run was never shared — a
+// metrics share created now on the author's behalf (publishing to the rating
+// is consent to show the run's numbers and how it was set up, so a reader
+// can see why it ranks where it does). A share the author revoked or let
+// expire is not replaced: no link then.
 func (s *Service) RatingTokenOf(ctx context.Context, r run.Run) (string, bool) {
 	refs, err := s.repo.OfTarget(ctx, string(KindRun), r.ID)
 	if err != nil {
@@ -449,7 +451,7 @@ func (s *Service) RatingTokenOf(ctx context.Context, r run.Run) (string, bool) {
 	}
 	id := r.ID
 	sh := Share{
-		ID: uuid.New(), TenantID: r.TenantID, Token: newToken(), Kind: KindRun, TargetID: &id, Scope: ScopeOverview,
+		ID: uuid.New(), TenantID: r.TenantID, Token: newToken(), Kind: KindRun, TargetID: &id, Scope: ScopeMetrics,
 		CreatedBy: r.AuthorID, CreatedAt: time.Now().UTC(),
 	}
 	snap, name, err := s.capture(ctx, auth.Actor{}, sh)

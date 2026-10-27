@@ -53,7 +53,7 @@ func snapshotOf(s run.Snapshot) oas.RunSnapshot {
 	out := oas.RunSnapshot{
 		Database: specToWire(s.Database), Workload: workloadSpecToWire(s.Workload), Sizes: sizesTo(s.Sizes),
 		ProviderProfile: oas.Ref{ID: s.ProviderProfile.ID, Name: oas.NewOptString(s.ProviderProfile.Name)},
-		Machines:        make([]oas.RunSnapshotMachinesItem, 0, len(s.Machines)),
+		Machines:        make([]oas.RunMachine, 0, len(s.Machines)),
 	}
 	if len(s.Execution) > 0 {
 		out.Execution = oas.NewOptSchemaValue(schemaValueOf(s.Execution))
@@ -78,38 +78,86 @@ func snapshotOf(s run.Snapshot) oas.RunSnapshot {
 		out.EffectiveConfigs = oas.NewOptRunSnapshotEffectiveConfigs(ec)
 	}
 	for _, m := range s.Machines {
-		item := oas.RunSnapshotMachinesItem{Name: m.Name, Role: oas.TopologyRole(m.Role), Size: oas.Size(m.Size), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB)}
-		if m.DiskGB > 0 {
-			item.DiskGB = oas.NewOptInt(m.DiskGB)
+		out.Machines = append(out.Machines, machineOf(m))
+	}
+	if t, ok := tuningOf(s.Tuning); ok {
+		out.Tuning = oas.NewOptRunTuning(t)
+	}
+	return out
+}
+
+// machineOf is a machine of the run with the engine's cache and the data
+// disk's limits.
+func machineOf(m run.MachineSnapshot) oas.RunMachine {
+	item := oas.RunMachine{Name: m.Name, Role: oas.TopologyRole(m.Role), Size: oas.Size(m.Size), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB)}
+	if m.DiskGB > 0 {
+		item.DiskGB = oas.NewOptInt(m.DiskGB)
+	}
+	if m.DiskType != "" {
+		item.DiskType = oas.NewOptString(m.DiskType)
+	}
+	if m.InstanceType != "" {
+		item.InstanceType = oas.NewOptString(m.InstanceType)
+	}
+	if m.Location != "" {
+		item.Location = oas.NewOptString(m.Location)
+	}
+	for _, v := range []struct {
+		n   int
+		opt *oas.OptInt
+	}{{m.CacheMB, &item.CacheMB}, {m.DiskReadIOPS, &item.DiskReadIops}, {m.DiskWriteIOPS, &item.DiskWriteIops}, {m.DiskReadMBps, &item.DiskReadMbps}, {m.DiskWriteMBps, &item.DiskWriteMbps}} {
+		if v.n > 0 {
+			*v.opt = oas.NewOptInt(v.n)
 		}
-		if m.DiskType != "" {
-			item.DiskType = oas.NewOptString(m.DiskType)
-		}
-		if m.InstanceType != "" {
-			item.InstanceType = oas.NewOptString(m.InstanceType)
-		}
-		if m.Location != "" {
-			item.Location = oas.NewOptString(m.Location)
-		}
-		for _, v := range []struct {
-			n   int
-			opt *oas.OptInt
-		}{{m.CacheMB, &item.CacheMB}, {m.DiskReadIOPS, &item.DiskReadIops}, {m.DiskWriteIOPS, &item.DiskWriteIops}, {m.DiskReadMBps, &item.DiskReadMbps}, {m.DiskWriteMBps, &item.DiskWriteMbps}} {
-			if v.n > 0 {
-				*v.opt = oas.NewOptInt(v.n)
+	}
+	return item
+}
+
+// tuningOf is how the run's database and load client were set up; false
+// for a run from before the record.
+func tuningOf(t run.Tuning) (oas.RunTuning, bool) {
+	if t.IsZero() {
+		return oas.RunTuning{}, false
+	}
+	out := oas.RunTuning{}
+	if t.Mode != "" {
+		out.Mode = oas.NewOptTuningMode(oas.TuningMode(t.Mode))
+	}
+	if t.Durability != "" {
+		out.Durability = oas.NewOptCommitDurability(oas.CommitDurability(t.Durability))
+	}
+	if len(t.Auto) > 0 {
+		auto := oas.RunTuningAuto{}
+		for role, bySchema := range t.Auto {
+			auto[role] = oas.RunTuningAutoItem{}
+			for id, values := range bySchema {
+				auto[role][id] = oas.RunTuningAutoItemItem(rawMapOf(values))
 			}
 		}
-		out.Machines = append(out.Machines, item)
+		out.Auto = oas.NewOptRunTuningAuto(auto)
 	}
-	if !s.Tuning.IsZero() {
-		t := oas.RunSnapshotTuning{}
-		if s.Tuning.Mode != "" {
-			t.Mode = oas.NewOptTuningMode(oas.TuningMode(s.Tuning.Mode))
+	if c := t.Client; c != nil {
+		client := oas.RunTuningClient{Auto: c.Auto}
+		if c.DriverType != "" {
+			client.DriverType = oas.NewOptString(c.DriverType)
 		}
-		if s.Tuning.Durability != "" {
-			t.Durability = oas.NewOptCommitDurability(oas.CommitDurability(s.Tuning.Durability))
+		if len(c.Settings) > 0 {
+			client.Settings = oas.NewOptRunTuningClientSettings(oas.RunTuningClientSettings(rawMapOf(c.Settings)))
 		}
-		out.Tuning = oas.NewOptRunSnapshotTuning(t)
+		out.Client = oas.NewOptRunTuningClient(client)
+	}
+	return out, true
+}
+
+// rawMapOf encodes each value of a map for an open JSON object.
+func rawMapOf(m map[string]any) map[string]jx.Raw {
+	out := make(map[string]jx.Raw, len(m))
+	for k, v := range m {
+		b, err := json.Marshal(v)
+		if err != nil {
+			continue
+		}
+		out[k] = b
 	}
 	return out
 }
