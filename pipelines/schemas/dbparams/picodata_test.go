@@ -81,7 +81,7 @@ func TestPicodata(t *testing.T) {
 			}}, Code: "RULE_VIOLATED", Path: "fsync-requires-26-2"},
 			// range: more instances per machine than the port layout allows
 			{
-				Value: map[string]any{"tiers": []any{picoTier("default", 1, 1)}, "instances_per_machine": int64(9)},
+				Value: map[string]any{"tiers": []any{picoTier("default", 1, 1)}, "instances_per_machine": int64(129)},
 				Code:  "LTE_VIOLATED", Path: "instances_per_machine",
 			},
 			// cross-field: nobody can vote

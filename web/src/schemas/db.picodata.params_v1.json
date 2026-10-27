@@ -190,12 +190,12 @@
       "title": "Default bucket count"
     },
     {
-      "description": "Picodata instances started on one machine (one memtx transaction thread each); machines = ceil(instances / this). Replicas of a replicaset never share a machine.",
+      "description": "Picodata instances started on one machine (one memtx transaction thread, one core each). 0 = auto: one instance per vCPU of the machine under tuning auto, one under stock; each tier instance then becomes a machine of that many instances. Otherwise machines = ceil(instances / this). Replicas of a replicaset never share a machine. Clients reach every instance only through HAProxy.",
       "group": "Topology",
       "int64": {
-        "default": "1",
-        "gte": "1",
-        "lte": "8"
+        "default": "0",
+        "gte": "0",
+        "lte": "128"
       },
       "name": "instances_per_machine",
       "title": "Instances per machine"

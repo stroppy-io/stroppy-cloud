@@ -13,8 +13,36 @@ import (
 
 const picoConf = "/etc/stroppy/picodata.yaml"
 
+// picoCase pins one instance per machine unless the params say otherwise:
+// the per-core default is its own test (TestPicodataInstancePerCore).
 func picoCase(version string, params map[string]any) tuneCase {
+	if params == nil {
+		params = map[string]any{}
+	}
+	if _, ok := params["instances_per_machine"]; !ok {
+		params["instances_per_machine"] = 1
+	}
 	return tuneCase{kind: catalog.Picodata, version: version, params: params, protocol: catalog.ProtoPicodata}
+}
+
+// Tuning auto starts one memtx instance per vCPU: a single 8-vCPU
+// machine runs eight instances behind HAProxy, each with an eighth of the
+// memory; stock keeps one.
+func TestPicodataInstancePerCore(t *testing.T) {
+	params := map[string]any{"instances_per_machine": 0, "haproxy": 1, "pgproto": true, "tiers": picoTiers(1, 1, nil)}
+	out, _ := compileTuned(t, picoCase("26.2", params))
+	if n := len(picoContainers(out)); n != 8 {
+		t.Fatalf("%d picodata instances on 8 vCPU, want 8", n)
+	}
+	proxy := fileOf(out, "-haproxy", "/usr/local/etc/haproxy/haproxy.cfg")
+	if strings.Count(proxy, "server db-1-") != 8 {
+		t.Errorf("HAProxy does not spread the clients over the 8 instances:\n%s", proxy)
+	}
+	stock := map[string]any{"instances_per_machine": 0, "tuning": "stock", "tiers": picoTiers(1, 1, nil)}
+	out, _ = compileTuned(t, picoCase("26.2", stock))
+	if n := len(picoContainers(out)); n != 1 {
+		t.Errorf("stock: %d instances, want 1", n)
+	}
 }
 
 func picoTiers(instances, rf int, extra map[string]any) []any {

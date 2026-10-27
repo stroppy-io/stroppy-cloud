@@ -29,7 +29,7 @@ export interface DbPicodataParams1 {
   tiers?: Array<DbPicodataParams1Item>;
   /** Default bucket count. cluster.default_bucket_count — buckets a tier gets when it sets none of its own (Picodata default 3000). */
   default_bucket_count?: number | string;
-  /** Instances per machine. Picodata instances started on one machine (one memtx transaction thread each); machines = ceil(instances / this). Replicas of a replicaset never share a machine. */
+  /** Instances per machine. Picodata instances started on one machine (one memtx transaction thread, one core each). 0 = auto: one instance per vCPU of the machine under tuning auto, one under stock; each tier instance then becomes a machine of that many instances. Otherwise machines = ceil(instances / this). Replicas of a replicaset never share a machine. Clients reach every instance only through HAProxy. */
   instances_per_machine?: number | string;
   /** memtx memory. instance.memtx.memory per instance. Empty = sized from the machine's RAM under tuning auto, 2 GB under stock; Picodata's own default of 64 MB only fits a smoke test. [MB] */
   memtx_memory_mb?: number | string;

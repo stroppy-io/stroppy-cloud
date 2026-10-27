@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -72,10 +71,17 @@ func picodataRecipe(c *compilation) error {
 	schemaID := c.schemaFor(role, "cfg.picodata.yaml@")
 	p := c.params()
 	nodes := c.machinesOf(role)
-	perMachine := dbkind.PicodataInstancesPerMachine(p)
+	perMachine, perCore := c.picoPerMachine(p, nodes)
 	tiers, err := c.picoTiers(p, schemaID, len(nodes))
 	if err != nil {
 		return err
+	}
+	if perCore {
+		// The plan placed one instance per machine; each becomes a
+		// machine full of them.
+		for i := range tiers {
+			tiers[i].instances *= perMachine
+		}
 	}
 	// Instances go round the machines in tier order, so a tier spreads
 	// over as many machines as it has instances.
@@ -208,6 +214,25 @@ func picodataRecipe(c *compilation) error {
 		}
 	}
 	return nil
+}
+
+// picoPerMachine is how many instances share a machine. memtx runs one
+// transaction thread per instance and Picodata sizes one core per memtx
+// instance, so with instances_per_machine left at 0 tuning auto starts one
+// per vCPU of the database machine (perCore); stock keeps one.
+//
+// doc: https://docs.picodata.io/picodata/stable/admin/sizing/
+func (c *compilation) picoPerMachine(p map[string]any, nodes []string) (perMachine int, perCore bool) {
+	if v := intParam(p, "instances_per_machine", 0); v > 0 {
+		return v, false
+	}
+	if c.tuning() != tuningAuto || len(nodes) == 0 {
+		return 1, false
+	}
+	if cpu := c.hostOf(nodes[0]).CPU; cpu > 1 {
+		return cpu, true
+	}
+	return 1, false
 }
 
 // pico262TierKeys are the tier keys 26.2.1 added, with the behavior of

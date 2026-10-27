@@ -87,8 +87,8 @@ func Picodata() *schemapb.Schema {
 			// doc: https://docs.picodata.io/picodata/stable/admin/sizing/
 			// doc: https://docs.picodata.io/picodata/26.2/reference/config/#instance_failure_domain
 			schemapb.Int64("instances_per_machine").Title("Instances per machine").Group("Topology").
-				Desc("Picodata instances started on one machine (one memtx transaction thread each); machines = ceil(instances / this). Replicas of a replicaset never share a machine.").
-				Gte(1).Lte(8).Default(1),
+				Desc("Picodata instances started on one machine (one memtx transaction thread, one core each). 0 = auto: one instance per vCPU of the machine under tuning auto, one under stock; each tier instance then becomes a machine of that many instances. Otherwise machines = ceil(instances / this). Replicas of a replicaset never share a machine. Clients reach every instance only through HAProxy.").
+				Gte(0).Lte(128).Default(0),
 
 			// memtx.memory is a byte size with K/M/G/T suffixes upstream; the
 			// schema takes plain megabytes and the recipe renders the suffix.
