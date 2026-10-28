@@ -19,7 +19,10 @@ func URL(proto catalog.Protocol, host string, ep topology.Endpoint, sslmode stri
 	case catalog.ProtoNoop:
 		return "noop://localhost", Driver(proto)
 	case catalog.ProtoMySQL:
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", l.User, l.Password, host, ep.Port, l.Database), Driver(proto)
+		// Without interpolateParams go-sql-driver prepares, executes and
+		// closes a statement per query: three round trips where pgx, with
+		// its statement cache, makes one.
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?interpolateParams=true", l.User, l.Password, host, ep.Port, l.Database), Driver(proto)
 	case catalog.ProtoPicodata:
 		return fmt.Sprintf("postgres://%s@%s:%d?sslmode=disable", userinfo(l), host, ep.Port), Driver(proto)
 	case catalog.ProtoYDBGrpc:

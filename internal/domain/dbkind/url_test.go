@@ -20,7 +20,7 @@ func TestClientURL(t *testing.T) {
 		{catalog.Postgres, nil, catalog.ProtoPg, "postgresql://postgres:stroppy_postgres@H:5432/postgres?sslmode=disable"},
 		{catalog.Postgres, map[string]any{"haproxy": 1}, catalog.ProtoPg, "postgresql://postgres:stroppy_postgres@H:5000/postgres?sslmode=disable"},
 		{catalog.PgNoop, nil, catalog.ProtoPg, "postgresql://postgres@H:5432/postgres?sslmode=disable"},
-		{catalog.MySQL, nil, catalog.ProtoMySQL, "root:stroppy_mysql@tcp(H:3306)/stroppy"},
+		{catalog.MySQL, nil, catalog.ProtoMySQL, "root:stroppy_mysql@tcp(H:3306)/stroppy?interpolateParams=true"},
 		{catalog.Picodata, template(t, catalog.Picodata), catalog.ProtoPicodata, "postgres://admin:T0psecret@H:4327?sslmode=disable"},
 		{catalog.YDB, nil, catalog.ProtoYDBGrpc, "grpc://H:2136/Root/stroppy"},
 		{catalog.Cockroach, nil, catalog.ProtoCockroach, "postgresql://root@H:26257/defaultdb?sslmode=disable"},
