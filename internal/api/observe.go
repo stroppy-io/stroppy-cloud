@@ -62,9 +62,7 @@ func (h *Handler) QueryRunLogs(ctx context.Context, params oas.QueryRunLogsParam
 		return nil, err
 	}
 	q := observe.LogQuery{RunID: params.ID, Roles: params.Role, Machines: params.Machine, Containers: params.Container, Phases: params.Phase, Segment: params.Segment.Or(""), Text: params.Q.Or(""), Cursor: params.Cursor.Or(""), Direction: string(params.Direction.Or(oas.QueryRunLogsDirectionOlder)), Limit: params.Limit.Or(200)}
-	for _, s := range params.Stream {
-		q.Streams = append(q.Streams, string(s))
-	}
+	q.Streams = append(q.Streams, params.Stream...)
 	for _, l := range params.Level {
 		q.Levels = append(q.Levels, string(l))
 	}

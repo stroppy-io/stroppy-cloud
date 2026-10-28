@@ -13,7 +13,7 @@ MODULE  := github.com/stroppy-io/stroppy-cloud
 BINARY  := stroppy-server
 LDFLAGS := -w -s -X $(MODULE)/internal/build.Version=$(VERSION) -X $(MODULE)/internal/build.Commit=$(COMMIT)
 GOFLAGS := -trimpath -ldflags="$(LDFLAGS)"
-GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
 DOCKER_IMAGE ?= ghcr.io/stroppy-io/stroppy-cloud
 DOCKER_TAG   ?= $(VERSION)

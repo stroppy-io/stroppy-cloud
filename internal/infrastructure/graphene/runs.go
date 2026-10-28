@@ -42,7 +42,7 @@ func (c *Client) StartRun(ctx context.Context, runID, pipeline string, params an
 // RunClose is how a run ended: the result it left and, when it did not
 // complete, the failure. A failed run still carries what it collected —
 // the pipeline puts the partial result into the failure's details.
-func (c *Client) RunClose(ctx context.Context, runID string) (json.RawMessage, string, error) {
+func (c *Client) RunClose(ctx context.Context, runID string) (result json.RawMessage, failure string, err error) {
 	resp, err := c.Runs.RunResult(ctx, connect.NewRequest(&managementv1.RunResultRequest{RunId: runID}))
 	if err != nil {
 		return nil, "", fmt.Errorf("graphene: result of %s: %w", runID, err)
