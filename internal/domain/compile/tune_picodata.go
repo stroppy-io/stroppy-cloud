@@ -109,14 +109,18 @@ const (
 // raised under auto whatever the workload: it only bounds one query's
 // virtual table, so queries below 5000 rows behave the same, and
 // validation and batch inserts of large scales stop failing at the limit;
-// the memory it can take stays bounded by the concurrency cap.
+// the memory it can take stays bounded by the concurrency cap. It is per
+// instance: every instance is a shard that sends its partial result of an
+// aggregate to the router, so 32 shards fill the router's virtual table 32
+// times faster (TPC-C validate_population on one 32-instance machine
+// overflowed 50000).
 //
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_runtime_concurrency_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_motion_row_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_storage_cache_count_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_storage_cache_size_max
 // doc: https://docs.picodata.io/picodata/25.3/reference/db_config/ — no sql_runtime_concurrency_max
-func (c *compilation) picoSettings(p map[string]any, endpoints int) ([]string, error) {
+func (c *compilation) picoSettings(p map[string]any, endpoints, instances int) ([]string, error) {
 	version := strParam(p, "version", "")
 	auto := c.tuning() == tuningAuto
 	concurrency := max(picoConcurrencyFloor, int(math.Ceil(picoConcurrencyFactor*float64(c.peakVUs())/float64(max(1, endpoints)))))
@@ -129,7 +133,7 @@ func (c *compilation) picoSettings(p map[string]any, endpoints int) ([]string, e
 		{param: "sql_runtime_concurrency_max", auto: concurrency, since: "26.1"},
 		{param: "sql_storage_cache_count_max", auto: picoCacheCountAuto},
 		{param: "sql_storage_cache_size_max_mb", setting: "sql_storage_cache_size_max", scale: 1 << 20, auto: picoCacheSizeAutoMB},
-		{param: "sql_motion_row_max", auto: picoMotionRowAuto},
+		{param: "sql_motion_row_max", auto: picoMotionRowAuto * max(1, instances)},
 	} {
 		v := intParam(p, s.param, 0)
 		supported := s.since == "" || picoSeriesAtLeast(version, s.since)

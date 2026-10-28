@@ -55,6 +55,11 @@ func TestPicodataInstancePerCore(t *testing.T) {
 	if n := len(picoContainers(out)); n != 32 {
 		t.Fatalf("%d picodata instances on 32 vCPU, want 32", n)
 	}
+	// Every instance is a shard that sends its partial results to the
+	// router: the virtual table limit grows with them.
+	if init := picoInit(t, out); !strings.Contains(init, "sql_motion_row_max = 1600000") {
+		t.Errorf("motion row limit not scaled to 32 shards:\n%s", init)
+	}
 	out.Spec.Provider.ProviderConfigName = "t-acme"
 	raw, err := json.Marshal(out.Spec)
 	if err != nil {
@@ -203,8 +208,9 @@ func TestPicodataBucketCount(t *testing.T) {
 func TestPicodataSQLSettings(t *testing.T) {
 	auto := []string{
 		"sql_vdbe_opcode_max = 0", "sql_storage_cache_count_max = 200",
-		"sql_storage_cache_size_max = 33554432", "sql_motion_row_max = 50000",
+		"sql_storage_cache_size_max = 33554432",
 	}
+	one := append([]string{"sql_motion_row_max = 50000"}, auto...)
 	for _, tc := range []struct {
 		name    string
 		version string
@@ -212,9 +218,10 @@ func TestPicodataSQLSettings(t *testing.T) {
 		want    []string
 		absent  []string
 	}{
-		{"single", "26.1", map[string]any{"tiers": picoTiers(1, 1, nil)}, append([]string{"sql_runtime_concurrency_max = 192"}, auto...), nil},
-		{"three-behind-haproxy", "26.2", map[string]any{"tiers": picoTiers(3, 3, nil), "haproxy": 1}, append([]string{"sql_runtime_concurrency_max = 64"}, auto...), nil},
-		{"25.3-has-no-concurrency", "25.3", map[string]any{"tiers": picoTiers(1, 1, nil)}, auto, []string{"sql_runtime_concurrency_max"}},
+		{"single", "26.1", map[string]any{"tiers": picoTiers(1, 1, nil)}, append([]string{"sql_runtime_concurrency_max = 192"}, one...), nil},
+		// Three instances: 50000 rows of the router's virtual table per instance.
+		{"three-behind-haproxy", "26.2", map[string]any{"tiers": picoTiers(3, 3, nil), "haproxy": 1}, append([]string{"sql_runtime_concurrency_max = 64", "sql_motion_row_max = 150000"}, auto...), nil},
+		{"25.3-has-no-concurrency", "25.3", map[string]any{"tiers": picoTiers(1, 1, nil)}, one, []string{"sql_runtime_concurrency_max"}},
 		{"stock", "26.1", map[string]any{"tiers": picoTiers(1, 1, nil), "tuning": "stock"}, []string{"sql_vdbe_opcode_max = 0"},
 			[]string{"sql_runtime_concurrency_max", "sql_storage_cache", "sql_motion_row_max"}},
 		{"explicit", "26.1", map[string]any{"tiers": picoTiers(1, 1, nil), "tuning": "stock", "sql_runtime_concurrency_max": 500, "sql_storage_cache_size_max_mb": 8},

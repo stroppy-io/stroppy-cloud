@@ -185,7 +185,7 @@ func picodataRecipe(c *compilation) error {
 	if proxied {
 		endpoints = len(instances)
 	}
-	stmts, err := c.picoSettings(p, endpoints)
+	stmts, err := c.picoSettings(p, endpoints, len(instances))
 	if err != nil {
 		return err
 	}
