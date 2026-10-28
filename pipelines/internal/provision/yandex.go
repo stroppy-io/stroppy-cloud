@@ -203,6 +203,13 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 		if coreFraction == 0 {
 			coreFraction = 100
 		}
+		// The accelerated network processes packets on host cores, not the
+		// guest's: the runner-database round trip stops competing with the
+		// workload. YC allows it only for a full core.
+		networkAcceleration := "standard"
+		if coreFraction == 100 {
+			networkAcceleration = "software_accelerated"
+		}
 		vmPublic, preemptible := public, st.Preemptible
 		if m.PublicIP != nil {
 			vmPublic = *m.PublicIP
@@ -220,9 +227,10 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 					Name:     ptr(vmName),
 					// Unique in the cloud: runs share the profile network,
 					// and a hostname must be unique inside a network.
-					Hostname:   ptr(vmName),
-					Zone:       ptr(zone),
-					PlatformID: ptr(m.InstanceType),
+					Hostname:                ptr(vmName),
+					Zone:                    ptr(zone),
+					PlatformID:              ptr(m.InstanceType),
+					NetworkAccelerationType: ptr(networkAcceleration),
 					Resources: []compute.ResourcesParameters{{
 						Cores:        ptr(float64(m.CPU)),
 						CoreFraction: ptr(float64(coreFraction)),

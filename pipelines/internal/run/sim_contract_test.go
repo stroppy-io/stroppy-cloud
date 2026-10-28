@@ -98,6 +98,8 @@ func TestSimulatedMachineSettingsReachCrossplane(t *testing.T) {
 	// Runs share the profile network, where a hostname must be unique.
 	require.Equal(t, names.Machine("runner-1"), params["hostname"])
 	require.Equal(t, float64(50), params["resources"].([]any)[0].(map[string]any)["coreFraction"])
+	// YC refuses the accelerated network below a full core.
+	require.Equal(t, "standard", params["networkAccelerationType"])
 	boot := params["bootDisk"].([]any)[0].(map[string]any)["initializeParams"].([]any)[0].(map[string]any)
 	require.Equal(t, float64(80), boot["size"])
 	require.Equal(t, float64(8192), boot["blockSize"])
@@ -108,6 +110,27 @@ func TestSimulatedMachineSettingsReachCrossplane(t *testing.T) {
 	subnet, _ := s.w.Resource(ref.OwnerRef(ycSubnetKind + "/" + names.Subnet()))
 	require.NoError(t, json.Unmarshal(subnet.Spec, &raw))
 	require.Equal(t, "routes", findObject(raw, "forProvider")["routeTableId"])
+	s.w.AssertNoLeaks(t)
+}
+
+// A full-core machine moves its packet processing off the guest cores, so
+// the network between runner and database is not what a run measures.
+func TestSimulatedFullCoreMachineGetsAcceleratedNetwork(t *testing.T) {
+	s := newSim(t)
+	wf := pipelinetestWorkflow(s)
+	r := noopRun()
+	s.converge(t, r, map[string]string{"runner-1": "10.130.0.20"})
+	s.w.OnAgentActivity(s.agent(r, "runner-1"), activities.NameRunSegment, mock.Anything, mock.Anything).Return(activities.RunSegmentResult{Result: spec.SegmentResult{Name: "smoke", Status: spec.SegmentCompleted}}, nil).Once()
+	s.w.Env.ExecuteWorkflow(wf, r)
+	require.NoError(t, s.w.Env.GetWorkflowError())
+	vm, ok := s.w.Resource(ref.OwnerRef(ycInstanceKind + "/" + provision.NewNames(r.Tenant, r.RunID).Machine("runner-1")))
+	require.True(t, ok)
+	var raw any
+	require.NoError(t, json.Unmarshal(vm.Spec, &raw))
+	params := findObject(raw, "forProvider")
+	require.NotNil(t, params, "serialized Crossplane spec missing")
+	require.Equal(t, float64(100), params["resources"].([]any)[0].(map[string]any)["coreFraction"])
+	require.Equal(t, "software_accelerated", params["networkAccelerationType"])
 	s.w.AssertNoLeaks(t)
 }
 
