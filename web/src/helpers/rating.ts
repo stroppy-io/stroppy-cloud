@@ -14,12 +14,20 @@ const SCENARIOS: Record<string, string> = {
   ycsb: 'YCSB',
 }
 
-/** "tpcc" → "TPC-C"; several scripts in one workload → "TPC-C + YCSB". */
-export function scenarioLabel(scenario: string): string {
+/**
+ * A scenario is the workload's scripts: "tpcc/tx" → "TPC-C", "tpcc/procs" →
+ * "TPC-C · stored procedures"; several scripts → "TPC-C + YCSB".
+ */
+export function scenarioLabel(t: TFunction, scenario: string): string {
   if (!scenario) return '—'
   return scenario
     .split('+')
-    .map((s) => SCENARIOS[s] ?? s)
+    .map((script) => {
+      const [family = '', variant] = script.split('/')
+      const name = SCENARIOS[family] ?? family
+      if (!variant || variant === 'tx') return name
+      return `${name} · ${variant === 'procs' ? t('common.scenario.procs') : variant}`
+    })
     .join(' + ')
 }
 

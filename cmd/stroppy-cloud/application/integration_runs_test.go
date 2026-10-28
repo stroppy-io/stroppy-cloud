@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -497,6 +498,23 @@ func TestE2ERuns(t *testing.T) {
 		e.want(e.req(http.MethodPatch, base+"/runs/"+id, map[string]any{"name": "renamed", "notes": "# hi", "rating": map[string]any{"global": true}}, tok), http.StatusOK, &patched)
 		if patched.Name != "renamed" {
 			t.Fatalf("patched %+v", patched)
+		}
+		// The scenario is the script itself: tpcc/tx and tpcc/procs are
+		// different client protocols and never share a ranking.
+		var rating struct {
+			Scenarios []string `json:"scenarios"`
+			Data      []struct {
+				RunID    string `json:"run_id"`
+				Scenario string `json:"scenario"`
+			} `json:"data"`
+		}
+		e.want(e.req(http.MethodGet, base+"/rating?scenario=tpcc/tx", nil, tok), http.StatusOK, &rating)
+		if !slices.Contains(rating.Scenarios, "tpcc/tx") || len(rating.Data) == 0 || rating.Data[0].Scenario != "tpcc/tx" {
+			t.Fatalf("rating %+v", rating)
+		}
+		e.want(e.req(http.MethodGet, base+"/rating?scenario=tpcc/procs", nil, tok), http.StatusOK, &rating)
+		if len(rating.Data) != 0 {
+			t.Fatalf("procs rating holds tx runs %+v", rating)
 		}
 		if r := e.req(http.MethodGet, base+"/runs/"+id+"/export?format=md", nil, tok); r.Status != http.StatusOK || !strings.Contains(string(r.Body), "# renamed") {
 			t.Fatalf("export %d %s", r.Status, r.Body)

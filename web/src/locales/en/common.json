@@ -531,6 +531,9 @@
     "global": "Publish to the public rating",
     "globalHint": "The result shows in the public Stroppy Cloud rating and on its front page: database, topology, machine sizes, scenario and headline metrics."
   },
+  "scenario": {
+    "procs": "stored procedures"
+  },
   "hardware": {
     "group": "{{count}} × {{cpu}} vCPU · {{memory}} GB",
     "total_one": "{{count}} machine · {{cpu}} vCPU · {{memory}} GB",

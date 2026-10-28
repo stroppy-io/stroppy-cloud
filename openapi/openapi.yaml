@@ -4822,7 +4822,7 @@ components:
       in: query
       style: form
       explode: false
-      description: Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within
+      description: Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within
         one scenario; all when omitted.
       schema:
         type: array
@@ -9607,8 +9607,8 @@ components:
           type: string
         scenario:
           type: string
-          description: 'Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by
-            `+`.'
+          description: 'Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios);
+            several joined by `+`.'
         hardware:
           $ref: '#/components/schemas/HardwareClass'
         stroppy_version:

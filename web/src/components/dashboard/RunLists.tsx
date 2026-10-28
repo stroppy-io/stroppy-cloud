@@ -283,7 +283,8 @@ export function TopResults({ items, slug }: { items: RatingEntry[]; slug: string
                   {dbLabel(e.db_kind, e.db_version)} · {topologyText(e.topology)}
                 </div>
                 <div className={styles.sub}>
-                  {scenarioLabel(e.scenario)} · {hardwareLabel(t, e.hardware)} · {e.provider_kind}
+                  {scenarioLabel(t, e.scenario)} · {hardwareLabel(t, e.hardware)} ·{' '}
+                  {e.provider_kind}
                 </div>
               </div>
               <div className={styles.right}>

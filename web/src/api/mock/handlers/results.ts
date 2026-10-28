@@ -29,15 +29,15 @@ const SECRET_RE = /pass|secret|token|key|credential|dsn/i
 
 const PERIOD_DAYS: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90, '1y': 365 }
 
-// Same keys as the server's rating query: the workload's script families,
-// and the stand without its runner grouped by vCPU and memory.
+// Same keys as the server's rating query: the workload's scripts, and the
+// stand without its runner grouped by vCPU and memory.
 function scenarioOf(r: Run): string {
-  const families = new Set<string>()
+  const scripts = new Set<string>()
   for (const seg of r.snapshot.workload.segments) {
     const script = (seg as { workload?: { script?: string } }).workload?.script
-    if (script) families.add(script.split('/')[0])
+    if (script) scripts.add(script)
   }
-  return [...families].sort().join('+')
+  return [...scripts].sort().join('+')
 }
 
 function hardwareOf(r: Run): Schemas['HardwareClass'] {

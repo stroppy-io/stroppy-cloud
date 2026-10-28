@@ -4335,7 +4335,7 @@ export interface components {
             node_count?: number;
             sizes?: components["schemas"]["RoleSizes"];
             workload_name?: string;
-            /** @description Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`. */
+            /** @description Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios); several joined by `+`. */
             scenario: string;
             hardware: components["schemas"]["HardwareClass"];
             stroppy_version?: string;
@@ -4644,7 +4644,7 @@ export interface components {
         ratingVersion: string[];
         ratingProvider: components["schemas"]["ProviderKind"][];
         ratingStroppy: string[];
-        /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+        /** @description Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one scenario; all when omitted. */
         ratingScenario: string[];
         /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
         ratingHardware: string[];
@@ -4706,7 +4706,7 @@ export interface operations {
                 version?: components["parameters"]["ratingVersion"];
                 provider?: components["parameters"]["ratingProvider"];
                 stroppy_version?: components["parameters"]["ratingStroppy"];
-                /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+                /** @description Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one scenario; all when omitted. */
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];
@@ -8917,7 +8917,7 @@ export interface operations {
                 version?: components["parameters"]["ratingVersion"];
                 provider?: components["parameters"]["ratingProvider"];
                 stroppy_version?: components["parameters"]["ratingStroppy"];
-                /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+                /** @description Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one scenario; all when omitted. */
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];

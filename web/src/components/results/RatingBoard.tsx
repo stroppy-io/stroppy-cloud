@@ -264,7 +264,7 @@ export function RatingBoard({
               id="rating-scenario"
               label={t('results.rating.filters.scenario')}
               allLabel={all}
-              options={scenarios.map((s) => ({ label: scenarioLabel(s), value: s }))}
+              options={scenarios.map((s) => ({ label: scenarioLabel(t, s), value: s }))}
               values={search.scenario}
               onChange={(scenario) => onSearchChange({ scenario })}
             />
@@ -340,7 +340,7 @@ export function RatingBoard({
               <section key={scenario}>
                 <div className={styles.sectionHead}>
                   <Text element="h2" variant="h4">
-                    {scenarioLabel(scenario)}
+                    {scenarioLabel(t, scenario)}
                   </Text>
                   <Text color="secondary" variant="bodySmall">
                     {t('results.rating.entries', { count: rows.length })} ·{' '}

@@ -186,15 +186,16 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- name: RatingRuns :many
 -- Completed, opted-in runs ranked by a headline metric. A number means
 -- something only next to runs of the same scenario on the same hardware, so
--- each row carries both: the scenario is the workload's script family
--- (tpcc/tx -> tpcc), the hardware is the stand without its runner, machines
--- grouped by vCPU and memory ("2x4c16g+1x2c4g").
+-- each row carries both: the scenario is the workload's scripts (tpcc/tx and
+-- tpcc/procs differ: one round trip per statement or per transaction), the
+-- hardware is the stand without its runner, machines grouped by vCPU and
+-- memory ("2x4c16g+1x2c4g").
 SELECT x.id, x.tenant_id, x.name, x.author_id, x.summary, x.finished_at, x.tps,
        x.tenant_name, x.tenant_public_name, x.scenario, x.hardware, x.value
 FROM (
   SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,
          t.name AS tenant_name, t.public_name AS tenant_public_name,
-         coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))
+         coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')
                    FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
                    WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
          coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
@@ -222,7 +223,7 @@ LIMIT @lim OFFSET @off;
 -- The scenarios and hardware the rating can be narrowed to: every pair that
 -- has at least one rated run.
 SELECT DISTINCT
-       coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))
+       coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')
                  FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
                  WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
        coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)

@@ -1,5 +1,23 @@
-import { describe, expect, it } from 'vitest'
-import { defaultHardware, hardwareCounts } from './rating'
+import { i18n } from '@lib/i18n'
+import { afterAll, describe, expect, it } from 'vitest'
+import { defaultHardware, hardwareCounts, scenarioLabel } from './rating'
+
+describe('scenarioLabel', () => {
+  const initial = i18n.language
+  afterAll(() => i18n.changeLanguage(initial))
+
+  it.each([
+    ['en', 'tpcc/tx', 'TPC-C'],
+    ['en', 'tpcc/procs', 'TPC-C · stored procedures'],
+    ['ru', 'tpcc/procs', 'TPC-C · хранимые процедуры'],
+    ['en', 'tpcds', 'TPC-DS'],
+    ['en', 'tpcb/tx+ycsb/run', 'TPC-B + YCSB · run'],
+    ['en', '', '—'],
+  ])('%s: %s → %s', async (lng, scenario, want) => {
+    await i18n.changeLanguage(lng)
+    expect(scenarioLabel(i18n.t, scenario)).toBe(want)
+  })
+})
 
 const row = (key: string) => ({ hardware: { key, machines: [] } })
 

@@ -191,7 +191,7 @@ components:
       in: query
       style: form
       explode: false
-      description: Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted.
+      description: Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one scenario; all when omitted.
       schema: { type: array, items: { type: string } }
     ratingHardware:
       name: hardware
@@ -218,7 +218,7 @@ components:
         node_count: { type: integer }
         sizes: { $ref: '#/components/schemas/RoleSizes' }
         workload_name: { type: string }
-        scenario: { type: string, description: 'Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`.' }
+        scenario: { type: string, description: 'Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios); several joined by `+`.' }
         hardware: { $ref: '#/components/schemas/HardwareClass' }
         stroppy_version: { type: string }
         provider_kind: { $ref: '#/components/schemas/ProviderKind' }

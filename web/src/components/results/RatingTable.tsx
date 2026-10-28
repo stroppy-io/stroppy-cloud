@@ -162,9 +162,9 @@ export function RatingTable({
         id: 'workload',
         header: t('results.rating.columns.workload'),
         minWidth: full ? 200 : 150,
-        value: (r) => r.workload_name ?? scenarioLabel(r.scenario),
+        value: (r) => r.workload_name ?? scenarioLabel(t, r.scenario),
         render: (r) => {
-          const scenario = scenarioLabel(r.scenario)
+          const scenario = scenarioLabel(t, r.scenario)
           const primary = r.workload_name ?? scenario
           // The scenario heads the section the table sits in: only the tool's version here.
           const secondary = r.stroppy_version ? `stroppy ${r.stroppy_version}` : undefined
@@ -247,7 +247,7 @@ export function RatingTable({
             .filter(Boolean)
             .join(' · ')
           const workload = [
-            r.workload_name ?? scenarioLabel(r.scenario),
+            r.workload_name ?? scenarioLabel(t, r.scenario),
             r.stroppy_version ? `stroppy ${r.stroppy_version}` : undefined,
           ]
             .filter(Boolean)
