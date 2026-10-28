@@ -355,7 +355,9 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, sbase+"/"+sch.ID+"/history", nil, tok), http.StatusOK, &history)
-		if len(history.Data) != 2 || history.Data[0].Status != "pending" {
+		// Statuses are the runs' own, not what they were when fired.
+		e.want(e.req(http.MethodGet, base+"/runs/"+ref.ID, nil, tok), http.StatusOK, &r)
+		if len(history.Data) != 2 || history.Data[0].Status != "pending" || history.Data[1].Status == "pending" || history.Data[1].Status != r.Status {
 			t.Fatalf("history %+v", history)
 		}
 		e.want(e.req(http.MethodGet, sbase+"/"+sch.ID, nil, tok), http.StatusOK, &sch)
@@ -379,6 +381,12 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 		e.want(e.req(http.MethodGet, base+"/suite-runs/"+sref.ID, nil, tok), http.StatusOK, &srun)
 		if srun.Trigger != "schedule" || srun.TriggerRef.ScheduleID != ss.ID {
 			t.Fatalf("scheduled suite run %+v", srun)
+		}
+		e.want(e.req(http.MethodPost, base+"/suite-runs/"+sref.ID+":cancel", nil, tok), http.StatusOK, nil)
+		e.want(e.req(http.MethodGet, base+"/suite-runs/"+sref.ID, nil, tok), http.StatusOK, &srun)
+		e.want(e.req(http.MethodGet, sbase+"/"+ss.ID, nil, tok), http.StatusOK, &sch)
+		if sch.LastRun.Kind != "suite_run" || sch.LastRun.Status == "pending" || sch.LastRun.Status != srun.Status {
+			t.Fatalf("suite schedule last run %+v", sch.LastRun)
 		}
 		var suiteView struct {
 			Summary struct {

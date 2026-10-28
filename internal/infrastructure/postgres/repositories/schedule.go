@@ -41,7 +41,11 @@ func (r *ScheduleRepo) ByID(ctx context.Context, id uuid.UUID) (schedule.Schedul
 		}
 		return schedule.Schedule{}, infraf("schedule: by id: %v", err)
 	}
-	return scheduleOf(row), nil
+	out := []schedule.Schedule{scheduleOf(row)}
+	if err := r.liveLastRuns(ctx, out); err != nil {
+		return schedule.Schedule{}, err
+	}
+	return out[0], nil
 }
 
 func (r *ScheduleRepo) List(ctx context.Context, tenantID uuid.UUID, q schedule.ListQuery) ([]schedule.Schedule, error) {
@@ -61,7 +65,7 @@ func (r *ScheduleRepo) List(ctx context.Context, tenantID uuid.UUID, q schedule.
 	for _, row := range rows {
 		out = append(out, scheduleOf(db.ScheduleByIDRow(row)))
 	}
-	return out, nil
+	return out, r.liveLastRuns(ctx, out)
 }
 
 func (r *ScheduleRepo) Upcoming(ctx context.Context, tenantID uuid.UUID, limit int) ([]schedule.Schedule, error) {
@@ -73,7 +77,7 @@ func (r *ScheduleRepo) Upcoming(ctx context.Context, tenantID uuid.UUID, limit i
 	for _, row := range rows {
 		out = append(out, scheduleOf(db.ScheduleByIDRow(row)))
 	}
-	return out, nil
+	return out, r.liveLastRuns(ctx, out)
 }
 
 func (r *ScheduleRepo) Due(ctx context.Context, now time.Time) ([]schedule.Schedule, error) {
@@ -145,7 +149,53 @@ func (r *ScheduleRepo) History(ctx context.Context, id uuid.UUID, limit, offset 
 	for _, row := range rows {
 		out = append(out, schedule.RunRef{Kind: row.Kind, ID: row.RefID, Name: row.Name, Status: row.Status, Error: row.Error, At: row.At})
 	}
-	return out, nil
+	refs := make([]*schedule.RunRef, len(out))
+	for i := range out {
+		refs[i] = &out[i]
+	}
+	return out, r.liveStatuses(ctx, refs)
+}
+
+func (r *ScheduleRepo) liveLastRuns(ctx context.Context, ss []schedule.Schedule) error {
+	refs := make([]*schedule.RunRef, 0, len(ss))
+	for _, s := range ss {
+		refs = append(refs, s.LastRun)
+	}
+	return r.liveStatuses(ctx, refs)
+}
+
+// liveStatuses replaces the status a fired ref was stored with by the
+// current one: the run or suite run owns its status, a schedule only points
+// at it. A ref without a run (the fire failed) keeps its stored outcome.
+func (r *ScheduleRepo) liveStatuses(ctx context.Context, refs []*schedule.RunRef) error {
+	ids := make([]uuid.UUID, 0, len(refs))
+	for _, ref := range refs {
+		if ref != nil && ref.ID != nil {
+			ids = append(ids, *ref.ID)
+		}
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	rows, err := r.q.FiredStatuses(ctx, ids)
+	if err != nil {
+		return infraf("schedule: fired statuses: %v", err)
+	}
+	status := make(map[uuid.UUID]string, len(rows))
+	for _, row := range rows {
+		if row.ID != nil && row.Status != "" {
+			status[*row.ID] = row.Status
+		}
+	}
+	for _, ref := range refs {
+		if ref == nil || ref.ID == nil {
+			continue
+		}
+		if st, ok := status[*ref.ID]; ok {
+			ref.Status = st
+		}
+	}
+	return nil
 }
 
 func scheduleOf(row db.ScheduleByIDRow) schedule.Schedule {

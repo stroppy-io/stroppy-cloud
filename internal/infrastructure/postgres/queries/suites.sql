@@ -189,6 +189,14 @@ INSERT INTO schedule_history (schedule_id, kind, ref_id, name, status, error) VA
 -- name: ScheduleHistory :many
 SELECT id, schedule_id, kind, ref_id, name, status, error, at FROM schedule_history WHERE schedule_id = @schedule_id ORDER BY at DESC LIMIT @lim OFFSET @off;
 
+-- name: FiredStatuses :many
+-- The current status of what schedules fired: a fired ref keeps only its id,
+-- the run or suite run owns the status.
+SELECT f.id::uuid AS id, coalesce(r.status, sr.status, '') AS status
+FROM unnest(@ids::uuid[]) AS f(id)
+LEFT JOIN runs r ON r.id = f.id
+LEFT JOIN suite_runs sr ON sr.id = f.id;
+
 -- name: UpcomingSchedules :many
 SELECT id, tenant_id, name, target_kind, target_id, target_name, cron, timezone, enabled, overrides, next_run_at, last_run, author_id, created_at, updated_at
 FROM schedules WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND enabled AND next_run_at IS NOT NULL ORDER BY next_run_at LIMIT @lim;
