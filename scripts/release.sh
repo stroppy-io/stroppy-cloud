@@ -3,9 +3,10 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-if [[ -n "$(git status --porcelain)" ]]; then
+# Untracked files never reach the tag: CI builds from the tagged commit.
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
   echo 'Working tree is not clean; commit your release changes first.' >&2
-  git status --short
+  git status --short --untracked-files=no
   exit 1
 fi
 if ! upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null); then
