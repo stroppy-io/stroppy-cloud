@@ -312,7 +312,7 @@ func TestE2ELibrary(t *testing.T) {
 		}
 		e.want(e.req(http.MethodPost, base+"/tests:validate", map[string]any{
 			"name":                "live",
-			"database":            map[string]any{"inline": map[string]any{"kind": "pg_noop", "version": "0.1.2", "params": map[string]any{}}},
+			"database":            map[string]any{"inline": map[string]any{"kind": "pg_noop", "version": "0.2.0", "params": map[string]any{}}},
 			"workload":            map[string]any{"ref": map[string]any{"id": wlID}},
 			"provider_profile_id": profileID,
 			"sizes":               map[string]any{"db": map[string]any{"size": "M"}, "runner": map[string]any{"size": "M"}},
