@@ -190,8 +190,17 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- tpcc/procs differ: one round trip per statement or per transaction), the
 -- hardware is the stand without its runner, machines grouped by vCPU and
 -- memory ("2x4c16g+1x2c4g").
-SELECT x.id, x.tenant_id, x.name, x.author_id, x.summary, x.finished_at, x.tps,
-       x.tenant_name, x.tenant_public_name, x.scenario, x.hardware, x.value
+-- One row per configuration (tenant, database, topology, workload, scenario,
+-- hardware, provider): its latest run among the ones the filters keep. The
+-- best of several runs would rank a lucky one, and repeated nightly runs
+-- would crowd the board with the same stand.
+SELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,
+       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.value
+FROM (
+SELECT x.*,
+       row_number() OVER (PARTITION BY x.tenant_id, x.summary->>'db_kind', x.summary->>'db_version', x.summary->'topology',
+                                       x.summary->>'workload_name', x.summary->>'provider_kind', x.scenario, x.hardware
+                          ORDER BY x.finished_at DESC, x.id) AS nth
 FROM (
   SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,
          t.name AS tenant_name, t.public_name AS tenant_public_name,
@@ -216,7 +225,9 @@ FROM (
 ) x
 WHERE (COALESCE(cardinality(@scenarios::text[]), 0) = 0 OR x.scenario = ANY(@scenarios::text[]))
   AND (COALESCE(cardinality(@hardware::text[]), 0) = 0 OR x.hardware = ANY(@hardware::text[]))
-ORDER BY CASE WHEN @higher_is_better::boolean THEN -x.value ELSE x.value END, x.finished_at DESC
+) y
+WHERE y.nth = 1
+ORDER BY CASE WHEN @higher_is_better::boolean THEN -y.value ELSE y.value END, y.finished_at DESC
 LIMIT @lim OFFSET @off;
 
 -- name: RatingFacets :many

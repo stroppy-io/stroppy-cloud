@@ -9654,6 +9654,8 @@ components:
             $ref: '#/components/schemas/HardwareClass'
         data:
           type: array
+          description: One entry per configuration (tenant, database, topology, workload, scenario, hardware,
+            provider) — its latest run among the ones the filters keep.
           items:
             $ref: '#/components/schemas/RatingEntry'
         meta:

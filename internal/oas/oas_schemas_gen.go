@@ -21988,7 +21988,8 @@ type RatingEntry struct {
 	NodeCount    OptInt           `json:"node_count"`
 	Sizes        OptRoleSizes     `json:"sizes"`
 	WorkloadName OptString        `json:"workload_name"`
-	// Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`.
+	// Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios); several joined
+	// by `+`.
 	Scenario       string          `json:"scenario"`
 	Hardware       HardwareClass   `json:"hardware"`
 	StroppyVersion OptString       `json:"stroppy_version"`
@@ -22217,8 +22218,10 @@ type RatingPage struct {
 	Scenarios []string `json:"scenarios"`
 	// Hardware classes that have rated runs, to filter by.
 	Hardware []HardwareClass `json:"hardware"`
-	Data     []RatingEntry   `json:"data"`
-	Meta     PageMeta        `json:"meta"`
+	// One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider)
+	// — its latest run among the ones the filters keep.
+	Data []RatingEntry `json:"data"`
+	Meta PageMeta      `json:"meta"`
 }
 
 // GetMetric returns the value of Metric.

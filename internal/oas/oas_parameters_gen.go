@@ -8529,8 +8529,8 @@ type GetPublicRatingParams struct {
 	Version        []string       `json:",omitempty"`
 	Provider       []ProviderKind `json:",omitempty"`
 	StroppyVersion []string       `json:",omitempty"`
-	// Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario;
-	// all when omitted.
+	// Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one
+	// scenario; all when omitted.
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
 	Hardware []string        `json:",omitempty"`
@@ -12950,8 +12950,8 @@ type GetTenantRatingParams struct {
 	Version        []string       `json:",omitempty"`
 	Provider       []ProviderKind `json:",omitempty"`
 	StroppyVersion []string       `json:",omitempty"`
-	// Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario;
-	// all when omitted.
+	// Workload scenario (the script, `tpcc/tx`, `tpcc/procs`). A number compares only within one
+	// scenario; all when omitted.
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
 	Hardware []string        `json:",omitempty"`

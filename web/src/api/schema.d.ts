@@ -4360,6 +4360,7 @@ export interface components {
             scenarios: string[];
             /** @description Hardware classes that have rated runs, to filter by. */
             hardware: components["schemas"]["HardwareClass"][];
+            /** @description One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) — its latest run among the ones the filters keep. */
             data: components["schemas"]["RatingEntry"][];
             meta: components["schemas"]["PageMeta"];
         };

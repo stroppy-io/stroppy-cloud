@@ -34,7 +34,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 	e := e2eServer(t)
 	base, tok, testID, tn := runFixture(t, e)
 
-	var a, b runView
+	var a, b, c runView
 	launchWithTPS(t, e, base, testID, tok, 1000, map[string]any{"name": "base", "rating": map[string]any{"global": true}}, &a)
 	launchWithTPS(t, e, base, testID, tok, 1100, map[string]any{"name": "candidate"}, &b)
 	a, b = finishRun(t, e, base, tok, a.ID), finishRun(t, e, base, tok, b.ID)
@@ -213,8 +213,9 @@ func TestE2EShareCompareRating(t *testing.T) {
 				ShareToken string `json:"share_token"`
 			} `json:"data"`
 		}
+		// Both runs are one configuration: one row, its latest run.
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
-		if len(page.Data) != 2 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || page.Data[1].Value != 1000 || len(page.Scenarios) != 1 || len(page.Hardware) != 1 {
+		if len(page.Data) != 1 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || len(page.Scenarios) != 1 || len(page.Hardware) != 1 {
 			t.Fatalf("tenant rating %+v", page)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=latency_p95_ms", nil, tok), http.StatusOK, &page)
@@ -222,7 +223,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 			t.Fatalf("lower-is-better rating %+v", page)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps&scenario="+page.Data[0].Scenario+"&hardware="+page.Data[0].Hardware.Key, nil, tok), http.StatusOK, &page)
-		if len(page.Data) != 2 {
+		if len(page.Data) != 1 {
 			t.Fatalf("scenario and hardware filter %+v", page)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps&scenario=nope", nil, tok), http.StatusOK, &page)
@@ -238,7 +239,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 		e.want(e.req(http.MethodPost, base+"/runs/"+a.ID+":share", map[string]any{}, tok), http.StatusCreated, &sh)
 		// The global rating spans tenants (other tests opt runs in too):
 		// ours is there with its public name and share link, the
-		// non-opted-in candidate is not.
+		// non-opted-in candidate is not and, though newer, does not hide it.
 		e.want(e.req(http.MethodGet, "/api/v1/public/rating?metric=tps&period=7d", nil, ""), http.StatusOK, &page)
 		found := false
 		for _, d := range page.Data {
@@ -251,6 +252,15 @@ func TestE2EShareCompareRating(t *testing.T) {
 		}
 		if !found {
 			t.Fatalf("public rating %+v", page)
+		}
+		// A newer, weaker run of the configuration replaces the best one.
+		launchWithTPS(t, e, base, testID, tok, 900, map[string]any{"name": "rerun"}, &c)
+		if c = finishRun(t, e, base, tok, c.ID); c.Status != "completed" {
+			t.Fatalf("rerun %s", c.Status)
+		}
+		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
+		if len(page.Data) != 1 || page.Data[0].RunID != c.ID || page.Data[0].Value != 900 {
+			t.Fatalf("latest run of the configuration %+v", page)
 		}
 	})
 
@@ -266,7 +276,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 			Providers   []map[string]any `json:"providers"`
 		}
 		e.want(e.req(http.MethodGet, base+"/dashboard", nil, tok), http.StatusOK, &d)
-		if d.RunCounts.Total != 2 || d.RunCounts.Completed != 2 || d.SuccessRate != 100 || len(d.RecentRuns) != 2 || len(d.TopResults) != 2 || len(d.Providers) != 1 {
+		if d.RunCounts.Total != 3 || d.RunCounts.Completed != 3 || d.SuccessRate != 100 || len(d.RecentRuns) != 3 || len(d.TopResults) != 1 || len(d.Providers) != 1 {
 			t.Fatalf("dashboard %+v", d)
 		}
 	})
@@ -278,7 +288,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 		e.want(e.req(http.MethodPost, base+"/runs/"+a.ID+":share", map[string]any{}, tok), http.StatusCreated, &sh)
 		e.want(e.req(http.MethodGet, "/api/v1/public/share/"+sh.Token, nil, ""), http.StatusOK, nil)
 		// The fixture keeps its stands; a tenant with kept stands is not deleted.
-		for _, id := range []string{a.ID, b.ID} {
+		for _, id := range []string{a.ID, b.ID, c.ID} {
 			_ = e.req(http.MethodPost, base+"/runs/"+id+":keep-release", nil, tok)
 		}
 		if r := e.req(http.MethodDelete, "/api/v1/tenants/"+tn.Slug, nil, tok); r.Status != http.StatusNoContent {
