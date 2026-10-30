@@ -2,7 +2,6 @@ package compile
 
 import (
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
@@ -19,33 +18,33 @@ func TestTuneDriverSizesThePoolForTheWorkload(t *testing.T) {
 			Workload: library.WorkloadSpec{Segments: segments},
 		}}
 	}
-	pool := func(driver map[string]any) map[string]any {
-		p, _ := driver["pool"].(map[string]any) //nolint:errcheck // nil fails below
-		return p
-	}
-
-	pg := map[string]any{}
-	if dsn := auto(`{}`).tuneDriver(pg, "postgres", "postgres://h/db"); dsn != "postgres://h/db" || pool(pg)["maxConns"] != 300 || pool(pg)["minConns"] != 300 {
-		t.Fatalf("postgres: %s %v", dsn, pg)
-	}
-
-	my := map[string]any{"sql": map[string]any{"maxIdleConns": 8}}
-	auto(`{}`).tuneDriver(my, "mysql", "")
-	if pool(my)["maxOpenConns"] != 300 || pool(my)["maxIdleConns"] != nil {
-		t.Fatalf("mysql: an explicit sql key must win: %v", my)
-	}
-
-	dsn := auto(`{}`).tuneDriver(map[string]any{}, "crdb", "postgresql://root@${ip:role:db}:26257/db?sslmode=disable")
-	if !strings.Contains(dsn, "pool_max_conns=300") || !strings.Contains(dsn, "${ip:role:db}") {
-		t.Fatalf("crdb: %s", dsn)
-	}
-	if kept := poolURL("postgresql://h/db?pool_max_conns=8", 300); kept != "postgresql://h/db?pool_max_conns=8" {
-		t.Fatalf("crdb: an explicit URL pool must win: %s", kept)
-	}
-
-	stock := map[string]any{}
-	if auto(`{"tuning":"stock"}`).tuneDriver(stock, "postgres", ""); len(stock) != 0 {
-		t.Fatalf("stock tuning keeps the driver defaults: %v", stock)
+	for _, tc := range []struct {
+		name, params, driverType string
+		driver, want             map[string]any
+	}{
+		{"postgres", `{}`, "postgres", map[string]any{}, map[string]any{"maxConns": 300, "minConns": 300}},
+		{"picodata", `{}`, "picodata", map[string]any{}, map[string]any{"maxConns": 300, "minConns": 300}},
+		{"crdb is pgx too", `{}`, "crdb", map[string]any{}, map[string]any{"maxConns": 300, "minConns": 300}},
+		{"an explicit postgres key wins", `{}`, "crdb", map[string]any{"postgres": map[string]any{"maxConns": 8}}, map[string]any{"minConns": 300}},
+		{"an explicit sql key wins", `{}`, "mysql", map[string]any{"sql": map[string]any{"maxIdleConns": 8}}, map[string]any{"maxOpenConns": 300}},
+		{"ydb", `{}`, "ydb", map[string]any{}, map[string]any{"maxOpenConns": 300, "maxIdleConns": 300}},
+		{"stock keeps the driver defaults", `{"tuning":"stock"}`, "postgres", map[string]any{}, nil},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			auto(tc.params).tuneDriver(tc.driver, tc.driverType)
+			got, ok := tc.driver["pool"].(map[string]any)
+			if !ok {
+				got = nil
+			}
+			if len(got) != len(tc.want) {
+				t.Fatalf("pool %v, want %v", got, tc.want)
+			}
+			for k, v := range tc.want {
+				if got[k] != v {
+					t.Fatalf("pool %v, want %v", got, tc.want)
+				}
+			}
+		})
 	}
 }
 

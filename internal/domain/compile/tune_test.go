@@ -66,7 +66,7 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 	}
 	segment := fmt.Sprintf(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":%d,"duration":"10m"}}`, vus)
 	wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{
-		StroppyVersion: "6.0.0", Protocol: protocol, Segments: []json.RawMessage{json.RawMessage(segment)},
+		StroppyVersion: "6.3.0", Protocol: protocol, Segments: []json.RawMessage{json.RawMessage(segment)},
 	})
 	if err != nil {
 		t.Fatal(err)

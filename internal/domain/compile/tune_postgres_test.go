@@ -40,7 +40,7 @@ func compileOriole(t *testing.T, tc tuneCase) (compile.Output, map[string]map[st
 		t.Fatal(err)
 	}
 	segment := `{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":128,"duration":"10m"}}`
-	wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(segment)}})
+	wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(segment)}})
 	if err != nil {
 		t.Fatal(err)
 	}

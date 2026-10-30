@@ -67,7 +67,7 @@ func TestE2ECatalog(t *testing.T) {
 				} `json:"scripts"`
 			} `json:"versions"`
 		}
-		e.want(e.req(http.MethodGet, "/api/v1/catalog/stroppy?version=6.0.0", nil, tok), http.StatusOK, &got)
+		e.want(e.req(http.MethodGet, "/api/v1/catalog/stroppy?version=6.3.0", nil, tok), http.StatusOK, &got)
 		if len(got.Versions) != 1 || len(got.Versions[0].Scripts) < 5 {
 			t.Fatalf("got %+v", got)
 		}

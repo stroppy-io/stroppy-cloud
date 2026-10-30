@@ -2,10 +2,7 @@ package compile
 
 import (
 	"encoding/json"
-	"net/url"
 	"sort"
-	"strconv"
-	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -21,26 +18,17 @@ import (
 //
 // doc: https://pkg.go.dev/github.com/jackc/pgx/v5/pgxpool#ParseConfig (pool_max_conns default)
 // doc: https://pkg.go.dev/database/sql#DB.SetMaxIdleConns (two idle connections by default)
-func (c *compilation) tuneDriver(driver map[string]any, driverType, dsn string) string {
+func (c *compilation) tuneDriver(driver map[string]any, driverType string) {
 	if c.tuning() != tuningAuto {
-		return dsn
+		return
 	}
 	conns := c.poolSize()
 	switch driverType {
-	case "crdb":
-		// Stroppy 6.2.1 drops the pool and postgres blocks for the crdb
-		// driver type (stroppy-io/stroppy#234); pgx reads the URL as well.
-		tuned := poolURL(dsn, conns)
-		if tuned != dsn {
-			c.clientAuto = append(c.clientAuto, "url.pool_max_conns", "url.pool_min_conns")
-		}
-		return tuned
-	case "postgres", "picodata":
+	case "postgres", "picodata", "crdb":
 		c.clientAuto = append(c.clientAuto, setPool(driver, "postgres", map[string]int{"maxConns": conns, "minConns": conns})...)
 	case "mysql", "ydb":
 		c.clientAuto = append(c.clientAuto, setPool(driver, "sql", map[string]int{"maxOpenConns": conns, "maxIdleConns": conns})...)
 	}
-	return dsn
 }
 
 // connectionsPerCPU is how many connections a database vCPU serves before
@@ -89,10 +77,13 @@ func (c *compilation) peakConnections() int {
 // setPool sets the pool keys the workload left unset, in its pool block or
 // in the driver's own block (postgres or sql), and names the ones it set.
 func setPool(driver map[string]any, family string, values map[string]int) []string {
-	pool, _ := driver["pool"].(map[string]any) //nolint:errcheck // absent = new block
-	own, _ := driver[family].(map[string]any)  //nolint:errcheck // absent = nothing set
-	if pool == nil {
+	pool, ok := driver["pool"].(map[string]any)
+	if !ok {
 		pool = map[string]any{}
+	}
+	var own map[string]any
+	if block, ok := driver[family].(map[string]any); ok {
+		own = block
 	}
 	var set []string
 	for key, v := range values {
@@ -120,7 +111,7 @@ var reportedDriverKeys = map[string]bool{
 }
 
 // clientSetup is the driver the runner gets, for the run's report: the
-// secret-free driver options, and for CockroachDB the pool the URL carries.
+// secret-free driver options.
 func (c *compilation) clientSetup() *run.ClientSetup {
 	w := c.out.Spec.Workload
 	if w.DriverType == "" {
@@ -132,23 +123,5 @@ func (c *compilation) clientSetup() *run.ClientSetup {
 			settings[k] = v
 		}
 	}
-	if _, query, ok := strings.Cut(w.URL, "?"); ok {
-		if values, err := url.ParseQuery(query); err == nil && values.Has("pool_max_conns") {
-			settings["url"] = map[string]any{"pool_max_conns": values.Get("pool_max_conns"), "pool_min_conns": values.Get("pool_min_conns")}
-		}
-	}
 	return &run.ClientSetup{DriverType: w.DriverType, Settings: settings, Auto: c.clientAuto}
-}
-
-// poolURL adds pgx's pool size to a DSN that does not name one. Only the
-// query is parsed, so unresolved ${ip:role:...} hosts stay valid.
-func poolURL(dsn string, conns int) string {
-	base, query, _ := strings.Cut(dsn, "?")
-	values, err := url.ParseQuery(query)
-	if err != nil || values.Has("pool_max_conns") {
-		return dsn
-	}
-	values.Set("pool_max_conns", strconv.Itoa(conns))
-	values.Set("pool_min_conns", strconv.Itoa(conns))
-	return base + "?" + values.Encode()
 }

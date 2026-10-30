@@ -27,7 +27,7 @@ func TestSegment(t *testing.T) {
 			"pacing":          true,
 			"retry_attempts":  int64(5),
 			"tx_isolation":    "repeatable_read",
-			"sql_file":        "tpcc/ydb_no_indexes",
+			"sql_dialect":     "ydb_no_indexes",
 		},
 		"run": map[string]any{
 			"executor":      "shared-iterations",
@@ -85,6 +85,9 @@ func TestSegment(t *testing.T) {
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "ydb_store_mode": "row"}), Code: "UNKNOWN_FIELD", Path: "workload.ydb_store_mode"},
 			{Value: withWorkload(map[string]any{"script": "execute_sql"}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withWorkload(map[string]any{"script": "execute_sql", "sql_body": "select 1", "sql_file": "q.sql"}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "sql_dialect": "crdb24", "sql_file": "q.sql"}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "sql_dialect": "oracle"}), Code: "CHOICE_NOT_ALLOWED", Path: "workload.sql_dialect"},
+			{Value: withWorkload(map[string]any{"script": "tpcb/tx", "sql_dialect": "crdb"}), Code: "UNKNOWN_FIELD", Path: "workload.sql_dialect"},
 			{Value: withRun(map[string]any{"executor": "constant-vus"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "shared-iterations", "duration": "10s"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "ramping-vus", "duration": "10s"}), Code: "CHOICE_NOT_ALLOWED", Path: "run.executor"},

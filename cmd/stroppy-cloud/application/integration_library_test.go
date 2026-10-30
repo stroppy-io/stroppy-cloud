@@ -173,7 +173,7 @@ func TestE2ELibrary(t *testing.T) {
 			Segments     []map[string]any          `json:"segments"`
 		}
 		e.want(e.req(http.MethodPost, base+"/workloads", map[string]any{
-			"name": "tpcc", "stroppy_version": "6.0.0", "protocol": "pg",
+			"name": "tpcc", "stroppy_version": "6.3.0", "protocol": "pg",
 			"segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 10}, "run": map[string]any{"vus": 256, "duration": "5m"}}},
 		}, tok), http.StatusCreated, &got)
 		wlID = got.ID
@@ -181,7 +181,7 @@ func TestE2ELibrary(t *testing.T) {
 			t.Fatalf("workload %+v", got)
 		}
 		e.problem(e.req(http.MethodPost, base+"/workloads", map[string]any{"name": "bad", "stroppy_version": "9.9.9", "protocol": "pg", "segments": []any{map[string]any{"name": "x", "workload": map[string]any{"script": "tpcc/tx"}}}}, tok), http.StatusUnprocessableEntity, "invalid")
-		e.problem(e.req(http.MethodPost, base+"/workloads", map[string]any{"name": "bad", "stroppy_version": "6.0.0", "protocol": "pg", "segments": []any{map[string]any{"name": "x", "workload": map[string]any{"script": "tpcc/tx", "nope": 1}}}}, tok), http.StatusUnprocessableEntity, "validation_failed")
+		e.problem(e.req(http.MethodPost, base+"/workloads", map[string]any{"name": "bad", "stroppy_version": "6.3.0", "protocol": "pg", "segments": []any{map[string]any{"name": "x", "workload": map[string]any{"script": "tpcc/tx", "nope": 1}}}}, tok), http.StatusUnprocessableEntity, "validation_failed")
 		var preview struct {
 			SegmentsSummary []struct {
 				Script string `json:"script"`
@@ -189,7 +189,7 @@ func TestE2ELibrary(t *testing.T) {
 				Limit  string `json:"limit"`
 			} `json:"segments_summary"`
 		}
-		e.want(e.req(http.MethodPost, base+"/workloads:preview", map[string]any{"name": "p", "stroppy_version": "6.0.0", "protocol": "mysql", "segments": []any{map[string]any{"name": "s", "workload": map[string]any{"script": "tpcb/tx"}, "run": map[string]any{"executor": "shared-iterations", "vus": 8, "iterations": 100}}}}, tok), http.StatusOK, &preview)
+		e.want(e.req(http.MethodPost, base+"/workloads:preview", map[string]any{"name": "p", "stroppy_version": "6.3.0", "protocol": "mysql", "segments": []any{map[string]any{"name": "s", "workload": map[string]any{"script": "tpcb/tx"}, "run": map[string]any{"executor": "shared-iterations", "vus": 8, "iterations": 100}}}}, tok), http.StatusOK, &preview)
 		if len(preview.SegmentsSummary) != 1 || preview.SegmentsSummary[0].Vus != 8 || preview.SegmentsSummary[0].Limit != "100 iterations" {
 			t.Fatalf("preview %+v", preview)
 		}

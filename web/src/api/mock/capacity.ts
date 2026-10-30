@@ -111,7 +111,7 @@ export function expandCapacityDemo(
       `wl-capacity-${i}`,
       i === 1 ? 'Baseline · 100 million rows · 2048 VU' : 'TPC-C · 2000 warehouses · 2048 VU'
     ),
-    stroppy_version: '6.1.0',
+    stroppy_version: '6.3.0',
     protocol: i === 1 ? 'ydb_grpc' : i === 2 ? 'mysql' : 'pg',
     schema: { id: 'workload.stroppy', version: '1' },
     segments: [

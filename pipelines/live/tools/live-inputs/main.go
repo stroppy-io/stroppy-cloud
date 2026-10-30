@@ -46,7 +46,7 @@ func generate() error {
 	kind := flag.String("database", "", "one database kind, or all when empty")
 	topologyID := flag.String("topology", "", "one topology, or all when empty")
 	script := flag.String("script", "simple", "Stroppy workload")
-	stroppyImage := flag.String("stroppy-image", "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62", "Stroppy image; use an immutable digest for development builds")
+	stroppyImage := flag.String("stroppy-image", "docker.stroppy.io/stroppy-io/stroppy:v6.3.0.68", "Stroppy image; use an immutable digest for development builds")
 	duration := flag.Duration("duration", 30*time.Second, "measurement duration")
 	allVersions := flag.Bool("all-versions", false, "compile every catalog version")
 	baseline := flag.Bool("baseline", false, "enable both quick baseline tiers")

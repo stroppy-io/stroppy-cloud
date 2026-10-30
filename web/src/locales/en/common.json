@@ -532,6 +532,8 @@
     "globalHint": "The result shows in the public Stroppy Cloud rating and on its front page: database, topology, machine sizes, scenario and headline metrics."
   },
   "scenario": {
+    "banking": "Bank transfers",
+    "inject": "fault injection",
     "procs": "stored procedures"
   },
   "hardware": {

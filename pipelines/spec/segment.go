@@ -71,6 +71,8 @@ type RunParams struct {
 	Duration     Duration `json:"duration,omitempty"`
 	Iterations   int64    `json:"iterations,omitempty"`
 	QueryTimeout Duration `json:"query_timeout,omitempty"`
+	// DrainTimeout is a duration or "none"; empty keeps Stroppy's default.
+	DrainTimeout string `json:"drain_timeout,omitempty"`
 }
 
 // Executors stroppy 6 knows.

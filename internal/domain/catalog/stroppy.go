@@ -26,6 +26,10 @@ func stroppy() StroppyCatalog {
 		{ID: "simple", Title: "Simple key-value", Protocols: all},
 		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
 		{ID: "baseline", Title: "Baseline workload", Protocols: all, Description: "A baseline workload segment; the machine self-check remains separately configurable."},
+		// doc: stroppy workloads/banking — pg, mysql, pico and ydb dialects;
+		// inject hooks PostgreSQL through the Macavity extension.
+		{ID: "banking", Title: "Banking invariants", Protocols: noCockroach, Description: "Transfers between accounts; verify checks that money and account tokens still add up. Picodata checks the total only."},
+		{ID: "banking/inject", Title: "Banking invariants, fault injection", Protocols: []Protocol{ProtoPg, ProtoNoop}, Description: "Banking with Macavity faults armed inside the transfers; needs the Macavity extension in the PostgreSQL server."},
 	}
 	schema := workload.Segment()
 	var variants map[string]*schemapb.Schema
@@ -42,7 +46,7 @@ func stroppy() StroppyCatalog {
 		sc := &scripts[i]
 		for _, name := range workload.Steps(sc.ID) {
 			phase := "bootstrap"
-			if name == "workload" {
+			if name == workload.MeasuredStep(sc.ID) {
 				phase = "workload"
 			}
 			sc.Steps = append(sc.Steps, StroppyStep{ID: name, Phase: phase})
@@ -56,20 +60,10 @@ func stroppy() StroppyCatalog {
 			sc.Params = append(sc.Params, schemaParam(f, "run"))
 		}
 	}
-	// 6.2 rejects the crdb driver for tpcb/procs (stroppy-io/stroppy#229).
-	scripts62 := make([]StroppyScript, len(scripts))
-	copy(scripts62, scripts)
-	for i := range scripts62 {
-		if scripts62[i].ID == "tpcb/procs" {
-			scripts62[i].Protocols = []Protocol{ProtoPg, ProtoMySQL, ProtoNoop}
-		}
-	}
+	// One release: the platform follows Stroppy's latest, and a workload of
+	// an older one is moved to it by migration.
 	return StroppyCatalog{Source: "static", Versions: []StroppyVersion{
-		{Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Baseline: true, Protocols: all, Scripts: scripts},
-		{Version: "6.1.0", Image: "ghcr.io/stroppy-io/stroppy:v6.1.0.63", Baseline: true, Protocols: all, Scripts: scripts},
-		// 6.2 names drivers ("default", see stroppycfg.DriverKey) and writes
-		// report envelope schema 4; workload parameters are a superset of 6.1.
-		{Version: "6.2.1", Image: "ghcr.io/stroppy-io/stroppy:v6.2.1.67", Default: true, Baseline: true, Protocols: all, Scripts: scripts62},
+		{Version: "6.3.0", Image: "ghcr.io/stroppy-io/stroppy:v6.3.0.68", Default: true, Baseline: true, Protocols: all, Scripts: scripts},
 	}}
 }
 

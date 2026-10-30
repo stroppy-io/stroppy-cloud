@@ -101,7 +101,7 @@ func seedStand(t *testing.T, e *e2e) string {
 	}
 	e.want(e.req(http.MethodPost, base+"/databases", map[string]any{"name": "pg-ha", "kind": "postgres", "version": "17", "params": map[string]any{"version": "17", "replicas": 1, "haproxy": 1}}, tok), http.StatusCreated, &db)
 	e.want(e.req(http.MethodPost, base+"/workloads", map[string]any{
-		"name": "tpcc 5m", "stroppy_version": "6.0.0", "protocol": "pg",
+		"name": "tpcc 5m", "stroppy_version": "6.3.0", "protocol": "pg",
 		"segments": []any{
 			map[string]any{"name": "warmup", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 4, "duration": "1m"}},
 			map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 16, "duration": "5m"}},

@@ -39,7 +39,7 @@ func TestCompileCustomImage(t *testing.T) {
 	if shape := derived.Plan.Shape(); shape.Nodes[0].Role != "db" || shape.Nodes[0].Count != 2 || len(database.Topology.Nodes) != len(shape.Nodes) {
 		t.Fatalf("shape %+v / %+v", shape, database.Topology)
 	}
-	workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+	workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 	if err != nil {
 		t.Fatal(err)
 	}

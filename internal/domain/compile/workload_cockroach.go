@@ -2,22 +2,16 @@ package compile
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
-// stroppyAtLeast compares a catalog Stroppy version ("6.2.1") with major.minor.
-func stroppyAtLeast(version string, major, minor int) bool {
-	var ma, mi int
-	if n, err := fmt.Sscanf(version, "%d.%d", &ma, &mi); err != nil || n != 2 {
-		return true // a dev or custom build: assume current
+// cockroach24Dialect selects crdb24 for TPC-C on CockroachDB 24.1: the crdb
+// driver picks crdb.sql, whose procedures 24.1 cannot parse. A dialect or
+// SQL file the workload names itself wins.
+func cockroach24Dialect(raw json.RawMessage, version string) (json.RawMessage, error) {
+	if version != "24.1" && !strings.HasPrefix(version, "24.1.") {
+		return raw, nil
 	}
-	return ma > major || ma == major && mi >= minor
-}
-
-// cockroachSQL selects the embedded dialect without replacing user SQL
-// (Stroppy before 6.2, which resolves --sql-file against its assets).
-func cockroachSQL(raw json.RawMessage, version string) (json.RawMessage, error) {
 	var segment map[string]any
 	if err := json.Unmarshal(raw, &segment); err != nil {
 		return nil, err
@@ -26,24 +20,12 @@ func cockroachSQL(raw json.RawMessage, version string) (json.RawMessage, error) 
 	if !ok {
 		return raw, nil
 	}
-	script, ok := workload["script"].(string)
-	if !ok {
+	if script, ok := workload["script"].(string); !ok || script != "tpcc/tx" && script != "tpcc/procs" {
 		return raw, nil
 	}
-	var file string
-	switch script {
-	case "tpcb/tx", "tpcb/procs":
-		file = "crdb.sql"
-	case "tpcc/tx", "tpcc/procs":
-		file = "crdb.sql"
-		if version == "24.1" || strings.HasPrefix(version, "24.1.") {
-			file = "crdb24.sql"
-		}
-	default:
+	if workload["sql_dialect"] != nil || workload["sql_file"] != nil {
 		return raw, nil
 	}
-	if existing, ok := workload["sql_file"].(string); !ok || existing == "" {
-		workload["sql_file"] = file
-	}
+	workload["sql_dialect"] = "crdb24"
 	return json.Marshal(segment)
 }

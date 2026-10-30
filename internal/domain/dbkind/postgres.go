@@ -39,8 +39,18 @@ func postgres() Kind {
 			},
 			ParamsSchema: "db.postgres.params@1", Protocols: []catalog.Protocol{catalog.ProtoPg}, Deployable: true,
 		},
-		plan:  func(p *topology.Plan, params map[string]any) { planPostgres(p, catalog.Postgres, params) },
-		login: func(map[string]any) topology.Login { return PostgresLogin },
+		plan:           func(p *topology.Plan, params map[string]any) { planPostgres(p, catalog.Postgres, params) },
+		login:          func(map[string]any) topology.Login { return PostgresLogin },
+		unsupportedFor: withoutMacavity,
+	}
+}
+
+// withoutMacavity refuses banking/inject on the images the platform deploys:
+// the Macavity extension it arms is built into the server, and they ship
+// without it.
+func withoutMacavity(map[string]any) map[string]unsupportedScript {
+	return map[string]unsupportedScript{
+		"banking/inject": {why: "banking/inject needs the Macavity extension in the PostgreSQL server; the deployed images do not ship it"},
 	}
 }
 
@@ -71,8 +81,9 @@ func orioledb() Kind {
 			},
 			ParamsSchema: "db.orioledb.params@1", Protocols: []catalog.Protocol{catalog.ProtoPg}, Deployable: true,
 		},
-		plan:  func(p *topology.Plan, params map[string]any) { planPostgres(p, catalog.OrioleDB, params) },
-		login: func(map[string]any) topology.Login { return PostgresLogin },
+		plan:           func(p *topology.Plan, params map[string]any) { planPostgres(p, catalog.OrioleDB, params) },
+		login:          func(map[string]any) topology.Login { return PostgresLogin },
+		unsupportedFor: withoutMacavity,
 	}
 }
 

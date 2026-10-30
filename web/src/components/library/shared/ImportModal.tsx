@@ -51,7 +51,7 @@ kind: Workload
 metadata:
   name: tpcb-quick
 spec:
-  stroppy_version: 6.1.0
+  stroppy_version: 6.3.0
   protocol: pg
   segments:
     - name: tpcb

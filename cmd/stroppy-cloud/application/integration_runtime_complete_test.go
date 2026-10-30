@@ -9,6 +9,9 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 )
 
 // Check explicit settings at the real HTTP -> PostgreSQL -> compiler -> Graphene boundary.
@@ -181,6 +184,11 @@ func TestE2EWorkloadParameterTransport(t *testing.T) {
 			continue
 		}
 		for script, v := range field["oneOf"].(map[string]any)["variants"].(map[string]any) {
+			// The fixture's PostgreSQL refuses this one (no Macavity); the
+			// pipeline's contract test renders its parameters instead.
+			if dbkind.UnsupportedScript(catalog.Postgres, "17", nil, script) != "" {
+				continue
+			}
 			for _, p := range v.(map[string]any)["fields"].([]any) {
 				key := p.(map[string]any)["name"].(string)
 				if !covered[script][key] {
@@ -189,7 +197,7 @@ func TestE2EWorkloadParameterTransport(t *testing.T) {
 			}
 		}
 	}
-	patch := map[string]any{"workload": map[string]any{"inline": map[string]any{"protocol": "pg", "stroppy_version": "6.0.0", "segments": segments}}}
+	patch := map[string]any{"workload": map[string]any{"inline": map[string]any{"protocol": "pg", "stroppy_version": "6.3.0", "segments": segments}}}
 	e.want(e.req(http.MethodPatch, base+"/tests/"+testID, patch, tok), http.StatusOK, nil)
 	e.want(e.req(http.MethodPatch, base+"/tests/"+testID, map[string]any{"name": "every workload parameter"}, tok), http.StatusOK, nil)
 	var r runView

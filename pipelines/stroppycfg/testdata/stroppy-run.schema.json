@@ -38,6 +38,14 @@
         {
           "not": {
             "required": [
+              "serviceAccountKeyFile",
+              "service_account_key_file"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
               "authUser",
               "auth_user"
             ]
@@ -277,6 +285,26 @@
           "anyOf": [
             {
               "$ref": "#/$defs/PostgresConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serviceAccountKeyFile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "service_account_key_file": {
+          "anyOf": [
+            {
+              "type": "string"
             },
             {
               "type": "null"
@@ -1820,24 +1848,6 @@
             {
               "additionalProperties": {
                 "$ref": "#/$defs/DriverRunConfig"
-              },
-              "propertyNames": {
-                "description": "Unsigned decimal uint32; leading zeroes are accepted and canonicalized.",
-                "pattern": "^[0-9]+$",
-                "x-stroppy-uint32Key": true
-              },
-              "type": "object"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "env": {
-          "anyOf": [
-            {
-              "additionalProperties": {
-                "type": "string"
               },
               "type": "object"
             },

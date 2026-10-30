@@ -85,6 +85,8 @@
       "pacing": true,
       "retry_attempts": 4,
       "tx_isolation": "read_committed",
+      "spread_warehouses": true,
+      "warmup": "1s",
       "sql_file": "tpcc/postgres"
     },
     "run": {
@@ -92,6 +94,30 @@
       "vus": 1,
       "iterations": 3,
       "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcc-tx-dialect",
+    "workload": {
+      "script": "tpcc/tx",
+      "sql_dialect": "pg"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3
+    }
+  },
+  {
+    "name": "tpcc-dialect",
+    "workload": {
+      "script": "tpcc/procs",
+      "sql_dialect": "pg"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3
     }
   },
   {
@@ -106,6 +132,8 @@
       "pacing": true,
       "retry_attempts": 4,
       "tx_isolation": "read_committed",
+      "spread_warehouses": true,
+      "warmup": "1s",
       "sql_file": "tpcc/postgres"
     },
     "run": {
@@ -113,6 +141,21 @@
       "vus": 1,
       "iterations": 3,
       "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "banking",
+    "workload": {
+      "script": "banking",
+      "accounts": 50,
+      "retry_attempts": 4,
+      "tx_isolation": "read_committed",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3
     }
   },
   {
@@ -163,7 +206,8 @@
     "run": {
       "executor": "constant-vus",
       "vus": 1,
-      "duration": "2s"
+      "duration": "2s",
+      "drain_timeout": "5s"
     }
   }
 ]

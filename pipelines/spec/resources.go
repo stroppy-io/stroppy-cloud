@@ -55,6 +55,9 @@ func EstimateDataset(raw []json.RawMessage) DatasetEstimate {
 			gb = math.Max(sf, 0.25) // fixed dimensions survive fractional scale
 		case "baseline":
 			gb = paramNumber(s.Workload.Params, "rows", 250000) * 256 / (1 << 30)
+		case "banking":
+			// One narrow row per account (id, balance, token).
+			gb = paramNumber(s.Workload.Params, "accounts", 100) * 64 / (1 << 30)
 		default:
 			e.Unknown = append(e.Unknown, s.Name)
 			continue

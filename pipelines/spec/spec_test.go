@@ -96,7 +96,7 @@ func sampleRun() Run {
 		Scrapes:  []Scrape{{Role: "db", URL: "http://127.0.0.1:9187/metrics", Job: "postgres"}},
 		Flows:    []Flow{{FromRole: "runner", ToRole: "db", Protocol: "tcp", Port: 5432, Label: "postgres"}},
 		Workload: Workload{
-			RunnerRole: "runner", StroppyImage: "ghcr.io/stroppy-io/stroppy:v6.0.0.62",
+			RunnerRole: "runner", StroppyImage: "ghcr.io/stroppy-io/stroppy:v6.3.0.68",
 			DriverType: "postgres", URL: "postgres://postgres:x@${ip:role:db}:5432/postgres?sslmode=disable",
 			Driver:   map[string]any{"bulkSize": 5000, "pool": map[string]any{"maxConns": 64}},
 			Segments: []json.RawMessage{json.RawMessage(`{"name":"load","workload":{"script":"tpcc/tx","scale_factor":10},"run":{"executor":"constant-vus","vus":8,"duration":"30s"}}`)},

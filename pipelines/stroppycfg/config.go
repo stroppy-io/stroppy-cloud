@@ -58,21 +58,9 @@ type Input struct {
 	Labels map[string]string
 }
 
-// DriverKey names the one driver of a config. Stroppy 6.2 replaced numeric
-// driver keys with named declarations ("default"); 6.0 and 6.1 accept only
-// numeric ones. The version comes from the image tag (vMAJOR.MINOR.PATCH[.N],
-// mirrored or not); a tag that names no version is a newer or dev build.
-func DriverKey(image string) string {
-	if at := strings.Index(image, "@"); at >= 0 {
-		image = image[:at]
-	}
-	tag := image[strings.LastIndex(image, ":")+1:]
-	var major, minor int
-	if n, err := fmt.Sscanf(strings.TrimPrefix(tag, "v"), "%d.%d", &major, &minor); err == nil && n == 2 && (major < 6 || major == 6 && minor < 2) {
-		return "0"
-	}
-	return "default"
-}
+// driverKey names the one driver of a config: the declaration every
+// built-in workload makes (d.Drivers.Declare("default", …)).
+const driverKey = "default"
 
 // Config renders stroppy-config.json of a segment.
 //
@@ -116,7 +104,7 @@ func Config(in Input) (map[string]any, error) {
 		"version": "1",
 		"script":  seg.Workload.Script,
 		"global":  global,
-		"drivers": map[string]any{DriverKey(in.Workload.StroppyImage): driver},
+		"drivers": map[string]any{driverKey: driver},
 		"run":     run,
 	}
 	if len(params) > 0 {
@@ -207,10 +195,13 @@ func RunObject(r spec.RunParams) (map[string]any, error) {
 	if r.QueryTimeout > 0 {
 		out["queryTimeout"] = r.QueryTimeout.Std().String()
 	}
+	if r.DrainTimeout != "" {
+		out["drainTimeout"] = r.DrainTimeout
+	}
 	return out, nil
 }
 
-// Driver renders drivers.0: type and URL from the workload, every other key
+// Driver renders drivers.default: type and URL from the workload, every other key
 // as the server rendered it (already lowerCamel), plus caCertFile when the
 // workload ships a CA.
 //

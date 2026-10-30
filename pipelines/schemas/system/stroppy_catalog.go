@@ -55,10 +55,10 @@ func StroppyCatalog() *schemapb.Schema {
 						Desc("Stroppy build: a release (6.0.0) or a nightly of one commit (nightly-<sha>). 6.0.0 is the minimum.").
 						Pattern(workload.VersionPattern).MaxLen(64).Required().
 						Rules(schemapb.Rule(`!this.matches("^[0-5]\\.")`, "stroppy releases before 6.0.0 are not supported").ID("min-v6")),
-					// doc: ghcr.io/stroppy-io/stroppy tags look like v6.0.0.62
+					// doc: ghcr.io/stroppy-io/stroppy tags look like v6.3.0.68
 					// (release + build number); nightlies are built by the platform.
 					schemapb.Str("image").Title("Image").
-						Desc("Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.0.0.62.").
+						Desc("Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.3.0.68.").
 						MinLen(1).MaxLen(512).Required(),
 					schemapb.Bool("baseline").Title("Has baseline").
 						Desc("The build ships `stroppy baseline` (6.0.0+); lets the workload form offer the runner self-check.").

@@ -1,6 +1,40 @@
 // GENERATED from schemapb schema workload.segment@1 — do not edit.
 // One stroppy load segment: workload, typed parameters, scenario, steps and thresholds.
 
+/** variant banking of workload */
+export interface WorkloadSegment1WorkloadBanking {
+  script: "banking";
+  /** Accounts. Bank accounts (accounts); verify expects the balances to sum to accounts × 1000. */
+  accounts?: number | string;
+  /** Retry attempts. Maximum attempts of one transaction before the iteration fails (retryAttempts). */
+  retry_attempts?: number | string;
+  /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
+  tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile). */
+  sql_file?: string | null;
+}
+
+/** variant banking/inject of workload */
+export interface WorkloadSegment1WorkloadBankingInject {
+  script: "banking/inject";
+  /** Accounts. Bank accounts (accounts); verify expects the balances to sum to accounts × 1000. */
+  accounts?: number | string;
+  /** Retry attempts. Maximum attempts of one transaction before the iteration fails (retryAttempts). */
+  retry_attempts?: number | string;
+  /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
+  tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile). */
+  sql_file?: string | null;
+  /** Fault point. Macavity fault point the injector arms (injectPoint). */
+  inject_point?: "before_commit" | "before_abort" | "executor_start" | "executor_end";
+  /** Fault action. What the fault does (injectAction): error fails the commit and is retried; crash kills the backend and the server reinitializes. */
+  inject_action?: "error" | "crash";
+  /** Fault every N transfers. Arm the injector every Nth transfer (injectEvery); 0 disables injection. */
+  inject_every?: number | string;
+  /** Fault occurrence. Which matching hit fires once armed (injectOccurrence). */
+  inject_occurrence?: number | string;
+}
+
 /** variant baseline of workload */
 export interface WorkloadSegment1WorkloadBaseline {
   script: "baseline";
@@ -37,7 +71,7 @@ export interface WorkloadSegment1WorkloadTpcbProcs {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico. */
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile). */
   sql_file?: string | null;
 }
 
@@ -52,7 +86,7 @@ export interface WorkloadSegment1WorkloadTpcbTx {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico. */
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile). */
   sql_file?: string | null;
 }
 
@@ -75,7 +109,13 @@ export interface WorkloadSegment1WorkloadTpccProcs {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes. */
+  /** Spread warehouses. Pick a home warehouse uniformly for every transaction (spreadWarehouses) instead of a fixed one per terminal; not fixed-terminal TPC-C. */
+  spread_warehouses?: boolean;
+  /** Warm-up traffic. Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none. */
+  warmup?: string | null;
+  /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
+  sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect. */
   sql_file?: string | null;
 }
 
@@ -98,7 +138,13 @@ export interface WorkloadSegment1WorkloadTpccTx {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes. */
+  /** Spread warehouses. Pick a home warehouse uniformly for every transaction (spreadWarehouses) instead of a fixed one per terminal; not fixed-terminal TPC-C. */
+  spread_warehouses?: boolean;
+  /** Warm-up traffic. Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none. */
+  warmup?: string | null;
+  /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
+  sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;
+  /** SQL file. SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect. */
   sql_file?: string | null;
 }
 
@@ -154,6 +200,8 @@ export interface WorkloadSegment1Run {
   iterations?: number | string | null;
   /** Query timeout. Per-statement deadline (queryTimeout); 0 disables it. */
   query_timeout?: string;
+  /** Drain timeout. Grace for in-flight iterations after a constant-vus duration (drainTimeout): a duration like 30s, or none to wait without a bound. Unset keeps Stroppy's 30s. */
+  drain_timeout?: string | null;
 }
 
 /** object thresholds */
@@ -169,7 +217,7 @@ export interface WorkloadSegment1 {
   /** Name. Segment id inside the workload; used as the phase label of the run and as a metric label. */
   name: string;
   /** Workload. Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`. */
-  workload: WorkloadSegment1WorkloadBaseline | WorkloadSegment1WorkloadExecuteSql | WorkloadSegment1WorkloadSimple | WorkloadSegment1WorkloadTpcbProcs | WorkloadSegment1WorkloadTpcbTx | WorkloadSegment1WorkloadTpccProcs | WorkloadSegment1WorkloadTpccTx | WorkloadSegment1WorkloadTpcds | WorkloadSegment1WorkloadTpchTx;
+  workload: WorkloadSegment1WorkloadBanking | WorkloadSegment1WorkloadBankingInject | WorkloadSegment1WorkloadBaseline | WorkloadSegment1WorkloadExecuteSql | WorkloadSegment1WorkloadSimple | WorkloadSegment1WorkloadTpcbProcs | WorkloadSegment1WorkloadTpcbTx | WorkloadSegment1WorkloadTpccProcs | WorkloadSegment1WorkloadTpccTx | WorkloadSegment1WorkloadTpcds | WorkloadSegment1WorkloadTpchTx;
   /** Scenario. Load shape of the segment. */
   run: WorkloadSegment1Run;
   /** Only these steps. Run only the listed stroppy steps (--steps); empty = all steps. */

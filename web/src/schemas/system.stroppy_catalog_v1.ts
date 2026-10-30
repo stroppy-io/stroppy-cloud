@@ -51,7 +51,7 @@ export interface SystemStroppyCatalog1ItemItem {
 export interface SystemStroppyCatalog1Item {
   /** Version. Stroppy build: a release (6.0.0) or a nightly of one commit (nightly-<sha>). 6.0.0 is the minimum. */
   version: string;
-  /** Image. Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.0.0.62. */
+  /** Image. Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.3.0.68. */
   image: string;
   /** Has baseline. The build ships `stroppy baseline` (6.0.0+); lets the workload form offer the runner self-check. */
   baseline?: boolean;

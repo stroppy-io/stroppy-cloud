@@ -60,7 +60,7 @@
                     "title": "Version"
                   },
                   {
-                    "description": "Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.0.0.62.",
+                    "description": "Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.3.0.68.",
                     "name": "image",
                     "required": true,
                     "string": {

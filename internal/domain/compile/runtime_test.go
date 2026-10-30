@@ -29,7 +29,7 @@ func runtimeInput(t *testing.T) (*schemas.Registry, compile.Input) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wl, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":1},"run":{"duration":"1m","vus":1}}`)}})
+	wl, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":1},"run":{"duration":"1m","vus":1}}`)}})
 	if err != nil {
 		t.Fatal(err)
 	}

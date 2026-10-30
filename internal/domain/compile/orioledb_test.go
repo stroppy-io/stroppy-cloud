@@ -44,7 +44,7 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 					t.Fatal(err)
 				}
 				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{
-					StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg,
+					StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg,
 					Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)},
 				})
 				if err != nil {

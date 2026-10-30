@@ -216,7 +216,7 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		var params map[string]any
 		_ = json.Unmarshal(dbSpec.Params, &params) //nolint:errcheck // baked by DeriveDatabase
 		for i, seg := range res.WorkloadDerived.Segments {
-			if why := dbkind.UnsupportedScript(dbSpec.Kind, dbSpec.Version, params, seg.Script, wlSpec.StroppyVersion); why != "" {
+			if why := dbkind.UnsupportedScript(dbSpec.Kind, dbSpec.Version, params, seg.Script); why != "" {
 				issue(fmt.Sprintf("workload.segments[%d].workload.script", i), "script_unsupported", "ERROR", why, nil)
 			}
 		}

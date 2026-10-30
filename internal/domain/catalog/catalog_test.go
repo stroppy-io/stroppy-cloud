@@ -88,7 +88,11 @@ func TestStroppyScriptMatrix(t *testing.T) {
 		{"tpcc/tx", catalog.ProtoPicodata, true},
 		{"tpcc/procs", catalog.ProtoPicodata, false},
 		{"tpcc/procs", catalog.ProtoYDBGrpc, false},
-		{"tpcb/procs", catalog.ProtoCockroach, false}, // stroppy 6.2 (default): stroppy-io/stroppy#229
+		{"tpcb/procs", catalog.ProtoCockroach, true},
+		{"banking", catalog.ProtoPicodata, true},
+		{"banking", catalog.ProtoCockroach, false},
+		{"banking/inject", catalog.ProtoPg, true},
+		{"banking/inject", catalog.ProtoMySQL, false},
 		{"tpch/tx", catalog.ProtoCockroach, false},
 		{"tpcds", catalog.ProtoCockroach, false},
 		{"tpch/tx", catalog.ProtoYDBGrpcs, true},

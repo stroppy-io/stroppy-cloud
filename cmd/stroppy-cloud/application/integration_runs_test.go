@@ -54,7 +54,7 @@ func runFixtureWith(t *testing.T, e *e2e, workload map[string]any, keep string) 
 	}
 	e.want(e.req(http.MethodPost, base+"/databases", map[string]any{"name": "pg-single", "kind": "postgres", "version": "17", "params": map[string]any{"version": "17"}}, tok), http.StatusCreated, &db)
 	wlBody := map[string]any{
-		"name": "tpcc", "stroppy_version": "6.0.0", "protocol": "pg",
+		"name": "tpcc", "stroppy_version": "6.3.0", "protocol": "pg",
 		"segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "1m"}}},
 	}
 	for k, v := range workload {

@@ -34,7 +34,7 @@ func TestConnectionOptionsReachDSNAndNativeDriver(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	c := compilation{in: Input{Catalog: cat, Workload: library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg}, WorkloadBaked: json.RawMessage(`{"connection":{"kind":"pg","sslmode":"require","application_name":"contract","query_exec_mode":"exec"},"driver":{"postgres":{"statement_cache_capacity":0}},"segments":[]}`)}}
+	c := compilation{in: Input{Catalog: cat, Workload: library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg}, WorkloadBaked: json.RawMessage(`{"connection":{"kind":"pg","sslmode":"require","application_name":"contract","query_exec_mode":"exec"},"driver":{"postgres":{"statement_cache_capacity":0}},"segments":[]}`)}}
 	if err := c.workload(); err != nil {
 		t.Fatal(err)
 	}

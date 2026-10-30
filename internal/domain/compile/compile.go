@@ -326,13 +326,9 @@ func (c *compilation) workload() error {
 	if err := json.Unmarshal(c.in.WorkloadBaked, &baked); err != nil {
 		return errs.Wrap(errs.CodeInvalid, "workload value", err)
 	}
-	// Stroppy 6.2 picks CockroachDB's own SQL from the crdb driver type
-	// (--sql-file became a path on disk); older releases select the
-	// embedded dialect by its file name.
-	crdbDriver := c.in.Workload.Protocol == catalog.ProtoCockroach && stroppyAtLeast(ver.Version, 6, 2)
-	if c.in.Workload.Protocol == catalog.ProtoCockroach && !crdbDriver {
+	if c.in.Workload.Protocol == catalog.ProtoCockroach {
 		for i, raw := range baked.Segments {
-			segment, err := cockroachSQL(raw, c.in.Database.Version)
+			segment, err := cockroach24Dialect(raw, c.in.Database.Version)
 			if err != nil {
 				return errs.Wrap(errs.CodeInvalid, "cockroach workload segment", err)
 			}
@@ -362,7 +358,7 @@ func (c *compilation) workload() error {
 	if err != nil {
 		return err
 	}
-	if crdbDriver {
+	if c.in.Workload.Protocol == catalog.ProtoCockroach {
 		driverType = "crdb"
 	}
 	driver := map[string]any{}
@@ -391,7 +387,7 @@ func (c *compilation) workload() error {
 		}
 		driver[camel(k)] = v
 	}
-	url = c.tuneDriver(driver, driverType, url)
+	c.tuneDriver(driver, driverType)
 	w := spec.Workload{RunnerRole: topology.RoleRunner, StroppyImage: image, DriverType: driverType, URL: url, Driver: driver, Segments: baked.Segments}
 	if ca, ok := baked.Connection["ca_cert"].(string); ok && ca != "" {
 		w.CACert = ca

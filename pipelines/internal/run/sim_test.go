@@ -67,7 +67,7 @@ func simRun() spec.Run {
 		HostPrep: []spec.HostPrep{{Role: "db", Kind: spec.HostPrepSysctl, Content: "vm.swappiness=1\n"}},
 		Flows:    []spec.Flow{{FromRole: "runner", ToRole: "db", Protocol: "tcp", Port: 5432}},
 		Workload: spec.Workload{
-			RunnerRole: "runner", StroppyImage: "ghcr.io/stroppy-io/stroppy:v6.0.0.62",
+			RunnerRole: "runner", StroppyImage: "ghcr.io/stroppy-io/stroppy:v6.3.0.68",
 			DriverType: "postgres", URL: "postgres://postgres:x@${ip:role:db}:5432/postgres?sslmode=disable",
 			Segments: []json.RawMessage{
 				json.RawMessage(`{"name":"load","workload":{"script":"tpcc/tx","scale_factor":2},"run":{"executor":"constant-vus","vus":4,"duration":"30s"}}`),

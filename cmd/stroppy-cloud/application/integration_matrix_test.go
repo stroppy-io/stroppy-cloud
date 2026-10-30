@@ -161,7 +161,7 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 		}
 	}
 	for _, c := range cases {
-		segments := runnable(c.kind, c.version, c.params, c.stroppy, c.segments)
+		segments := runnable(c.kind, c.version, c.params, c.segments)
 		if len(segments) == 0 {
 			continue
 		}
@@ -301,16 +301,16 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 
 // runnable drops the segments the database version refuses (dbkind
 // UnsupportedScript); a refused smoke segment becomes a short TPC-B.
-func runnable(kind, version string, params map[string]any, stroppy string, segments []any) []any {
+func runnable(kind, version string, params map[string]any, segments []any) []any {
 	out := make([]any, 0, len(segments))
 	for _, s := range segments {
 		seg := s.(map[string]any)
 		script, _ := seg["workload"].(map[string]any)["script"].(string)
-		if dbkind.UnsupportedScript(catalog.DatabaseKind(kind), version, params, script, stroppy) == "" {
+		if dbkind.UnsupportedScript(catalog.DatabaseKind(kind), version, params, script) == "" {
 			out = append(out, s)
 			continue
 		}
-		if seg["name"] == "smoke" && dbkind.UnsupportedScript(catalog.DatabaseKind(kind), version, params, "tpcb/tx", stroppy) == "" {
+		if seg["name"] == "smoke" && dbkind.UnsupportedScript(catalog.DatabaseKind(kind), version, params, "tpcb/tx") == "" {
 			out = append(out, map[string]any{"name": "smoke", "workload": map[string]any{"script": "tpcb/tx", "scale_factor": 1}, "run": map[string]any{"executor": "shared-iterations", "vus": 2, "iterations": 100}})
 		}
 	}

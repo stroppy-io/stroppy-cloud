@@ -33,7 +33,7 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 		{catalog.ProtoPg, "postgres://test:example@db.internal:5432/bench", "postgres"},
 		{catalog.ProtoMySQL, "test:example@tcp(db.internal:3306)/bench", "mysql"},
 		{catalog.ProtoPicodata, "postgres://admin:example@db.internal:4327", "picodata"},
-		{catalog.ProtoCockroach, "postgres://test:example@db.internal:26257/bench", "postgres"},
+		{catalog.ProtoCockroach, "postgres://test:example@db.internal:26257/bench", "crdb"},
 		{catalog.ProtoYDBGrpc, "grpc://db.internal:2136/Root/bench", "ydb"},
 		{catalog.ProtoYDBGrpcs, "grpcs://db.internal:2135/Root/bench", "ydb"},
 	}
@@ -44,7 +44,7 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: tc.protocol, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+			workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: tc.protocol, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 			if err != nil {
 				t.Fatal(err)
 			}

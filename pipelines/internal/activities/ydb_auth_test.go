@@ -16,7 +16,7 @@ import (
 func TestYDBServiceAccountFileIsPrivateAndRemoved(t *testing.T) {
 	dir := t.TempDir()
 	config := filepath.Join(dir, "stroppy-config.json")
-	original := []byte(`{"drivers":{"0":{"driverType":"ydb"}}}`)
+	original := []byte(`{"drivers":{"default":{"driverType":"ydb"}}}`)
 	require.NoError(t, os.WriteFile(config, original, 0600))
 	key := `{"private_key":"test-secret","service_account_id":"sa","id":"key"}`
 	input := []string{"run", "-f", "/workspace/stroppy-config.json"}
@@ -34,7 +34,7 @@ func TestYDBServiceAccountFileIsPrivateAndRemoved(t *testing.T) {
 		Drivers map[string]struct{ ServiceAccountKeyFile string }
 	}
 	require.NoError(t, json.Unmarshal(raw, &cfg))
-	keyPath := filepath.Join(dir, filepath.Base(cfg.Drivers["0"].ServiceAccountKeyFile))
+	keyPath := filepath.Join(dir, filepath.Base(cfg.Drivers["default"].ServiceAccountKeyFile))
 	for _, filename := range []string{runtimePath, keyPath} {
 		info, err := os.Stat(filename)
 		require.NoError(t, err)

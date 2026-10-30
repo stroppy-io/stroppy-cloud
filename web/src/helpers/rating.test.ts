@@ -11,6 +11,8 @@ describe('scenarioLabel', () => {
     ['en', 'tpcc/procs', 'TPC-C · stored procedures'],
     ['ru', 'tpcc/procs', 'TPC-C · хранимые процедуры'],
     ['en', 'tpcds', 'TPC-DS'],
+    ['en', 'banking', 'Bank transfers'],
+    ['ru', 'banking/inject', 'Банковские переводы · внедрение сбоев'],
     ['en', 'tpcb/tx+ycsb/run', 'TPC-B + YCSB · run'],
     ['en', '', '—'],
   ])('%s: %s → %s', async (lng, scenario, want) => {

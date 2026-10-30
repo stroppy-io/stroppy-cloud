@@ -14,6 +14,18 @@ const SCENARIOS: Record<string, string> = {
   ycsb: 'YCSB',
 }
 
+/** A family named in words rather than by a benchmark's own name. */
+function familyName(t: TFunction, family: string): string {
+  if (family === 'banking') return t('common.scenario.banking')
+  return SCENARIOS[family] ?? family
+}
+
+function variantName(t: TFunction, variant: string): string {
+  if (variant === 'procs') return t('common.scenario.procs')
+  if (variant === 'inject') return t('common.scenario.inject')
+  return variant
+}
+
 /**
  * A scenario is the workload's scripts: "tpcc/tx" → "TPC-C", "tpcc/procs" →
  * "TPC-C · stored procedures"; several scripts → "TPC-C + YCSB".
@@ -24,9 +36,9 @@ export function scenarioLabel(t: TFunction, scenario: string): string {
     .split('+')
     .map((script) => {
       const [family = '', variant] = script.split('/')
-      const name = SCENARIOS[family] ?? family
+      const name = familyName(t, family)
       if (!variant || variant === 'tx') return name
-      return `${name} · ${variant === 'procs' ? t('common.scenario.procs') : variant}`
+      return `${name} · ${variantName(t, variant)}`
     })
     .join(' + ')
 }

@@ -40,7 +40,7 @@ func TestDistributedCatalogRuntimeContracts(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: db.Protocols[0], Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+					workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: db.Protocols[0], Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 					if err != nil {
 						t.Fatal(err)
 					}

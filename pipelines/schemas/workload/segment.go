@@ -27,23 +27,36 @@ const stepPattern = `^[a-z][a-z0-9_]*$`
 // doc: stroppy `run <workload> --help` — "--name VALUE"
 const flagPattern = `^[a-z][a-z0-9-]*$`
 
-// filePattern is a stroppy preset dialect id (tpcc/pico).
+// filePattern is a SQL file path on the runner.
 const filePattern = `^[A-Za-z0-9._/-]+$`
 
-// Scripts stroppy 6.0.0 registers (`stroppy probe -o json` → workloads[].name).
-// The catalog (system.stroppy_catalog@1) may add more for newer builds; those
-// pass their parameters through extra_params.
+// goDuration is a Go duration string (time.ParseDuration): 30s, 1m30s.
+const goDuration = `([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+`
+
+const goDurationPattern = `^` + goDuration + `$`
+
+// Scripts stroppy 6.3.0 registers (`stroppy probe -o json` → workloads[].name).
 const (
-	ScriptTpccTx     schemapb.VariantKey = "tpcc/tx"
-	ScriptTpccProcs  schemapb.VariantKey = "tpcc/procs"
-	ScriptTpcbTx     schemapb.VariantKey = "tpcb/tx"
-	ScriptTpcbProcs  schemapb.VariantKey = "tpcb/procs"
-	ScriptTpchTx     schemapb.VariantKey = "tpch/tx"
-	ScriptTpcds      schemapb.VariantKey = "tpcds"
-	ScriptSimple     schemapb.VariantKey = "simple"
-	ScriptBaseline   schemapb.VariantKey = "baseline"
-	ScriptExecuteSQL schemapb.VariantKey = "execute_sql"
+	ScriptTpccTx        schemapb.VariantKey = "tpcc/tx"
+	ScriptTpccProcs     schemapb.VariantKey = "tpcc/procs"
+	ScriptTpcbTx        schemapb.VariantKey = "tpcb/tx"
+	ScriptTpcbProcs     schemapb.VariantKey = "tpcb/procs"
+	ScriptTpchTx        schemapb.VariantKey = "tpch/tx"
+	ScriptTpcds         schemapb.VariantKey = "tpcds"
+	ScriptSimple        schemapb.VariantKey = "simple"
+	ScriptBaseline      schemapb.VariantKey = "baseline"
+	ScriptExecuteSQL    schemapb.VariantKey = "execute_sql"
+	ScriptBanking       schemapb.VariantKey = "banking"
+	ScriptBankingInject schemapb.VariantKey = "banking/inject"
 )
+
+// Scripts are every script the segment schema accepts.
+func Scripts() []schemapb.VariantKey {
+	return []schemapb.VariantKey{
+		ScriptTpccTx, ScriptTpccProcs, ScriptTpcbTx, ScriptTpcbProcs, ScriptTpchTx, ScriptTpcds,
+		ScriptSimple, ScriptBaseline, ScriptExecuteSQL, ScriptBanking, ScriptBankingInject,
+	}
+}
 
 // Executors stroppy 6 knows (pkg/bench/runtime.go).
 const (
@@ -109,6 +122,22 @@ func sqlFile(desc string) *schemapb.StrB {
 		Desc(desc).Pattern(filePattern).MaxLen(256).Nullable()
 }
 
+// doc: stroppy 6.3 workloads/tpcc/tpcc.go — sql-dialect, the embedded
+// dialects; empty selects by driver.
+func sqlDialect() *schemapb.ChoiceB {
+	return schemapb.Choice("sql_dialect").Title("SQL dialect").Group("SQL").
+		Desc("Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file.").
+		Opt(schemapb.StrV("pg"), "PostgreSQL").
+		Opt(schemapb.StrV("mysql"), "MySQL").
+		Opt(schemapb.StrV("pico"), "Picodata").
+		Opt(schemapb.StrV("ydb"), "YDB").
+		Opt(schemapb.StrV("ydb_no_indexes"), "YDB without secondary indexes").
+		Opt(schemapb.StrV("tidb"), "TiDB").
+		Opt(schemapb.StrV("crdb"), "CockroachDB").
+		Opt(schemapb.StrV("crdb24"), "CockroachDB 24.1").
+		Nullable()
+}
+
 // doc: probe — ydbStoreMode string default "column"
 func ydbStoreMode() *schemapb.ChoiceB {
 	return schemapb.Choice("ydb_store_mode").Title("YDB store mode").Group("Load").
@@ -138,7 +167,18 @@ func tpccFields() []schemapb.FieldDef {
 			Default(false),
 		retryAttempts(),
 		txIsolation(),
-		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes."),
+		// doc: probe — tpcc spreadWarehouses bool default false
+		schemapb.Bool("spread_warehouses").Title("Spread warehouses").Group("Transactions").
+			Desc("Pick a home warehouse uniformly for every transaction (spreadWarehouses) instead of a fixed one per terminal; not fixed-terminal TPC-C.").
+			Default(false),
+		// doc: probe — tpcc warmup duration default 0s. A string: Stroppy reads
+		// a config duration as a Go duration string, and Bake would turn a
+		// schema duration into nanoseconds.
+		schemapb.Str("warmup").Title("Warm-up traffic").Group("Transactions").
+			Desc("Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none.").
+			Pattern(goDurationPattern).MaxLen(32).Nullable(),
+		sqlDialect(),
+		sqlFile("SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect."),
 	}
 }
 
@@ -152,7 +192,7 @@ func tpcbFields() []schemapb.FieldDef {
 		loadWorkers(1),
 		retryAttempts(),
 		txIsolation(),
-		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico."),
+		sqlFile("SQL file on the runner replacing the dialect (sqlFile)."),
 	}
 }
 
@@ -205,6 +245,45 @@ func baselineFields() []schemapb.FieldDef {
 	}
 }
 
+// bankingFields are the parameters of banking.
+// doc: probe — banking params; stroppy workloads/banking/README.md.
+func bankingFields() []schemapb.FieldDef {
+	return []schemapb.FieldDef{
+		schemapb.Int64("accounts").Title("Accounts").Group("Data").
+			Desc("Bank accounts (accounts); verify expects the balances to sum to accounts × 1000.").
+			Gte(2).Lte(100000000).Default(100),
+		retryAttempts(),
+		txIsolation(),
+		sqlFile("SQL file on the runner replacing the dialect (sqlFile)."),
+	}
+}
+
+// bankingInjectFields are the parameters of banking/inject: banking plus a
+// Macavity fault armed inside the transfers.
+// doc: probe — banking/inject params; stroppy workloads/banking/README.md "Fault injection".
+func bankingInjectFields() []schemapb.FieldDef {
+	return append(bankingFields(),
+		schemapb.Choice("inject_point").Title("Fault point").Group("Faults").
+			Desc("Macavity fault point the injector arms (injectPoint).").
+			Opt(schemapb.StrV("before_commit"), "Before commit").
+			Opt(schemapb.StrV("before_abort"), "Before abort").
+			Opt(schemapb.StrV("executor_start"), "Executor start").
+			Opt(schemapb.StrV("executor_end"), "Executor end").
+			Default(schemapb.StrV("before_commit")),
+		schemapb.Choice("inject_action").Title("Fault action").Group("Faults").
+			Desc("What the fault does (injectAction): error fails the commit and is retried; crash kills the backend and the server reinitializes.").
+			Opt(schemapb.StrV("error"), "Error").
+			Opt(schemapb.StrV("crash"), "Crash").
+			Default(schemapb.StrV("error")),
+		schemapb.Int64("inject_every").Title("Fault every N transfers").Group("Faults").
+			Desc("Arm the injector every Nth transfer (injectEvery); 0 disables injection.").
+			Gte(0).Default(25),
+		schemapb.Int64("inject_occurrence").Title("Fault occurrence").Group("Faults").
+			Desc("Which matching hit fires once armed (injectOccurrence).").
+			Gte(1).Default(1),
+	)
+}
+
 // executeSQLFields are the parameters of execute_sql.
 // doc: probe — execute_sql params: sqlBody | sqlFile.
 func executeSQLFields() []schemapb.FieldDef {
@@ -244,6 +323,8 @@ func Segment() *schemapb.Schema {
 				VariantOf(ScriptSimple, strictVariant()).
 				VariantOf(ScriptBaseline, strictVariant(baselineFields()...)).
 				VariantOf(ScriptExecuteSQL, strictVariant(executeSQLFields()...)).
+				VariantOf(ScriptBanking, strictVariant(bankingFields()...)).
+				VariantOf(ScriptBankingInject, strictVariant(bankingInjectFields()...)).
 				Required(),
 
 			// doc: `stroppy run <workload> --help` "Run parameters"
@@ -265,6 +346,10 @@ func Segment() *schemapb.Schema {
 				schemapb.Duration("query_timeout").Title("Query timeout").
 					Desc("Per-statement deadline (queryTimeout); 0 disables it.").
 					Gte(0).Lte(time.Hour).Default(0),
+				// doc: probe — run drainTimeout string default "30s", "none" waits unbounded
+				schemapb.Str("drain_timeout").Title("Drain timeout").
+					Desc("Grace for in-flight iterations after a constant-vus duration (drainTimeout): a duration like 30s, or none to wait without a bound. Unset keeps Stroppy's 30s.").
+					Pattern(`^(none|`+goDuration+`)$`).MaxLen(32).Nullable(),
 			).Title("Scenario").Group("Scenario").
 				Desc("Load shape of the segment.").Strict().Required().
 				Rule(
@@ -341,6 +426,11 @@ func Segment() *schemapb.Schema {
 					`(("sql_body" in this.workload && this.workload.sql_body != null) != ("sql_file" in this.workload && this.workload.sql_file != null))`,
 				"execute_sql needs exactly one of sql_body or sql_file",
 			).ID("execute-sql-source"),
+			segmentRule(
+				`!("workload" in this) || !("sql_dialect" in this.workload) || this.workload.sql_dialect == null || `+
+					`!("sql_file" in this.workload) || this.workload.sql_file == null`,
+				"stroppy rejects sql_dialect together with sql_file",
+			).ID("sql-source-exclusive"),
 		).
 		MustBuild()
 }

@@ -170,7 +170,7 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   `${public_ip:<machine>}` — в env/cmd/files контейнеров и env workload.
   Неизвестное имя/роль — ошибка до деплоя.
 - Подключение к БД: `workload.url` RunSpec (с плейсхолдерами) + `driver_type`
-  + `driver` (lowerCamel-ключи `drivers.0` stroppy-config.json) — пайплайн
+  + `driver` (lowerCamel-ключи `drivers.default` stroppy-config.json) — пайплайн
   только пишет их в конфиг. Никакого env-моста: stroppy 6 типизирован.
 - Имена облачных ресурсов: `stroppy-<tenant>-<run8>-...`; агенты
   `<run8>-<machine>`. Сеть профиля YC — `<ProviderConfig>-net/-nat/-routes`.
@@ -260,12 +260,12 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
 чекаут `~/devel/github/stroppy-io/stroppy` (`stroppy probe -o json`,
 `stroppy run <workload> --help`, `stroppy help config-file|drivers|steps`).
 
-- Образ: `ghcr.io/stroppy-io/stroppy:v6.0.0.62` (тег = релиз + номер сборки),
+- Образ: `ghcr.io/stroppy-io/stroppy:v6.3.0.68` (тег = релиз + номер сборки),
   entrypoint `stroppy`, WORKDIR `/workspace`; контейнер на host-сети,
   директория сегмента примонтирована как `/workspace`.
 - Команда: `run -f /workspace/stroppy-config.json --log-mode production
   --log-level <lvl> [--<extra>=<v>…]`. Конфиг: `script`, `global{runId,
-  metadata, logger, exporter.otlpExport}`, `drivers.0`, `run{executor, vus,
+  metadata, logger, exporter.otlpExport}`, `drivers.default`, `run{executor, vus,
   duration|iterations, queryTimeout}`, `params{<lowerCamel>}`, `steps/noSteps`.
   Snake_case ключи схемы → lowerCamel (`scale_factor` → `scaleFactor`);
   `sql_file`/`schema_file` с именем файла из `files` → `/workspace/<name>`.

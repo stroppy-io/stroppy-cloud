@@ -8,7 +8,7 @@ import (
 
 // noopValidations are the steps that read back what the load wrote; the
 // noop driver and the pg-noop server store nothing, so they can only fail.
-var noopValidations = []string{"validate_population", "validate_answers"}
+var noopValidations = []string{"validate_population", "validate_answers", "verify"}
 
 // noopSteps skips the validation steps of a segment on the noop driver or
 // against pg-noop, unless the segment lists its steps itself.

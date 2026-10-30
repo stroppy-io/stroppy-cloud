@@ -8,7 +8,7 @@ import (
 
 func TestStroppy(t *testing.T) {
 	minimal := map[string]any{
-		"stroppy_version": "6.0.0",
+		"stroppy_version": "6.3.0",
 		"protocol":        "pg",
 		"segments":        []any{minimalSegment("load")},
 	}
@@ -36,7 +36,7 @@ func TestStroppy(t *testing.T) {
 	}
 
 	with := func(over map[string]any) map[string]any {
-		v := map[string]any{"stroppy_version": "6.0.0", "protocol": "pg", "segments": []any{minimalSegment("load")}}
+		v := map[string]any{"stroppy_version": "6.3.0", "protocol": "pg", "segments": []any{minimalSegment("load")}}
 		for k, val := range over {
 			v[k] = val
 		}

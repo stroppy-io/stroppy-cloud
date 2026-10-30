@@ -45,7 +45,7 @@ func TestCompileMySQLClusters(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: db.Protocols[0], Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+					wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: db.Protocols[0], Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -193,7 +193,7 @@ func TestGaleraProxyReaderOverride(t *testing.T) {
 				t.Fatalf("explicit reader policy lost: %v", cfg)
 			}
 			provider, _ := cat.Provider("yandex")
-			wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: "mysql", Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+			wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: "mysql", Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 			if err != nil {
 				t.Fatal(err)
 			}

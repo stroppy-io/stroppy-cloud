@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -31,6 +32,10 @@ func TestStroppyParameterContract(t *testing.T) {
 				Name, Scope, Config string
 				Default             any
 			}
+			Steps []struct {
+				Name     string
+				Measured bool
+			}
 		}
 	}
 	if err := json.Unmarshal(raw, &probe); err != nil {
@@ -53,6 +58,16 @@ func TestStroppyParameterContract(t *testing.T) {
 			schema, ok := variants[upstream.Name]
 			if !ok {
 				t.Fatal("executable workload missing from schema")
+			}
+			var steps []string
+			for _, s := range upstream.Steps {
+				steps = append(steps, s.Name)
+				if s.Measured && s.Name != workloadschema.MeasuredStep(upstream.Name) {
+					t.Errorf("measured step %s, schema says %s", s.Name, workloadschema.MeasuredStep(upstream.Name))
+				}
+			}
+			if !slices.Equal(steps, workloadschema.Steps(upstream.Name)) {
+				t.Errorf("steps %v, schema says %v", steps, workloadschema.Steps(upstream.Name))
 			}
 			fields := map[string]bool{}
 			for _, f := range schema.GetFields() {
@@ -146,13 +161,14 @@ func TestStroppyExecutableContract(t *testing.T) {
 	if bin == "" {
 		t.Skip("set STROPPY_CONTRACT_BINARY to run local Stroppy conformance")
 	}
-	for _, script := range []string{"simple", "execute_sql", "baseline", "tpcb/tx", "tpcb/procs", "tpcc/tx", "tpcc/procs", "tpch/tx", "tpcds"} {
+	for _, key := range workloadschema.Scripts() {
+		script := string(key)
 		t.Run(script, func(t *testing.T) {
 			wl := map[string]any{"script": script}
 			if script == "execute_sql" {
 				wl["sql_body"] = "SELECT 1"
 			}
-			seg := bakeSegment(t, map[string]any{"name": "contract", "workload": wl, "run": map[string]any{"executor": "shared-iterations", "iterations": int64(1)}, "steps": []any{"workload"}, "seed": uint64(42)})
+			seg := bakeSegment(t, map[string]any{"name": "contract", "workload": wl, "run": map[string]any{"executor": "shared-iterations", "iterations": int64(1)}, "steps": []any{workloadschema.MeasuredStep(script)}, "seed": uint64(42)})
 			cfg, err := MarshalConfig(Input{Segment: seg, Workload: spec.Workload{DriverType: "noop", URL: "noop://localhost"}})
 			if err != nil {
 				t.Fatal(err)
@@ -206,8 +222,11 @@ func TestNativeDriverFieldContract(t *testing.T) {
 				fields[f.GetName()] = true
 			}
 			if name == "DriverRunConfig" {
+				// The pipeline owns these: workload driver_type and url, and the
+				// managed-YDB key file it writes at run time.
 				fields["driverType"] = true
 				fields["url"] = true
+				fields["serviceAccountKeyFile"] = true
 			}
 			for key := range upstream.Defs[name].Properties {
 				if strings.Contains(key, "_") {

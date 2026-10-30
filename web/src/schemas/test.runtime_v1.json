@@ -1731,6 +1731,280 @@
           "oneOf": {
             "discriminator": "script",
             "variants": {
+              "banking": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "description": "Bank accounts (accounts); verify expects the balances to sum to accounts × 1000.",
+                    "group": "Data",
+                    "int64": {
+                      "default": "100",
+                      "gte": "2",
+                      "lte": "100000000"
+                    },
+                    "name": "accounts",
+                    "title": "Accounts"
+                  },
+                  {
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "name": "retry_attempts",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "Read uncommitted",
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          }
+                        },
+                        {
+                          "label": "Read committed",
+                          "value": {
+                            "stringValue": "read_committed"
+                          }
+                        },
+                        {
+                          "label": "Repeatable read",
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          }
+                        },
+                        {
+                          "label": "Serializable",
+                          "value": {
+                            "stringValue": "serializable"
+                          }
+                        },
+                        {
+                          "label": "Database default",
+                          "value": {
+                            "stringValue": "db_default"
+                          }
+                        },
+                        {
+                          "label": "Connection-level",
+                          "value": {
+                            "stringValue": "conn"
+                          }
+                        },
+                        {
+                          "label": "None (no BEGIN)",
+                          "value": {
+                            "stringValue": "none"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "description": "SQL file on the runner replacing the dialect (sqlFile).",
+                    "group": "SQL",
+                    "name": "sql_file",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "banking/inject": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "description": "Bank accounts (accounts); verify expects the balances to sum to accounts × 1000.",
+                    "group": "Data",
+                    "int64": {
+                      "default": "100",
+                      "gte": "2",
+                      "lte": "100000000"
+                    },
+                    "name": "accounts",
+                    "title": "Accounts"
+                  },
+                  {
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "name": "retry_attempts",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "Read uncommitted",
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          }
+                        },
+                        {
+                          "label": "Read committed",
+                          "value": {
+                            "stringValue": "read_committed"
+                          }
+                        },
+                        {
+                          "label": "Repeatable read",
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          }
+                        },
+                        {
+                          "label": "Serializable",
+                          "value": {
+                            "stringValue": "serializable"
+                          }
+                        },
+                        {
+                          "label": "Database default",
+                          "value": {
+                            "stringValue": "db_default"
+                          }
+                        },
+                        {
+                          "label": "Connection-level",
+                          "value": {
+                            "stringValue": "conn"
+                          }
+                        },
+                        {
+                          "label": "None (no BEGIN)",
+                          "value": {
+                            "stringValue": "none"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "description": "SQL file on the runner replacing the dialect (sqlFile).",
+                    "group": "SQL",
+                    "name": "sql_file",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "title": "SQL file"
+                  },
+                  {
+                    "choice": {
+                      "default": {
+                        "stringValue": "before_commit"
+                      },
+                      "options": [
+                        {
+                          "label": "Before commit",
+                          "value": {
+                            "stringValue": "before_commit"
+                          }
+                        },
+                        {
+                          "label": "Before abort",
+                          "value": {
+                            "stringValue": "before_abort"
+                          }
+                        },
+                        {
+                          "label": "Executor start",
+                          "value": {
+                            "stringValue": "executor_start"
+                          }
+                        },
+                        {
+                          "label": "Executor end",
+                          "value": {
+                            "stringValue": "executor_end"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Macavity fault point the injector arms (injectPoint).",
+                    "group": "Faults",
+                    "name": "inject_point",
+                    "title": "Fault point"
+                  },
+                  {
+                    "choice": {
+                      "default": {
+                        "stringValue": "error"
+                      },
+                      "options": [
+                        {
+                          "label": "Error",
+                          "value": {
+                            "stringValue": "error"
+                          }
+                        },
+                        {
+                          "label": "Crash",
+                          "value": {
+                            "stringValue": "crash"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "What the fault does (injectAction): error fails the commit and is retried; crash kills the backend and the server reinitializes.",
+                    "group": "Faults",
+                    "name": "inject_action",
+                    "title": "Fault action"
+                  },
+                  {
+                    "description": "Arm the injector every Nth transfer (injectEvery); 0 disables injection.",
+                    "group": "Faults",
+                    "int64": {
+                      "default": "25",
+                      "gte": "0"
+                    },
+                    "name": "inject_every",
+                    "title": "Fault every N transfers"
+                  },
+                  {
+                    "description": "Which matching hit fires once armed (injectOccurrence).",
+                    "group": "Faults",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1"
+                    },
+                    "name": "inject_occurrence",
+                    "title": "Fault occurrence"
+                  }
+                ],
+                "strict": true
+              },
               "baseline": {
                 "fields": [
                   {
@@ -1950,7 +2224,7 @@
                     "title": "Transaction isolation"
                   },
                   {
-                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico.",
+                    "description": "SQL file on the runner replacing the dialect (sqlFile).",
                     "group": "SQL",
                     "name": "sql_file",
                     "nullable": true,
@@ -2057,7 +2331,7 @@
                     "title": "Transaction isolation"
                   },
                   {
-                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico.",
+                    "description": "SQL file on the runner replacing the dialect (sqlFile).",
                     "group": "SQL",
                     "name": "sql_file",
                     "nullable": true,
@@ -2201,7 +2475,86 @@
                     "title": "Transaction isolation"
                   },
                   {
-                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes.",
+                    "bool": {
+                      "default": false
+                    },
+                    "description": "Pick a home warehouse uniformly for every transaction (spreadWarehouses) instead of a fixed one per terminal; not fixed-terminal TPC-C.",
+                    "group": "Transactions",
+                    "name": "spread_warehouses",
+                    "title": "Spread warehouses"
+                  },
+                  {
+                    "description": "Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none.",
+                    "group": "Transactions",
+                    "name": "warmup",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "32",
+                      "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+                    },
+                    "title": "Warm-up traffic"
+                  },
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "PostgreSQL",
+                          "value": {
+                            "stringValue": "pg"
+                          }
+                        },
+                        {
+                          "label": "MySQL",
+                          "value": {
+                            "stringValue": "mysql"
+                          }
+                        },
+                        {
+                          "label": "Picodata",
+                          "value": {
+                            "stringValue": "pico"
+                          }
+                        },
+                        {
+                          "label": "YDB",
+                          "value": {
+                            "stringValue": "ydb"
+                          }
+                        },
+                        {
+                          "label": "YDB without secondary indexes",
+                          "value": {
+                            "stringValue": "ydb_no_indexes"
+                          }
+                        },
+                        {
+                          "label": "TiDB",
+                          "value": {
+                            "stringValue": "tidb"
+                          }
+                        },
+                        {
+                          "label": "CockroachDB",
+                          "value": {
+                            "stringValue": "crdb"
+                          }
+                        },
+                        {
+                          "label": "CockroachDB 24.1",
+                          "value": {
+                            "stringValue": "crdb24"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file.",
+                    "group": "SQL",
+                    "name": "sql_dialect",
+                    "nullable": true,
+                    "title": "SQL dialect"
+                  },
+                  {
+                    "description": "SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect.",
                     "group": "SQL",
                     "name": "sql_file",
                     "nullable": true,
@@ -2345,7 +2698,86 @@
                     "title": "Transaction isolation"
                   },
                   {
-                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes.",
+                    "bool": {
+                      "default": false
+                    },
+                    "description": "Pick a home warehouse uniformly for every transaction (spreadWarehouses) instead of a fixed one per terminal; not fixed-terminal TPC-C.",
+                    "group": "Transactions",
+                    "name": "spread_warehouses",
+                    "title": "Spread warehouses"
+                  },
+                  {
+                    "description": "Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none.",
+                    "group": "Transactions",
+                    "name": "warmup",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "32",
+                      "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+                    },
+                    "title": "Warm-up traffic"
+                  },
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "PostgreSQL",
+                          "value": {
+                            "stringValue": "pg"
+                          }
+                        },
+                        {
+                          "label": "MySQL",
+                          "value": {
+                            "stringValue": "mysql"
+                          }
+                        },
+                        {
+                          "label": "Picodata",
+                          "value": {
+                            "stringValue": "pico"
+                          }
+                        },
+                        {
+                          "label": "YDB",
+                          "value": {
+                            "stringValue": "ydb"
+                          }
+                        },
+                        {
+                          "label": "YDB without secondary indexes",
+                          "value": {
+                            "stringValue": "ydb_no_indexes"
+                          }
+                        },
+                        {
+                          "label": "TiDB",
+                          "value": {
+                            "stringValue": "tidb"
+                          }
+                        },
+                        {
+                          "label": "CockroachDB",
+                          "value": {
+                            "stringValue": "crdb"
+                          }
+                        },
+                        {
+                          "label": "CockroachDB 24.1",
+                          "value": {
+                            "stringValue": "crdb24"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file.",
+                    "group": "SQL",
+                    "name": "sql_dialect",
+                    "nullable": true,
+                    "title": "SQL dialect"
+                  },
+                  {
+                    "description": "SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect.",
                     "group": "SQL",
                     "name": "sql_file",
                     "nullable": true,
@@ -2636,6 +3068,16 @@
                   },
                   "name": "query_timeout",
                   "title": "Query timeout"
+                },
+                {
+                  "description": "Grace for in-flight iterations after a constant-vus duration (drainTimeout): a duration like 30s, or none to wait without a bound. Unset keeps Stroppy's 30s.",
+                  "name": "drain_timeout",
+                  "nullable": true,
+                  "string": {
+                    "maxLen": "32",
+                    "pattern": "^(none|([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+)$"
+                  },
+                  "title": "Drain timeout"
                 }
               ],
               "rules": [
@@ -2835,7 +3277,7 @@
       },
       "rules": [
         {
-          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
+          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"validate_source\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"validate_source\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"banking\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))) \u0026\u0026 (s.workload.script != \"banking/inject\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))))",
           "id": "known-workload-steps",
           "message": "step must be an executable Stroppy step of the selected workload"
         },
@@ -2848,6 +3290,11 @@
           "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload \u0026\u0026 s.workload.sql_body != null) != (\"sql_file\" in s.workload \u0026\u0026 s.workload.sql_file != null)))",
           "id": "execute-sql-source",
           "message": "execute_sql needs exactly one of sql_body or sql_file"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"sql_dialect\" in s.workload) || s.workload.sql_dialect == null || !(\"sql_file\" in s.workload) || s.workload.sql_file == null)",
+          "id": "sql-source-exclusive",
+          "message": "stroppy rejects sql_dialect together with sql_file"
         }
       ],
       "strict": true

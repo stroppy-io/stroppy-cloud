@@ -52,7 +52,7 @@ def main():
                 raise SystemExit(f"{name} differs from local Stroppy; inspect the change before --refresh")
     env = dict(os.environ, STROPPY_CONTRACT_BINARY=str(binary))
     subprocess.run(
-        ["go", "test", "./spec", "./stroppycfg", "./internal/activities", "./internal/run", "./internal/suite", "-count=1"],
+        ["go", "test", "./spec", "./stroppycfg", "./internal/activities", "./internal/run", "-count=1"],
         cwd=ROOT / "pipelines", env=env, check=True, timeout=600,
     )
 

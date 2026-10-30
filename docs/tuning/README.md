@@ -100,11 +100,9 @@ stroppy: по соединению на каждого виртуального 
 `database/sql` — два простаивающих: пул зависел от машины генератора, и 256
 VU на 16 соединениях runner'а L давали потолок 16 / латентность транзакции.
 
-- PostgreSQL, OrioleDB, Picodata, pg-noop: `pool.maxConns = minConns`;
-- MySQL, MariaDB, YDB: `pool.maxOpenConns = maxIdleConns`;
-- CockroachDB: `pool_max_conns` и `pool_min_conns` в URL — stroppy 6.2.1
-  отбрасывает блоки `pool`/`postgres` для `driverType: crdb`
-  (stroppy-io/stroppy#234).
+- PostgreSQL, OrioleDB, Picodata, pg-noop, CockroachDB (pgx):
+  `pool.maxConns = minConns`;
+- MySQL, MariaDB, YDB: `pool.maxOpenConns = maxIdleConns`.
 
 Ключ пула, заданный в workload, побеждает. `stock` оставляет дефолты драйвера.
 Серверные лимиты соединений (`max_connections` PG, MySQL/MariaDB,

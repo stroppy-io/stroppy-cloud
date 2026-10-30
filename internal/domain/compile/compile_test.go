@@ -46,7 +46,7 @@ func TestCompileCatalogTopologies(t *testing.T) {
 					t.Fatalf("derive: %v", err)
 				}
 				proto := db.Protocols[0]
-				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: proto, Segments: []json.RawMessage{
+				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: proto, Segments: []json.RawMessage{
 					json.RawMessage(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":1},"run":{"vus":8,"duration":"1m"}}`),
 				}})
 				if err != nil {
@@ -166,7 +166,7 @@ func TestCompilePostgresConfigVersions(t *testing.T) {
 				if len(derived.EffectiveConfigs["db"][prefix+major]) == 0 {
 					t.Fatal("missing selected schema")
 				}
-				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 				if err != nil {
 					t.Fatal(err)
 				}
