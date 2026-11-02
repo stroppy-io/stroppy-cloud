@@ -86,6 +86,10 @@ func Proxysql2() *schemapb.Schema {
 			schemapb.Int64("connect_timeout_server").Title("Backend connect timeout").Group("MySQL").
 				Desc("Timeout of a single connection attempt to a backend.").
 				Unit("ms").Gte(100).Lte(600000).Default(3000),
+			// doc: .../mysql-variables/#mysql-query_retries_on_failure
+			schemapb.Int64("query_retries_on_failure").Title("Query retries on failure").Group("MySQL").
+				Desc("Times the proxy re-sends a query on another backend connection when one fails. A retried statement may already have run: a re-sent CREATE INDEX fails as a duplicate. 0 under tuning auto.").
+				Gte(0).Lte(1000).Default(1),
 			// doc: .../mysql-variables/#mysql-poll_timeout
 			schemapb.Int64("poll_timeout").Title("Poll timeout").Group("MySQL").
 				Desc("Event-loop poll timeout.").Unit("ms").Gte(10).Lte(60000).Default(2000),
@@ -312,6 +316,7 @@ mysql_variables=
     default_query_delay={{{values.default_query_delay}}}
     default_query_timeout={{{values.default_query_timeout}}}
     connect_timeout_server={{{values.connect_timeout_server}}}
+    query_retries_on_failure={{{values.query_retries_on_failure}}}
     server_version="{{{values.server_version}}}"
     default_schema="{{{values.default_schema}}}"
     default_charset="{{{values.default_charset}}}"

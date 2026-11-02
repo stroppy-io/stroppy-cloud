@@ -43,6 +43,8 @@ export interface CfgProxysqlCnf2 {
   default_query_timeout?: number | string;
   /** Backend connect timeout. Timeout of a single connection attempt to a backend. [ms] */
   connect_timeout_server?: number | string;
+  /** Query retries on failure. Times the proxy re-sends a query on another backend connection when one fails. A retried statement may already have run: a re-sent CREATE INDEX fails as a duplicate. 0 under tuning auto. */
+  query_retries_on_failure?: number | string;
   /** Poll timeout. Event-loop poll timeout. [ms] */
   poll_timeout?: number | string;
   /** Thread stack size. Stack size of each worker thread; not changeable at runtime. [B] */

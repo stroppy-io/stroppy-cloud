@@ -242,7 +242,7 @@ func TestGaleraAuto(t *testing.T) {
 	}
 	proxy := fileOf(out, "-proxysql", "/etc/proxysql.cnf")
 	// M proxy = 4 vCPU; backend max_connections 300 less headroom.
-	for _, want := range []string{"threads=4\n", "max_connections=2048\n", "max_connections=250,", "writer_is_also_reader=1", `server_version="11.4.0-MariaDB"`} {
+	for _, want := range []string{"threads=4\n", "max_connections=2048\n", "max_connections=250,", "writer_is_also_reader=1", `server_version="11.4.0-MariaDB"`, "query_retries_on_failure=0\n"} {
 		if !strings.Contains(proxy, want) {
 			t.Errorf("proxysql.cnf lacks %q:\n%s", want, proxy)
 		}

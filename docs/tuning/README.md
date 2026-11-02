@@ -203,6 +203,7 @@ VU на 16 соединениях runner'а L давали потолок 16 / �
 | `skip_name_resolve`, `open_files_limit` | ON, от max_connections | — / 5000 |
 | `binlog_expire_logs_seconds` | 1 сутки | 30 суток |
 | ProxySQL `threads` | от vCPU прокси | 4 |
+| ProxySQL `query_retries_on_failure` | 0: запрос падает, а не выполняется дважды (повтор `CREATE INDEX` на замершем писателе давал `1061 Duplicate key name`) | 1 |
 
 `innodb_dedicated_server` не используем: у 8.0 и 8.4 разные алгоритмы, и
 итоговые числа не видны в `effective_configs`.

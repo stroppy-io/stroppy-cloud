@@ -276,6 +276,10 @@ func (c *compilation) proxysql() error {
 			}
 		}
 		t.set("max_connections", max(2048, 2*c.peakVUs()))
+		// A benchmark statement fails rather than runs twice: the proxy's
+		// retry re-sends a statement the stalled backend may have applied.
+		// doc: https://proxysql.com/documentation/global-variables/mysql-variables/#mysql-query_retries_on_failure
+		t.set("query_retries_on_failure", 0)
 	}
 	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {
