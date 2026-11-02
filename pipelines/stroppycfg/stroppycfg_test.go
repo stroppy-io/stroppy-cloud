@@ -274,4 +274,3 @@ func TestConfigSeparatesSegmentsWithoutMutatingLabels(t *testing.T) {
 		t.Fatal("mutated caller labels")
 	}
 }
-

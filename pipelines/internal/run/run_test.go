@@ -33,8 +33,8 @@ func TestExpand(t *testing.T) {
 	infra, infos := sampleInfra()
 	a := NewAddresses(infra, infos)
 	for in, want := range map[string]string{
-		"postgres://u@${ip:db-1}:5432/db": "postgres://u@10.0.0.11:5432/db",
-		"hosts=${ips:role:db}":            "hosts=10.0.0.11,10.0.0.12",
+		"postgres://u@${ip:db-1}:5432/db":                                    "postgres://u@10.0.0.11:5432/db",
+		"hosts=${ips:role:db}":                                               "hosts=10.0.0.11,10.0.0.12",
 		"primary=${ip:role:db} pub=${public_ip:db-1} none=${public_ip:db-2}": "primary=10.0.0.11 pub=1.1.1.1 none=",
 		"plain": "plain",
 	} {

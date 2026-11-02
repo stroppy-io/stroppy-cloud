@@ -37,9 +37,9 @@ func TestSegment(t *testing.T) {
 		},
 		"steps":        []any{"create_schema", "load_data"},
 		"extra_params": map[string]any{"new-flag": "1"},
-		"thresholds": map[string]any{"p99_ms": 25.0, "error_rate": 0.01},
-		"warmup":     "30s",
-		"log_level":  "debug",
+		"thresholds":   map[string]any{"p99_ms": 25.0, "error_rate": 0.01},
+		"warmup":       "30s",
+		"log_level":    "debug",
 	}
 	tpch := map[string]any{
 		"name":     "tpch",

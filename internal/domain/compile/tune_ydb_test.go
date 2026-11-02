@@ -164,8 +164,8 @@ func TestYDBPdiskSizeFromDisk(t *testing.T) {
 		want   string
 		count  int
 	}{
-		{"single 300 GB", nil, 300, "232G", 1},           // 0.8 × 290
-		{"single 100 GB", nil, 100, "80G", 1},            // 72 → floor
+		{"single 300 GB", nil, 300, "232G", 1}, // 0.8 × 290
+		{"single 100 GB", nil, 100, "80G", 1},  // 72 → floor
 		{"three pdisks 600 GB", map[string]any{"pdisks_per_node": 3}, 600, "157G", 3},
 		{"three pdisks at the minimum", map[string]any{"pdisks_per_node": 3}, 260, "80G", 3},
 		{"fixed size", map[string]any{"auto_size_pdisks": false}, 300, "80G", 1},
