@@ -28,6 +28,8 @@ type Projector struct {
 	log       *xlog.Logger
 	telemetry Telemetry
 	onFinish  func()
+	window    time.Duration
+	grace     time.Duration
 
 	mu       sync.Mutex
 	active   map[uuid.UUID]struct{}
@@ -39,9 +41,22 @@ type Projector struct {
 // next tick starting another, so a followed run does not flicker to stale.
 const liveGrace = 10 * time.Second
 
+const (
+	// followWindow is how long one follower reads the event stream before
+	// it hands over to the next tick, which reloads durable commands
+	// (notably cancellation) even while the stream stays open and silent.
+	followWindow = 30 * time.Second
+	// followGrace is what the follower has after the window to store what
+	// it read and to finish the run.
+	followGrace = 15 * time.Second
+)
+
 // NewProjector wires the worker.
 func NewProjector(repo Repository, g Graphene, publisher Publisher, scope func(context.Context, string) context.Context, log *xlog.Logger) *Projector {
-	return &Projector{repo: repo, graphene: g, publisher: publisher, scope: scope, log: log, active: map[uuid.UUID]struct{}{}, released: map[uuid.UUID]time.Time{}}
+	return &Projector{
+		repo: repo, graphene: g, publisher: publisher, scope: scope, log: log, window: followWindow, grace: followGrace,
+		active: map[uuid.UUID]struct{}{}, released: map[uuid.UUID]time.Time{},
+	}
 }
 
 // Telemetry reads a run's workload throughput from the metric store
@@ -146,9 +161,9 @@ var errFinished = errors.New("run finished")
 // asked once; a terminal answer finishes the run, anything else leaves it
 // for the next tick.
 func (p *Projector) follow(ctx context.Context, l Live) {
-	// Periodically reload durable commands (notably cancellation), even if
-	// the event stream remains open and silent.
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	// The window ends reading the stream (see followWindow); storing what
+	// was read keeps the grace beyond it.
+	ctx, cancel := context.WithTimeout(ctx, p.window+p.grace)
 	defer cancel()
 	r, err := p.repo.ByID(ctx, l.ID)
 	if err != nil {
@@ -185,7 +200,9 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 	}
 	state, status, lastID := r.State, r.Status, r.LastEventID
 	finished := false
-	err = p.graphene.Events(sctx, r.GrapheneID(), lastID, true, func(e RawEvent) error {
+	stream, stopStream := context.WithTimeout(sctx, p.window)
+	defer stopStream()
+	err = p.graphene.Events(stream, r.GrapheneID(), lastID, true, func(e RawEvent) error {
 		if e.ID <= lastID {
 			return nil
 		}
@@ -238,12 +255,12 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		}
 		return nil
 	})
-	if err != nil && !errors.Is(err, errFinished) && ctx.Err() == nil {
+	if err != nil && !errors.Is(err, errFinished) && stream.Err() == nil {
 		// A suite cell the pipeline has not started yet answers not_found:
 		// the next tick retries.
 		p.log.Debug("projector: events", xlog.String("run", r.ID.String()), xlog.Error("error", err))
 	}
-	if finished || ctx.Err() != nil {
+	if finished || stream.Err() != nil {
 		return
 	}
 	// Stream closed without a terminal event: ask once.
