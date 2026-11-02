@@ -177,15 +177,13 @@ func (r *ScheduleRepo) liveStatuses(ctx context.Context, refs []*schedule.RunRef
 	if len(ids) == 0 {
 		return nil
 	}
-	rows, err := r.q.FiredStatuses(ctx, ids)
+	rows, err := r.q.FiredStatuses(ctx, db.FiredStatusesParams{Ids: ids})
 	if err != nil {
 		return infraf("schedule: fired statuses: %v", err)
 	}
 	status := make(map[uuid.UUID]string, len(rows))
 	for _, row := range rows {
-		if row.ID != nil && row.Status != "" {
-			status[*row.ID] = row.Status
-		}
+		status[row.ID] = row.Status
 	}
 	for _, ref := range refs {
 		if ref == nil || ref.ID == nil {

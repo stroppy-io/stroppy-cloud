@@ -3821,38 +3821,6 @@ func (q *Queries) ScheduleHistory(ctx context.Context, arg ScheduleHistoryParams
 	return items, nil
 }
 
-const firedStatusesSQL = `-- The current status of what schedules fired: a fired ref keeps only its id,
--- the run or suite run owns the status.
-SELECT f.id::uuid AS id, coalesce(r.status, sr.status, '') AS status
-FROM unnest($1::uuid[]) AS f(id)
-LEFT JOIN runs r ON r.id = f.id
-LEFT JOIN suite_runs sr ON sr.id = f.id;`
-
-type FiredStatusesRow struct {
-	ID     *uuid.UUID
-	Status string
-}
-
-func (q *Queries) FiredStatuses(ctx context.Context, ids []uuid.UUID) ([]FiredStatusesRow, error) {
-	rows, err := q.db.Query(ctx, firedStatusesSQL, ids)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []FiredStatusesRow
-	for rows.Next() {
-		var i FiredStatusesRow
-		if err := rows.Scan(&i.ID, &i.Status); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const upcomingSchedulesSQL = `SELECT id, tenant_id, name, target_kind, target_id, target_name, cron, timezone, enabled, overrides, next_run_at, last_run, author_id, created_at, updated_at
 FROM schedules WHERE tenant_id = $1 AND deleted_at IS NULL AND enabled AND next_run_at IS NOT NULL ORDER BY next_run_at LIMIT $2;`
 
@@ -5531,6 +5499,40 @@ func (q *Queries) SuiteRunsOfTenant(ctx context.Context, arg SuiteRunsOfTenantPa
 	for rows.Next() {
 		var i SuiteRunsOfTenantRow
 		if err := rows.Scan(&i.ID, &i.TenantID, &i.SuiteID, &i.SuiteName, &i.Name, &i.Status, &i.StatusReason, &i.Trigger, &i.ScheduleID, &i.RetryOf, &i.Concurrency, &i.Cells, &i.Labels, &i.AuthorID, &i.GrapheneNamespace, &i.LastEventID, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.DurationSeconds, &i.UpdatedAt, &i.DeletedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	return items, rows.Err()
+}
+
+type FiredStatusesParams struct {
+	Ids []uuid.UUID
+}
+
+type FiredStatusesRow struct {
+	ID     uuid.UUID
+	Status string
+}
+
+func (q *Queries) FiredStatuses(ctx context.Context, arg FiredStatusesParams) ([]FiredStatusesRow, error) {
+	var b strings.Builder
+	var args []any
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.Ids)
+		positions[1] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("-- The current status of what schedules fired: a fired ref keeps only its id,\n-- the run or suite run owns the status.\nSELECT r.id, r.status FROM runs r WHERE r.id = ANY($%d::uuid[])\nUNION ALL\nSELECT sr.id, sr.status FROM suite_runs sr WHERE sr.id = ANY($%d::uuid[]);", positions[1], positions[1]))
+	rows, err := q.db.Query(ctx, b.String(), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FiredStatusesRow
+	for rows.Next() {
+		var i FiredStatusesRow
+		if err := rows.Scan(&i.ID, &i.Status); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

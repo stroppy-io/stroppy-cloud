@@ -192,10 +192,9 @@ SELECT id, schedule_id, kind, ref_id, name, status, error, at FROM schedule_hist
 -- name: FiredStatuses :many
 -- The current status of what schedules fired: a fired ref keeps only its id,
 -- the run or suite run owns the status.
-SELECT f.id::uuid AS id, coalesce(r.status, sr.status, '') AS status
-FROM unnest(@ids::uuid[]) AS f(id)
-LEFT JOIN runs r ON r.id = f.id
-LEFT JOIN suite_runs sr ON sr.id = f.id;
+SELECT r.id, r.status FROM runs r WHERE r.id = ANY(@ids::uuid[])
+UNION ALL
+SELECT sr.id, sr.status FROM suite_runs sr WHERE sr.id = ANY(@ids::uuid[]);
 
 -- name: UpcomingSchedules :many
 SELECT id, tenant_id, name, target_kind, target_id, target_name, cron, timezone, enabled, overrides, next_run_at, last_run, author_id, created_at, updated_at

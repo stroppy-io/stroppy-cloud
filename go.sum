@@ -262,6 +262,8 @@ github.com/gopherex/schemapb/go v1.9.9 h1:W4G6P8j+3zk1KOr8aVZapI+eCZvePTnR+jClig
 github.com/gopherex/schemapb/go v1.9.9/go.mod h1:BwQdhiN79lmQ/jEPuoLW7HC7dltWVWb3wAR9/WAzMo8=
 github.com/gopherex/sqld v1.1.10 h1:+SgU5h3VUwRPFcMzEVJX/92cM/DdBEjrUP8TBZjfsG0=
 github.com/gopherex/sqld v1.1.10/go.mod h1:J/HwPz/WO9lJFALOQZipoG7KTXJV2N8E9qwu9aNIz2k=
+github.com/gopherex/sqld v1.1.11 h1:BVlDtvxWXNhxHw0zgaLWH08rNlW+7hB9ojw/WzA99fw=
+github.com/gopherex/sqld v1.1.11/go.mod h1:J/HwPz/WO9lJFALOQZipoG7KTXJV2N8E9qwu9aNIz2k=
 github.com/gopherex/xconf v1.4.1 h1:raQIeoOzQFdijvjxC4IfO1Ddr0ivvQ6YuHOBfIKk1Jk=
 github.com/gopherex/xconf v1.4.1/go.mod h1:w7qMqq9P37pkZthRH/JcS6QmGV/nNoCxCkg96kIJjoM=
 github.com/gopherex/xconf/contrib/sources/dotenv v1.4.1 h1:N4OEWIg7+ywbI5/mgNeLSrSvQd5uslRpJltpQGBUDiM=
