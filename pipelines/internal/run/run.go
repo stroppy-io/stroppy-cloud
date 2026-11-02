@@ -117,7 +117,11 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		}
 		return struct{}{}, nc.probe(ctx)
 	}); err != nil {
-		// The snapshots of a failed connectivity check are the evidence.
+		// The snapshots of a failed connectivity check and of every other
+		// machine are the evidence.
+		if ctx.Err() == nil {
+			nc.failure(ctx, err.Error())
+		}
 		return spec.Result{Artifacts: nc.artifacts()}, err
 	}
 
@@ -129,6 +133,10 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		}
 		return runWorkload(ctx, run, runners[0].Agent, addrs, nc)
 	})
+	if wlErr != nil && ctx.Err() == nil {
+		nc.failure(ctx, wlErr.Error())
+		wl.NetArtifacts = nc.artifacts()
+	}
 	result, err := collect(ctx, run, wl, wlErr)
 	if err != nil {
 		return result, err

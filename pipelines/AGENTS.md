@@ -78,6 +78,11 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   самой probe-activity — тоже предупреждение (пути записаны как `other`).
   Упавшее ожидание `stroppy.database.reachable` в workload записывает путь
   runner → endpoint, снимает оба конца (`reach`) и повторяет milestone.
+- Упавший deploy или workload (не отменённый) снимает тем же
+  `stroppy.net.snapshot` каждую машину, у которой ещё нет снимка, до
+  teardown: хвост `dmesg` и сеть называют то, чего нет в ошибке прогона
+  (OOM, ошибка диска, обрыв связи). Артефакт
+  `<run8>-netdiag-failure-<machine>` на 30 дней, в `result.artifacts`.
 - Milestone `network.checked`: `stage` (deploy|workload), `total`, `failed`,
   `critical`, `pairs[]` (неудачные первыми, не больше 2000), `snapshots[]`
   (`machine`, `artifact`). Артефакты снимков входят в `result.artifacts`,

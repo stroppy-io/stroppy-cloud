@@ -317,6 +317,29 @@ func (nc *netCheck) snapshot(ctx pipeline.Context, label string) {
 			}
 		}
 	}
+	nc.capture(ctx, label, involved)
+}
+
+// failure captures every machine of a failed run that has no snapshot yet:
+// the kernel log and network state name what the run's own error cannot
+// (an OOM kill, a disk error, a dropped link).
+func (nc *netCheck) failure(ctx pipeline.Context, reason string) {
+	taken := map[string]bool{}
+	for _, s := range nc.snaps {
+		taken[s.Machine] = true
+	}
+	involved := map[string][]string{}
+	for _, m := range nc.order {
+		if _, ok := nc.agents[m]; ok && !taken[m] {
+			involved[m] = []string{"run failed: " + reason}
+		}
+	}
+	nc.capture(ctx, "failure", involved)
+}
+
+// capture snapshots the machines named in involved, in machine order, and
+// publishes each as an artifact. A snapshot that fails is a warning.
+func (nc *netCheck) capture(ctx pipeline.Context, label string, involved map[string][]string) {
 	var machines []string
 	for _, m := range nc.order {
 		if len(involved[m]) > 0 {

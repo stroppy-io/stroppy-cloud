@@ -310,6 +310,27 @@ func TestSimulatedRunSegmentActivityLostIsFailure(t *testing.T) {
 	s.w.AssertNoLeaks(t)
 }
 
+// A failed workload leaves the kernel log and network state of every
+// machine as evidence, before teardown takes the machines away.
+func TestSimulatedFailedWorkloadSnapshotsMachines(t *testing.T) {
+	s := newSim(t)
+	run := noopRun()
+	wf := pipelinetestWorkflow(s)
+	s.converge(t, run, map[string]string{"runner-1": "10.130.0.20"})
+	runner := s.agent(run, "runner-1")
+	s.w.OnAgentActivity(runner, activities.NameRunSegment, mock.Anything, mock.Anything).
+		Return(activities.RunSegmentResult{}, temporal.NewTimeoutError(1, nil)).Once()
+	s.w.File(runner, "/ws/netdiag/failure-runner-1.txt", []byte("$ dmesg | tail\n"))
+
+	s.w.Env.ExecuteWorkflow(wf, run)
+	err := s.w.Env.GetWorkflowError()
+	require.ErrorContains(t, err, "segment smoke")
+	a, ok := s.w.Resource(ref.OwnerRef("artifact/8f1c3f2a-netdiag-failure-runner-1"))
+	require.True(t, ok, "the failure snapshot is published")
+	require.Equal(t, "ready", a.Phase)
+	s.w.AssertNoLeaks(t)
+}
+
 func TestSimulatedRunMultipleSegmentsAndArtifactFailure(t *testing.T) {
 	s := newSim(t)
 	run := noopRun()
