@@ -326,7 +326,33 @@ func runStroppy(ctx context.Context, c stroppyContainer) (stroppyOutput, error) 
 
 	out := stroppyOutput{LogPath: filepath.Join(c.Dir, "stroppy.log")}
 	out.ExitCode, out.Log, out.Stdout, out.StreamErr = streamAndWait(ctx, cli, created.ID, out.LogPath, c.LogName)
+	if ctx.Err() != nil {
+		stopAbandoned(ctx, cli, created.ID, c.LogName)
+	}
 	return out, nil
+}
+
+const (
+	// abandonedStopGrace is how long stroppy gets after SIGTERM to finish
+	// its report before Docker kills it.
+	abandonedStopGrace = 10 * time.Second
+	// abandonedStopDeadline bounds the whole stop call.
+	abandonedStopDeadline = 30 * time.Second
+)
+
+// stopAbandoned stops a stroppy container whose activity was cancelled or
+// timed out: nobody waits for its result any more, and left running it
+// would keep loading the database under the next segment or run. The
+// activity context is done, so the stop runs on its own deadline.
+func stopAbandoned(ctx context.Context, cli *dockerclient.Client, id, name string) {
+	stopCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), abandonedStopDeadline)
+	defer cancel()
+	grace := int(abandonedStopGrace.Seconds())
+	if err := cli.ContainerStop(stopCtx, id, container.StopOptions{Timeout: &grace}); err != nil && !cerrdefs.IsNotFound(err) {
+		obs.Warn(stopCtx, "abandoned stroppy container not stopped", obs.Str("container", name), obs.Err(err))
+		return
+	}
+	obs.Info(stopCtx, "abandoned stroppy container stopped", obs.Str("container", name), obs.Err(ctx.Err()))
 }
 
 // workspaceSubdir is a directory inside the machine's run workspace: the
