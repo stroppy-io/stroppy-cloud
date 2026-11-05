@@ -8,6 +8,13 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
 )
 
+// StroppyRelease is the one Stroppy release the platform runs; a workload of
+// an earlier one is moved to it by migration.
+const (
+	StroppyRelease = "6.3.2"
+	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.3.2.70"
+)
+
 // The schemas own parameter descriptions and defaults. Catalog only adds build
 // identities and protocol availability, never a second handwritten parameter list.
 func stroppy() StroppyCatalog {
@@ -60,10 +67,8 @@ func stroppy() StroppyCatalog {
 			sc.Params = append(sc.Params, schemaParam(f, "run"))
 		}
 	}
-	// One release: the platform follows Stroppy's latest, and a workload of
-	// an older one is moved to it by migration.
 	return StroppyCatalog{Source: "static", Versions: []StroppyVersion{
-		{Version: "6.3.0", Image: "ghcr.io/stroppy-io/stroppy:v6.3.0.68", Default: true, Baseline: true, Protocols: all, Scripts: scripts},
+		{Version: StroppyRelease, Image: stroppyImage, Default: true, Baseline: true, Protocols: all, Scripts: scripts},
 	}}
 }
 

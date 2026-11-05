@@ -82,7 +82,7 @@
     "pipelines/stroppycfg/testdata/baseline.json": "bf675e8faa114a4750b3752e7dfebdbf5be954d9fa6f67d3d1217e876b77d5d3",
     "pipelines/stroppycfg/testdata/run-report-v4.json": "59a0d0c732c3eaa4c01ddfe4dcb0f99cf265c319d4e61681fe6444ca813e948b",
     "pipelines/stroppycfg/testdata/run-report.json": "aea89e726d3066fb3fa7aedf7220a8db968653de75b2233a5b3bd476c02c57ca",
-    "pipelines/stroppycfg/testdata/stroppy-contract-source.json": "ba20ce699afee5d522e95296f4a48c2de376746d046f55dbb1387e20391ce676",
+    "pipelines/stroppycfg/testdata/stroppy-contract-source.json": "e799c8bc40c7c0a4c2cee310ab99f8a9dc0a12dc8cdbf10a652584705dfaba21",
     "pipelines/stroppycfg/testdata/stroppy-probe.json": "6eec9b4acbc25f12cb66ec3e151fab62422de56e1b15aecfbc256458524ffbd3",
     "pipelines/stroppycfg/testdata/stroppy-run.schema.json": "4f3de332fa95f05a30e1b68e63868c7ec766aaa0ff95768668dec8d665230c7a",
     "web/src/api/enums.ts": "f283458c5870d97500763b27d6881176139df32655ed517f09f7f253b2d31c3f",

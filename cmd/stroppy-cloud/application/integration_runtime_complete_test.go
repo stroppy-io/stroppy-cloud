@@ -197,7 +197,7 @@ func TestE2EWorkloadParameterTransport(t *testing.T) {
 			}
 		}
 	}
-	patch := map[string]any{"workload": map[string]any{"inline": map[string]any{"protocol": "pg", "stroppy_version": "6.3.0", "segments": segments}}}
+	patch := map[string]any{"workload": map[string]any{"inline": map[string]any{"protocol": "pg", "stroppy_version": catalog.StroppyRelease, "segments": segments}}}
 	e.want(e.req(http.MethodPatch, base+"/tests/"+testID, patch, tok), http.StatusOK, nil)
 	e.want(e.req(http.MethodPatch, base+"/tests/"+testID, map[string]any{"name": "every workload parameter"}, tok), http.StatusOK, nil)
 	var r runView

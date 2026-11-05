@@ -44,7 +44,7 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.3.0", Protocol: tc.protocol, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+			workload, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: catalog.StroppyRelease, Protocol: tc.protocol, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
 			if err != nil {
 				t.Fatal(err)
 			}
