@@ -168,7 +168,12 @@ func TestMPPSSHKeyIsOneForTheCluster(t *testing.T) {
 		if c.Kind != spec.ContainerKindDatabase {
 			continue
 		}
-		if fileIn(c, "/etc/mpp/ssh/id_ed25519") != private || fileIn(c, "/etc/mpp/ssh/authorized_keys") != public || fileIn(c, "/etc/mpp/ssh/id_ed25519.pub") != public {
+		// The key is accepted only from the cluster's machines.
+		authorized := fileIn(c, "/etc/mpp/ssh/authorized_keys")
+		if !strings.HasPrefix(authorized, `from="${ip:coordinator-1},${ip:db-1},`) || !strings.HasSuffix(authorized, `" `+public) {
+			t.Errorf("%s: authorized_keys %q", c.Name, authorized)
+		}
+		if fileIn(c, "/etc/mpp/ssh/id_ed25519") != private || fileIn(c, "/etc/mpp/ssh/id_ed25519.pub") != public {
 			t.Errorf("%s does not carry the cluster's key", c.Name)
 		}
 		for _, f := range c.Files {

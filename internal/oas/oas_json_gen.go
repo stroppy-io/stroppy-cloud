@@ -11230,6 +11230,8 @@ func (s *ErrorReason) Decode(d *jx.Decoder) error {
 		*s = ErrorReasonDatabaseRefAndInlineAreExclusive
 	case ErrorReasonDbKindNotLaunchable:
 		*s = ErrorReasonDbKindNotLaunchable
+	case ErrorReasonMppDialectUnavailable:
+		*s = ErrorReasonMppDialectUnavailable
 	case ErrorReasonDbKindUnknown:
 		*s = ErrorReasonDbKindUnknown
 	case ErrorReasonDbVersionNoImage:

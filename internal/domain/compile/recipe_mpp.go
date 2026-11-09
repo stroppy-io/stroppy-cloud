@@ -103,10 +103,12 @@ func mppRecipe(c *compilation) error {
 		return err
 	}
 
+	// The key is derivable from the run id, so sshd accepts it only from the
+	// cluster's own machines: from anywhere else it opens nothing.
 	sshFiles := []spec.File{
 		{Path: mppSSHDir + "/id_ed25519", Content: key.Private, Mode: "0600"},
 		{Path: mppSSHDir + "/id_ed25519.pub", Content: key.Public, Mode: "0644"},
-		{Path: mppSSHDir + "/authorized_keys", Content: key.Public, Mode: "0644"},
+		{Path: mppSSHDir + "/authorized_keys", Content: mppAuthorized(key.Public, append([]string{coordinator}, segments...)), Mode: "0644"},
 	}
 	segmentContainers := make([]string, 0, len(segments))
 	for _, m := range segments {

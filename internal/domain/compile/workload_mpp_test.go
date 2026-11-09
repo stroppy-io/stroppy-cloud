@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 )
 
 // build is a stroppy build whose tpch/tx lists sql-dialect and whose tpcds
@@ -23,7 +24,6 @@ func TestGPDialect(t *testing.T) {
 		{"tpch gets gp", `{"workload":{"script":"tpch/tx","scale_factor":1}}`, `{"workload":{"script":"tpch/tx","scale_factor":1,"sql_dialect":"gp"}}`},
 		{"a dialect of the workload wins", `{"workload":{"script":"tpch/tx","sql_dialect":"pg"}}`, `{"workload":{"script":"tpch/tx","sql_dialect":"pg"}}`},
 		{"an sql file wins", `{"workload":{"script":"tpch/tx","sql_file":"tpch/x"}}`, `{"workload":{"script":"tpch/tx","sql_file":"tpch/x"}}`},
-		{"a build without the flag on this script", `{"workload":{"script":"tpcds"}}`, `{"workload":{"script":"tpcds"}}`},
 		{"a script that is not analytic", `{"workload":{"script":"simple"}}`, `{"workload":{"script":"simple"}}`},
 		{"an unknown script", `{"workload":{"script":"nope"}}`, `{"workload":{"script":"nope"}}`},
 		{"no workload", `{"name":"x"}`, `{"name":"x"}`},
@@ -50,6 +50,15 @@ func TestGPDialect(t *testing.T) {
 	}
 	if _, err := gpDialect(json.RawMessage(`{`), build()); err == nil {
 		t.Error("a broken segment is accepted")
+	}
+	// A build without the dialect would measure the pg schema: refused.
+	_, err := gpDialect(json.RawMessage(`{"workload":{"script":"tpcds"}}`), build())
+	if reason, _ := errs.ReasonOf(err); reason != "mpp_dialect_unavailable" {
+		t.Errorf("a build without the gp dialect: %v", err)
+	}
+	// Its own dialect or SQL file keeps the workload author's choice.
+	if _, err := gpDialect(json.RawMessage(`{"workload":{"script":"tpcds","sql_dialect":"pg"}}`), build()); err != nil {
+		t.Errorf("an explicit dialect is refused: %v", err)
 	}
 }
 

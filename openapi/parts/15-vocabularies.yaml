@@ -324,6 +324,7 @@ components:
         - "database_not_found"
         - "database_ref_and_inline_are_exclusive"
         - "db_kind_not_launchable"
+        - "mpp_dialect_unavailable"
         - "db_kind_unknown"
         - "db_version_no_image"
         - "db_version_unknown"

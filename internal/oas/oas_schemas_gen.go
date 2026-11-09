@@ -5436,6 +5436,7 @@ const (
 	ErrorReasonDatabaseNotFound                    ErrorReason = "database_not_found"
 	ErrorReasonDatabaseRefAndInlineAreExclusive    ErrorReason = "database_ref_and_inline_are_exclusive"
 	ErrorReasonDbKindNotLaunchable                 ErrorReason = "db_kind_not_launchable"
+	ErrorReasonMppDialectUnavailable               ErrorReason = "mpp_dialect_unavailable"
 	ErrorReasonDbKindUnknown                       ErrorReason = "db_kind_unknown"
 	ErrorReasonDbVersionNoImage                    ErrorReason = "db_version_no_image"
 	ErrorReasonDbVersionUnknown                    ErrorReason = "db_version_unknown"
@@ -5675,6 +5676,7 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonDatabaseNotFound,
 		ErrorReasonDatabaseRefAndInlineAreExclusive,
 		ErrorReasonDbKindNotLaunchable,
+		ErrorReasonMppDialectUnavailable,
 		ErrorReasonDbKindUnknown,
 		ErrorReasonDbVersionNoImage,
 		ErrorReasonDbVersionUnknown,
@@ -5943,6 +5945,8 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 	case ErrorReasonDatabaseRefAndInlineAreExclusive:
 		return []byte(s), nil
 	case ErrorReasonDbKindNotLaunchable:
+		return []byte(s), nil
+	case ErrorReasonMppDialectUnavailable:
 		return []byte(s), nil
 	case ErrorReasonDbKindUnknown:
 		return []byte(s), nil
@@ -6448,6 +6452,9 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 		return nil
 	case ErrorReasonDbKindNotLaunchable:
 		*s = ErrorReasonDbKindNotLaunchable
+		return nil
+	case ErrorReasonMppDialectUnavailable:
+		*s = ErrorReasonMppDialectUnavailable
 		return nil
 	case ErrorReasonDbKindUnknown:
 		*s = ErrorReasonDbKindUnknown

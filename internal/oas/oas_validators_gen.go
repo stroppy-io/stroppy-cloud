@@ -2465,6 +2465,8 @@ func (s ErrorReason) Validate() error {
 		return nil
 	case "db_kind_not_launchable":
 		return nil
+	case "mpp_dialect_unavailable":
+		return nil
 	case "db_kind_unknown":
 		return nil
 	case "db_version_no_image":

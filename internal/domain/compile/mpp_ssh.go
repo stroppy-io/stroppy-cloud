@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/pem"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -26,6 +27,14 @@ type mppKey struct {
 	Private string
 	// Public is the OpenSSH public key line (id_ed25519.pub, authorized_keys).
 	Public string
+}
+
+// mppAuthorized is the authorized_keys line of the cluster: the public key,
+// accepted only from the private addresses of the machines (expanded by the
+// pipeline once they exist) and loopback, which the engine's utilities may
+// use for the host they run on. doc: sshd(8) AUTHORIZED_KEYS FILE FORMAT, from=
+func mppAuthorized(public string, machines []string) string {
+	return `from="` + strings.Join(append(ipsOf(machines), "127.0.0.1", "::1"), ",") + `" ` + public
 }
 
 // newMPPKey derives the key pair of a run.

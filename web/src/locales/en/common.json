@@ -187,6 +187,7 @@
       "database_not_found": "Database not found. It may have been deleted",
       "database_ref_and_inline_are_exclusive": "Give the database either as a library reference or inline in the test; not both",
       "db_kind_not_launchable": "“{{kind}}” cannot be launched yet",
+      "mpp_dialect_unavailable": "Stroppy {{stroppy_version}} has no Greenplum dialect for {{script}}: without it the tables are not distributed and the numbers would not compare. Pick a Stroppy version that has it.",
       "db_kind_unknown": "Unknown database “{{kind}}”",
       "db_version_no_image": "{{kind}} {{version}} has no image. Pick another version",
       "db_version_unknown": "{{kind}} has no version {{version}}. Pick one from the list",

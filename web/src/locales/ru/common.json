@@ -187,6 +187,7 @@
       "database_not_found": "База не найдена. Возможно, она удалена",
       "database_ref_and_inline_are_exclusive": "Укажите базу либо ссылкой на библиотеку, либо прямо в тесте — не оба сразу",
       "db_kind_not_launchable": "СУБД «{{kind}}» пока нельзя запускать",
+      "mpp_dialect_unavailable": "В Stroppy {{stroppy_version}} нет диалекта Greenplum для {{script}}: без него таблицы не распределяются по сегментам и цифры несравнимы. Выберите версию Stroppy, где он есть.",
       "db_kind_unknown": "Неизвестная СУБД «{{kind}}»",
       "db_version_no_image": "Для {{kind}} {{version}} нет образа. Выберите другую версию",
       "db_version_unknown": "У {{kind}} нет версии {{version}}. Выберите из списка",
