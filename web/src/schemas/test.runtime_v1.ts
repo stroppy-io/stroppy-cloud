@@ -200,6 +200,14 @@ export interface TestRuntime1DriverInsertProgress {
   stallAfter?: string;
 }
 
+/** object transactions */
+export interface TestRuntime1DriverTransactions {
+  /** Default isolation. Isolation every physical connection starts with (transactions.defaultIsolation); a workload's own level wins per transaction. Unset or db_default keeps the database's. */
+  defaultIsolation?: "db_default" | "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | null;
+  /** Fold BEGIN. Send BEGIN together with the transaction's first query in one network request (transactions.foldBegin); unset keeps Stroppy's on. */
+  foldBegin?: boolean | null;
+}
+
 /** def driver */
 export interface TestRuntime1Driver {
   /** Insert method. Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves. */
@@ -214,6 +222,8 @@ export interface TestRuntime1Driver {
   sql?: TestRuntime1DriverSql;
   /** Load progress. insertProgress.* — load progress reporting. */
   insertProgress?: TestRuntime1DriverInsertProgress;
+  /** Transactions. transactions.* — how the driver opens transactions. */
+  transactions?: TestRuntime1DriverTransactions;
   /** Auth token. IAM token passed as authToken. */
   authToken?: string | null;
   /** User. Static credentials user (authUser). */

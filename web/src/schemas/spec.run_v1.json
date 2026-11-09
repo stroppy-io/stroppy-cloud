@@ -1078,6 +1078,65 @@
           "title": "Load progress"
         },
         {
+          "description": "transactions.* — how the driver opens transactions.",
+          "name": "transactions",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "choice": {
+                    "options": [
+                      {
+                        "label": "Database default",
+                        "value": {
+                          "stringValue": "db_default"
+                        }
+                      },
+                      {
+                        "label": "Read uncommitted",
+                        "value": {
+                          "stringValue": "read_uncommitted"
+                        }
+                      },
+                      {
+                        "label": "Read committed",
+                        "value": {
+                          "stringValue": "read_committed"
+                        }
+                      },
+                      {
+                        "label": "Repeatable read",
+                        "value": {
+                          "stringValue": "repeatable_read"
+                        }
+                      },
+                      {
+                        "label": "Serializable",
+                        "value": {
+                          "stringValue": "serializable"
+                        }
+                      }
+                    ]
+                  },
+                  "description": "Isolation every physical connection starts with (transactions.defaultIsolation); a workload's own level wins per transaction. Unset or db_default keeps the database's.",
+                  "name": "defaultIsolation",
+                  "nullable": true,
+                  "title": "Default isolation"
+                },
+                {
+                  "bool": {},
+                  "description": "Send BEGIN together with the transaction's first query in one network request (transactions.foldBegin); unset keeps Stroppy's on.",
+                  "name": "foldBegin",
+                  "nullable": true,
+                  "title": "Fold BEGIN"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "title": "Transactions"
+        },
+        {
           "description": "IAM token passed as authToken.",
           "name": "authToken",
           "nullable": true,

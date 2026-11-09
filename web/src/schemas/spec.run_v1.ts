@@ -129,6 +129,14 @@ export interface SpecRun1DriverInsertProgress {
   stallAfter?: string;
 }
 
+/** object transactions */
+export interface SpecRun1DriverTransactions {
+  /** Default isolation. Isolation every physical connection starts with (transactions.defaultIsolation); a workload's own level wins per transaction. Unset or db_default keeps the database's. */
+  defaultIsolation?: "db_default" | "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | null;
+  /** Fold BEGIN. Send BEGIN together with the transaction's first query in one network request (transactions.foldBegin); unset keeps Stroppy's on. */
+  foldBegin?: boolean | null;
+}
+
 /** def driver */
 export interface SpecRun1Driver {
   /** Insert method. Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves. */
@@ -143,6 +151,8 @@ export interface SpecRun1Driver {
   sql?: SpecRun1DriverSql;
   /** Load progress. insertProgress.* — load progress reporting. */
   insertProgress?: SpecRun1DriverInsertProgress;
+  /** Transactions. transactions.* — how the driver opens transactions. */
+  transactions?: SpecRun1DriverTransactions;
   /** Auth token. IAM token passed as authToken. */
   authToken?: string | null;
   /** User. Static credentials user (authUser). */

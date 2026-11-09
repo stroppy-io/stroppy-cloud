@@ -107,7 +107,7 @@ func setPool(driver map[string]any, family string, values map[string]int) []stri
 // reaches public shares, so only these known, secret-free keys go in.
 var reportedDriverKeys = map[string]bool{
 	"pool": true, "postgres": true, "sql": true, "bulkSize": true,
-	"defaultInsertMethod": true, "insertProgress": true, "tlsInsecureSkipVerify": true,
+	"defaultInsertMethod": true, "insertProgress": true, "tlsInsecureSkipVerify": true, "transactions": true,
 }
 
 // clientSetup is the driver the runner gets, for the run's report: the

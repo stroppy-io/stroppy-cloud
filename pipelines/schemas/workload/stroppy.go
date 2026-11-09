@@ -95,6 +95,22 @@ func Stroppy() *schemapb.Schema {
 					schemapb.Duration("stall_after").Title("Stall after").
 						Desc("insertProgress.stallAfter — warn when no rows moved for this long.").Gt(0).Lte(24*time.Hour).Default(60*time.Second),
 				).Title("Load progress").Desc("insertProgress.* — load progress reporting.").Strict(),
+
+				// doc: stroppy 6.3.3 pkg/driver/transactions.go — ParseIsolation,
+				// FoldBegin (on unless set false).
+				schemapb.Object("transactions",
+					schemapb.Choice("default_isolation").Title("Default isolation").
+						Desc("Isolation every physical connection starts with (transactions.defaultIsolation); a workload's own level wins per transaction. Unset or db_default keeps the database's.").
+						Opt(schemapb.StrV("db_default"), "Database default").
+						Opt(schemapb.StrV("read_uncommitted"), "Read uncommitted").
+						Opt(schemapb.StrV("read_committed"), "Read committed").
+						Opt(schemapb.StrV("repeatable_read"), "Repeatable read").
+						Opt(schemapb.StrV("serializable"), "Serializable").
+						Nullable(),
+					schemapb.Bool("fold_begin").Title("Fold BEGIN").
+						Desc("Send BEGIN together with the transaction's first query in one network request (transactions.foldBegin); unset keeps Stroppy's on.").
+						Nullable(),
+				).Title("Transactions").Desc("transactions.* — how the driver opens transactions.").Strict(),
 			).Title("Driver").Group("Driver").
 				Desc("Protocol-neutral stroppy driver options.").Strict(),
 

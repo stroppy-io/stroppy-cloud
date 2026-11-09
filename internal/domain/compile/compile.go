@@ -366,7 +366,7 @@ func (c *compilation) workload() error {
 		driver["postgres"] = map[string]any{"defaultQueryExecMode": "exec"}
 	}
 	for k, v := range baked.Driver {
-		if k == "pool" || k == "insert_progress" || k == "postgres" || k == "sql" {
+		if k == "pool" || k == "insert_progress" || k == "postgres" || k == "sql" || k == "transactions" {
 			driver[camel(k)] = camelMap(v)
 			continue
 		}

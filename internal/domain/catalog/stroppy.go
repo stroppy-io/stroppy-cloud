@@ -11,8 +11,8 @@ import (
 // StroppyRelease is the one Stroppy release the platform runs; a workload of
 // an earlier one is moved to it by migration.
 const (
-	StroppyRelease = "6.3.2"
-	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.3.2.70"
+	StroppyRelease = "6.3.3"
+	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.3.3.71"
 )
 
 // The schemas own parameter descriptions and defaults. Catalog only adds build

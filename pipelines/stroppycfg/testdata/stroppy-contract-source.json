@@ -1,16 +1,16 @@
 {
   "repository": "https://github.com/stroppy-io/stroppy",
-  "source_commit": "d4cafcfce92b7b409009674f62135658327f44f7",
+  "source_commit": "8068ea8ec8c052c52bb31355939fde05095f3357",
   "source_dirty": false,
-  "binary_sha256": "ea03a1bf0eb2890199f0cdef7771f845bd1607798f7f15c579aa267ae8715e32",
+  "binary_sha256": "3b67a6b326befd3de302ac5d41305fda87f89e8895e7b29f80987d3d4f97091f",
   "binary_vcs": [
-    "build\tvcs.revision=d4cafcfce92b7b409009674f62135658327f44f7",
-    "build\tvcs.time=2026-11-05T05:26:30Z",
+    "build\tvcs.revision=8068ea8ec8c052c52bb31355939fde05095f3357",
+    "build\tvcs.time=2026-11-06T19:12:02Z",
     "build\tvcs.modified=false"
   ],
   "fixture_sha256": {
     "stroppy-probe.json": "6cdd95f687f78640bc25ef09ae11a8c655240130b68731f6dc7170201b7a8722",
-    "stroppy-run.schema.json": "d9c576896c5559c1bbc6a423818465594b1a3b2ccc7499cfbf1cde92e100a18d"
+    "stroppy-run.schema.json": "069715784f94d735fbda33727edf029ff21d155d67bdd159b088ea2a5e73d11c"
   },
   "scope": "Binary probe and source-generated JSON Schema; executable checks use noop only. Source commit does not assert binary provenance; binary VCS metadata is recorded separately."
 }

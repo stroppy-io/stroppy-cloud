@@ -314,6 +314,14 @@ export interface WorkloadStroppy1DriverInsertProgress {
   stall_after?: string;
 }
 
+/** object transactions */
+export interface WorkloadStroppy1DriverTransactions {
+  /** Default isolation. Isolation every physical connection starts with (transactions.defaultIsolation); a workload's own level wins per transaction. Unset or db_default keeps the database's. */
+  default_isolation?: "db_default" | "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | null;
+  /** Fold BEGIN. Send BEGIN together with the transaction's first query in one network request (transactions.foldBegin); unset keeps Stroppy's on. */
+  fold_begin?: boolean | null;
+}
+
 /** object driver */
 export interface WorkloadStroppy1Driver {
   /** Insert method. Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves. */
@@ -328,6 +336,8 @@ export interface WorkloadStroppy1Driver {
   sql?: WorkloadStroppy1DriverSql;
   /** Load progress. insertProgress.* — load progress reporting. */
   insert_progress?: WorkloadStroppy1DriverInsertProgress;
+  /** Transactions. transactions.* — how the driver opens transactions. */
+  transactions?: WorkloadStroppy1DriverTransactions;
 }
 
 /** variant cockroach of connection */

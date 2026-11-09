@@ -209,7 +209,7 @@ func TestNativeDriverFieldContract(t *testing.T) {
 	}
 	native := workloadschema.NativeDriver()
 	objects := map[string]*schemapb.Schema{"DriverRunConfig": native}
-	names := map[string]string{"pool": "PoolConfig", "postgres": "PostgresConfig", "sql": "SQLConfig", "insertProgress": "InsertProgressConfig"}
+	names := map[string]string{"pool": "PoolConfig", "postgres": "PostgresConfig", "sql": "SQLConfig", "insertProgress": "InsertProgressConfig", "transactions": "TransactionConfig"}
 	for _, f := range native.GetFields() {
 		if name := names[f.GetName()]; name != "" {
 			objects[name] = f.GetObject().GetSchema()
