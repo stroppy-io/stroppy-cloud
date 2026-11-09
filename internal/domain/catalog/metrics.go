@@ -9,7 +9,9 @@ const agent = `"graphene.agent"`
 // series, node_exporter on every machine and each database's exporter —
 // as MetricsQL over the real series names.
 func metrics() []Metric {
-	pg := []DatabaseKind{Postgres, OrioleDB, PgNoop}
+	// The coordinator of the Greenplum family is a PostgreSQL server the
+	// postgres exporter reads.
+	pg := []DatabaseKind{Postgres, OrioleDB, PgNoop, Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry}
 	mysql := []DatabaseKind{MySQL, MariaDB}
 	quantile := func(q string) string {
 		return `histogram_quantile(` + q + `, sum by (le) ((rate(stroppy_iteration_duration_bucket{$native}[1m]) or rate(stroppy_iteration_duration_milliseconds_bucket{$native}[1m]))))`

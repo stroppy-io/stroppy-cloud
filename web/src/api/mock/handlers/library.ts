@@ -213,6 +213,21 @@ export function deriveDatabase(
       req.db = { cpu: 4, memory_gb: n > 1 ? 24 : 16, disk_gb: 100, reason: 'engine_baseline' }
       break
     }
+    case 'greenplum':
+    case 'greengage':
+    case 'warehousepg':
+    case 'opengpdb':
+    case 'cloudberry': {
+      const hosts = num(params.segment_hosts, 4)
+      nodes.push({ role: 'coordinator', engine: kind, count: 1 })
+      nodes.push({ role: 'db', engine: kind, count: hosts })
+      flows.push({ from: 'coordinator', to: 'db', protocol: 'mpp-ssh', port: 2222 })
+      flows.push({ from: 'coordinator', to: 'db', protocol: 'mpp-segment', port: 6000 })
+      label = `cluster-${hosts}`
+      req.coordinator = { cpu: 2, memory_gb: 8, disk_gb: 20, reason: 'engine_baseline' }
+      req.db = { cpu: 4, memory_gb: 16, disk_gb: 50, reason: 'engine_baseline' }
+      break
+    }
     case 'ydb_managed': {
       const n = str(params.type) === 'serverless' ? 0 : num(params.node_count, 3)
       nodes.push({ role: 'db', engine: 'ydb', count: n })

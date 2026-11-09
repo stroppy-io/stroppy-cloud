@@ -27,6 +27,8 @@ func All() []*schemapb.Schema {
 		PatroniYml4(),
 		PgHbaConf1(),
 		PgbouncerIni1(),
+		MppGpinitsystem1(),
+		MppGucs1(),
 		MariadbCnf1011(),
 		MariadbCnf1104(),
 		MariadbCnf1108(),

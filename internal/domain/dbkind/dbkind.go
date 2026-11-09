@@ -37,7 +37,9 @@ type unsupportedScript struct {
 
 // kinds in catalog order.
 func kinds() []Kind {
-	return []Kind{postgres(), orioledb(), mysql(), mariadb(), picodata(), ydb(), ydbManaged(), cockroach(), pgNoop(), noop(), external(), custom()}
+	out := []Kind{postgres(), orioledb(), mysql(), mariadb(), picodata(), ydb(), ydbManaged(), cockroach()}
+	out = append(out, mpp()...)
+	return append(out, pgNoop(), noop(), external(), custom())
 }
 
 // Databases is the catalog's database matrix.

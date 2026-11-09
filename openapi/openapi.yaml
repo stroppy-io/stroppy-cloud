@@ -5277,6 +5277,11 @@ components:
       - ydb
       - ydb_managed
       - cockroach
+      - greenplum
+      - greengage
+      - warehousepg
+      - opengpdb
+      - cloudberry
       - pg_noop
       - noop
       - external

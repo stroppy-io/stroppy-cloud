@@ -335,6 +335,15 @@ func (c *compilation) workload() error {
 			baked.Segments[i] = segment
 		}
 	}
+	if dbkind.IsMPP(c.in.Database.Kind) {
+		for i, raw := range baked.Segments {
+			segment, err := gpDialect(raw, ver)
+			if err != nil {
+				return errs.Wrap(errs.CodeInvalid, "Greenplum-family workload segment", err)
+			}
+			baked.Segments[i] = segment
+		}
+	}
 	if c.in.Database.Kind == catalog.YDBManaged && strParam(c.params(), "type", "") == "serverless" {
 		for i, raw := range baked.Segments {
 			segment, err := rowStore(raw)

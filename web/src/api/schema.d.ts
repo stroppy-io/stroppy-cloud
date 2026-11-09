@@ -2572,7 +2572,7 @@ export interface components {
          * @description A database kind. Adding a kind is a code change: the server list (internal/domain/dbkind) and this enum are kept equal by a test.
          * @enum {string}
          */
-        DatabaseKind: "postgres" | "orioledb" | "mysql" | "mariadb" | "picodata" | "ydb" | "ydb_managed" | "cockroach" | "pg_noop" | "noop" | "external" | "custom";
+        DatabaseKind: "postgres" | "orioledb" | "mysql" | "mariadb" | "picodata" | "ydb" | "ydb_managed" | "cockroach" | "greenplum" | "greengage" | "warehousepg" | "opengpdb" | "cloudberry" | "pg_noop" | "noop" | "external" | "custom";
         /**
          * @description The database's tuning: auto sizes the engine's settings from the machine, role, topology and workload; stock keeps the engine's defaults.
          * @enum {string}

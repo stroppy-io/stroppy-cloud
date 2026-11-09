@@ -42,6 +42,11 @@ workload. URL подключения строит `dbkind.URL` из плана. 
 `pipelines/schemas/workload`. Валидация теста отказывает в
 несовместимой связке до запуска.
 
+Семейство Greenplum (Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry) —
+пять kind'ов с одной формой развёртывания: один `dbkind/mpp.go`, один рецепт
+`compile/recipe_mpp.go`, одна схема параметров на kind и общие `cfg.mpp.*`;
+аналитические движки, сценарии TPC-C/TPC-B им отказаны (`docs/tuning/mpp.md`).
+
 Новый kind = схема + файл в `dbkind` (и строка в `kinds()`) + рецепт +
 значение в enum `DatabaseKind` контракта. Свитчей по kind вне этих мест нет;
 тест `TestEveryDeployableKindHasRecipe` ловит kind без рецепта.

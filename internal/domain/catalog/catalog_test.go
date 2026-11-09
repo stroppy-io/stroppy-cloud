@@ -18,7 +18,7 @@ func TestCatalogBakes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(c.Databases) != 12 {
+	if len(c.Databases) != 17 {
 		t.Fatalf("databases = %d", len(c.Databases))
 	}
 	for _, d := range c.Databases {
@@ -52,6 +52,28 @@ func TestCatalogBakes(t *testing.T) {
 	}
 	if len(c.MetricsFor(catalog.Postgres)) >= len(c.Metrics) || len(c.MetricsFor("")) != len(c.Metrics) {
 		t.Error("metric filtering")
+	}
+}
+
+// The coordinator of the Greenplum family is a PostgreSQL server the postgres
+// exporter reads, so its metrics are the PostgreSQL group's.
+func TestMPPKindsHavePostgresMetrics(t *testing.T) {
+	reg := schemas.New()
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, kind := range []catalog.DatabaseKind{catalog.Greenplum, catalog.Greengage, catalog.WarehousePG, catalog.OpenGPDB, catalog.Cloudberry} {
+		found := false
+		for _, m := range c.MetricsFor(kind) {
+			found = found || m.Key == "pg_stat_database_xact_commit"
+			if m.Group == "CockroachDB" || m.Group == "Picodata" {
+				t.Errorf("%s gets the %s metric %s", kind, m.Group, m.Key)
+			}
+		}
+		if !found {
+			t.Errorf("%s has no PostgreSQL commit metric", kind)
+		}
 	}
 }
 

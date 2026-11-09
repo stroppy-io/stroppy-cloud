@@ -107,6 +107,7 @@ func TestPostgresParams(t *testing.T) {
 | Picodata | 25.3 (legacy) / 26.1 / 26.2 | `cfg.picodata.yaml@25/@26.1/@26` |
 | YDB | 25.4 / 26.1 / 26.2 / 26.3 | `cfg.ydb.config.yaml@25/@26` |
 | CockroachDB | 24.1 / 24.3 / 25.2 / 25.4 / 26.2 / 26.3 | `cfg.cockroach.flags@24/@25/@26` |
+| Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry | 6.x (PostgreSQL 9.4) / 7.x, 8.0 alpha (12, 14) / 2.1 (14) | один `cfg.mpp.gpinitsystem@1` и один `cfg.mpp.gucs@1` на все версии |
 | MaxScale (параметр mariadb) | линия 24.02 | `cfg.maxscale.cnf@24` |
 
 Обвязка, версия которой продуктом не выбирается: `pg_hba 1`, `patroni 3` (legacy 3.3), `patroni 4` (4.1.5), `etcd 3` (3.5), `haproxy 2` (2.9), `pgbouncer 1` (1.23), `proxysql 2`
@@ -145,6 +146,15 @@ Version-gating внутри одного билдера (что именно р�
   26; с @25 добавлены `--wal-failover`, `--locality-advertise-addr`,
   `--max-disk-temp-storage`. Дефолт `--cache` у upstream 128MiB (24.x) →
   256MiB (25.4+), схема во всех мажорах держит 25%.
+* `mpp.gpinitsystem` / `mpp.gucs` (семейство Greenplum): одна схема на все
+  версии и все пять движков, версионных расхождений внутри схемы нет, а у
+  значений есть: ключи координатора `MASTER_*` (основа PostgreSQL 9.4, 6.x) и
+  `COORDINATOR_*` (12 и 14) выбирает сервер полем `coordinator_keyword`;
+  `max_wal_size` бывает только в 7.x и новее (в 6.x его место занимает
+  `checkpoint_segments`, который `gpconfig` не меняет), `autovacuum` в 6.x
+  `gpconfig` тоже не меняет. Поля `gucs` по умолчанию не
+  заданы: пустое значение — дефолт движка. Таблица значений профиля —
+  `docs/tuning/mpp.md`.
 * `maxscale.cnf`: только @24 (линия 24.02) — последняя линия со свободным
   образом на Docker Hub (`mariadb/maxscale:24.02.x`; 25.x есть только как
   `-trial`). В 24.02 у монитора три таймаута

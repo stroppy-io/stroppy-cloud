@@ -9285,6 +9285,16 @@ func (s *DatabaseKind) Decode(d *jx.Decoder) error {
 		*s = DatabaseKindYdbManaged
 	case DatabaseKindCockroach:
 		*s = DatabaseKindCockroach
+	case DatabaseKindGreenplum:
+		*s = DatabaseKindGreenplum
+	case DatabaseKindGreengage:
+		*s = DatabaseKindGreengage
+	case DatabaseKindWarehousepg:
+		*s = DatabaseKindWarehousepg
+	case DatabaseKindOpengpdb:
+		*s = DatabaseKindOpengpdb
+	case DatabaseKindCloudberry:
+		*s = DatabaseKindCloudberry
 	case DatabaseKindPgNoop:
 		*s = DatabaseKindPgNoop
 	case DatabaseKindNoop:

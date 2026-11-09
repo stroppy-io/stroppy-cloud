@@ -22,6 +22,42 @@ func TestHugeDatasetRejectsUnrelatedDiskCapacity(t *testing.T) {
 	}
 }
 
+// A dataset that does not fit one machine fits the four segment hosts of a
+// Greenplum-family cluster, which distribute every table: their storage is
+// counted together, as for the other distributed engines.
+func TestDistributedStorageOfTheGreenplumFamily(t *testing.T) {
+	for _, tc := range []struct {
+		image  string
+		accept bool
+	}{
+		{"docker.stroppy.io/stroppy-io/greengage:7.5.1", true},
+		{"docker.stroppy.io/stroppy-io/warehousepg:7.6.1-whpg", true},
+		{"docker.stroppy.io/stroppy-io/cloudberry:2.1.0-incubating", true},
+		{"docker.stroppy.io/stroppy-io/greenplum:6.27.1", true},
+		{"docker.stroppy.io/stroppy-io/opengpdb:6.30.2", true},
+		{"postgres:17", false},
+	} {
+		t.Run(tc.image, func(t *testing.T) {
+			r := capacityRun()
+			r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"h","workload":{"script":"tpch/tx","scale_factor":20},"run":{"vus":1,"duration":"1m"}}`)}
+			r.Containers = nil
+			for _, name := range []string{"db-1", "db-2", "db-3", "db-4"} {
+				if name != "db-1" {
+					r.Machines = append(r.Machines, Machine{Name: name, Role: "db", CPU: 4, MemoryGB: 8, InstanceType: "standard-v3", Disks: []Disk{{Name: "data", GB: 10, Type: "network-ssd", Mount: "/data"}}})
+				}
+				r.Containers = append(r.Containers, Container{Name: name + "-db", Role: "db", Machine: name, Image: tc.image, Mounts: []Mount{{Source: "/data/mpp", Target: "/data/mpp"}}})
+			}
+			failed := false
+			for _, issue := range CheckResources(r) {
+				failed = failed || (issue.Code == "capacity_insufficient" && issue.Severity == "ERROR")
+			}
+			if failed == tc.accept {
+				t.Errorf("capacity error = %v for %s", failed, tc.image)
+			}
+		})
+	}
+}
+
 func TestResourcesRejectImpossibleLayouts(t *testing.T) {
 	for _, tc := range []struct {
 		name string

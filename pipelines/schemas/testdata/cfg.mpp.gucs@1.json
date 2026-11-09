@@ -1,0 +1,357 @@
+{
+  "coerce": true,
+  "description": "GUCs applied with gpconfig to a Greenplum-family cluster, one list per role.",
+  "fields": [
+    {
+      "description": "Memory one segment instance (or the coordinator) may use for all its queries; the server cancels the biggest query above it. Engine default 8192, which caps a big host unless raised.",
+      "group": "Memory",
+      "int64": {
+        "gte": "128",
+        "lte": "1048576"
+      },
+      "name": "gp_vmem_protect_limit",
+      "nullable": true,
+      "title": "Segment memory limit",
+      "unit": "MB"
+    },
+    {
+      "description": "Upper bound of statement_mem for any session. Engine default 2000; statement_mem must stay below it, so it is written first.",
+      "group": "Memory",
+      "int64": {
+        "gte": "2",
+        "lte": "1048576"
+      },
+      "name": "max_statement_mem",
+      "nullable": true,
+      "title": "Max statement memory",
+      "unit": "MB"
+    },
+    {
+      "description": "Memory one query may use on one segment before operators spill to disk. Engine default 125; must be below max_statement_mem.",
+      "group": "Memory",
+      "int64": {
+        "gte": "1",
+        "lte": "1048576"
+      },
+      "name": "statement_mem",
+      "nullable": true,
+      "title": "Statement memory",
+      "unit": "MB"
+    },
+    {
+      "description": "Memory of one sort or hash step before it spills (engine default 32).",
+      "group": "Memory",
+      "int64": {
+        "gte": "1",
+        "lte": "1048576"
+      },
+      "name": "work_mem",
+      "nullable": true,
+      "title": "Work memory",
+      "unit": "MB"
+    },
+    {
+      "description": "Shared buffer pool of each segment instance (engine default 125). Analytic scans barely use it.",
+      "group": "Memory",
+      "int64": {
+        "gte": "16",
+        "lte": "1048576"
+      },
+      "name": "shared_buffers",
+      "nullable": true,
+      "title": "Shared buffers",
+      "unit": "MB"
+    },
+    {
+      "description": "The PostgreSQL planner's guess of the cache one segment instance can count on; GPORCA does not read it.",
+      "group": "Memory",
+      "int64": {
+        "gte": "1",
+        "lte": "8388608"
+      },
+      "name": "effective_cache_size",
+      "nullable": true,
+      "title": "Effective cache size",
+      "unit": "MB"
+    },
+    {
+      "description": "Share of gp_vmem_protect_limit above which the server starts cancelling the biggest queries (engine default 90).",
+      "group": "Memory",
+      "int64": {
+        "gte": "1",
+        "lte": "100"
+      },
+      "name": "runaway_detector_activation_percent",
+      "nullable": true,
+      "title": "Runaway detector threshold",
+      "unit": "%"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "queue",
+            "value": {
+              "stringValue": "queue"
+            }
+          },
+          {
+            "label": "group",
+            "value": {
+              "stringValue": "group"
+            }
+          },
+          {
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
+          }
+        ]
+      },
+      "description": "How concurrency and memory of queries are managed: queue = resource queues (all engines), group = cgroups (needs a cgroup setup the images do not have), none = no manager (7.x and Cloudberry).",
+      "group": "Memory",
+      "name": "gp_resource_manager",
+      "nullable": true,
+      "title": "Resource manager"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
+          }
+        ]
+      },
+      "description": "on = GPORCA plans queries, off = the PostgreSQL-based planner. The optimizer parameter of the database sets it.",
+      "group": "Planner",
+      "name": "optimizer",
+      "nullable": true,
+      "title": "GPORCA"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
+          },
+          {
+            "label": "on_change",
+            "value": {
+              "stringValue": "on_change"
+            }
+          },
+          {
+            "label": "on_no_stats",
+            "value": {
+              "stringValue": "on_no_stats"
+            }
+          }
+        ]
+      },
+      "description": "When a statement triggers ANALYZE on its own: none, on_change or on_no_stats. 6.x engines default to on_no_stats, 7.x and Cloudberry to none.",
+      "group": "Planner",
+      "name": "gp_autostats_mode",
+      "nullable": true,
+      "title": "Automatic statistics"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
+          }
+        ]
+      },
+      "description": "Background vacuum and analyze of the catalogs.",
+      "group": "Planner",
+      "name": "autovacuum",
+      "nullable": true,
+      "title": "Autovacuum"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "udpifc",
+            "value": {
+              "stringValue": "udpifc"
+            }
+          },
+          {
+            "label": "tcp",
+            "value": {
+              "stringValue": "tcp"
+            }
+          },
+          {
+            "label": "proxy",
+            "value": {
+              "stringValue": "proxy"
+            }
+          }
+        ]
+      },
+      "description": "Transport of motion data between segments: udpifc (every engine's default), tcp or proxy.",
+      "group": "Interconnect",
+      "name": "gp_interconnect_type",
+      "nullable": true,
+      "title": "Interconnect type"
+    },
+    {
+      "description": "Largest UDP packet of the interconnect (engine default 8192, which assumes jumbo frames). 1420 fits a 1500-byte MTU without IP fragmentation.",
+      "group": "Interconnect",
+      "int64": {
+        "gte": "512",
+        "lte": "65536"
+      },
+      "name": "gp_max_packet_size",
+      "nullable": true,
+      "title": "Interconnect packet size",
+      "unit": "bytes"
+    },
+    {
+      "description": "Packets a receiver queues per sender (engine default 4).",
+      "group": "Interconnect",
+      "int64": {
+        "gte": "1",
+        "lte": "4096"
+      },
+      "name": "gp_interconnect_queue_depth",
+      "nullable": true,
+      "title": "Receive queue depth",
+      "unit": "packets"
+    },
+    {
+      "description": "Packets a sender keeps in flight per receiver (engine default 2).",
+      "group": "Interconnect",
+      "int64": {
+        "gte": "1",
+        "lte": "4096"
+      },
+      "name": "gp_interconnect_snd_queue_depth",
+      "nullable": true,
+      "title": "Send queue depth",
+      "unit": "packets"
+    },
+    {
+      "description": "Client connections of the coordinator; on segments every session of the coordinator opens one connection per slice, so segments need at least 3 times the coordinator's value.",
+      "group": "Connections",
+      "int64": {
+        "gte": "1",
+        "lte": "262143"
+      },
+      "name": "max_connections",
+      "nullable": true,
+      "title": "Connections",
+      "unit": ""
+    },
+    {
+      "description": "How long the fault prober waits for a segment to answer (engine default 20).",
+      "group": "Fault detection",
+      "int64": {
+        "gte": "1",
+        "lte": "3600"
+      },
+      "name": "gp_fts_probe_timeout",
+      "nullable": true,
+      "title": "FTS probe timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Time between probes of all segments (engine default 60).",
+      "group": "Fault detection",
+      "int64": {
+        "gte": "10",
+        "lte": "3600"
+      },
+      "name": "gp_fts_probe_interval",
+      "nullable": true,
+      "title": "FTS probe interval",
+      "unit": "s"
+    },
+    {
+      "description": "How long the coordinator waits for a segment to accept a connection (engine default 180).",
+      "group": "Fault detection",
+      "int64": {
+        "gte": "1",
+        "lte": "86400"
+      },
+      "name": "gp_segment_connect_timeout",
+      "nullable": true,
+      "title": "Segment connect timeout",
+      "unit": "s"
+    },
+    {
+      "description": "WAL size that triggers a checkpoint. PostgreSQL 12 and 14 bases only (7.x, 8.x and Cloudberry).",
+      "group": "WAL",
+      "int64": {
+        "gte": "32",
+        "lte": "1048576"
+      },
+      "name": "max_wal_size",
+      "nullable": true,
+      "title": "Max WAL size",
+      "unit": "MB"
+    },
+    {
+      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "valueField": {
+          "name": "value",
+          "string": {}
+        }
+      },
+      "name": "custom",
+      "title": "Extra settings"
+    },
+    {
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "The `custom` map joined into config lines; the template prints it at the end of the file.",
+      "group": "Custom",
+      "name": "custom_rendered",
+      "title": "Rendered extra settings"
+    }
+  ],
+  "id": {
+    "name": "mpp.gucs",
+    "namespace": "cfg",
+    "version": "v1.0.0"
+  },
+  "rules": [
+    {
+      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "id": "custom-keys",
+      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$"
+    }
+  ],
+  "strict": true,
+  "templates": {
+    "conf": "# GUCs for gpconfig — generated by stroppy; unset keys keep the engine's value.\n{{#values.gp_vmem_protect_limit}}gp_vmem_protect_limit = {{{.}}}\n{{/values.gp_vmem_protect_limit}}\n{{#values.max_statement_mem}}max_statement_mem = {{{.}}}MB\n{{/values.max_statement_mem}}\n{{#values.statement_mem}}statement_mem = {{{.}}}MB\n{{/values.statement_mem}}\n{{#values.work_mem}}work_mem = {{{.}}}MB\n{{/values.work_mem}}\n{{#values.shared_buffers}}shared_buffers = {{{.}}}MB\n{{/values.shared_buffers}}\n{{#values.effective_cache_size}}effective_cache_size = {{{.}}}MB\n{{/values.effective_cache_size}}\n{{#values.runaway_detector_activation_percent}}runaway_detector_activation_percent = {{{.}}}\n{{/values.runaway_detector_activation_percent}}\n{{#values.gp_resource_manager}}gp_resource_manager = {{{.}}}\n{{/values.gp_resource_manager}}\n{{#values.optimizer}}optimizer = {{{.}}}\n{{/values.optimizer}}\n{{#values.gp_autostats_mode}}gp_autostats_mode = {{{.}}}\n{{/values.gp_autostats_mode}}\n{{#values.autovacuum}}autovacuum = {{{.}}}\n{{/values.autovacuum}}\n{{#values.gp_interconnect_type}}gp_interconnect_type = {{{.}}}\n{{/values.gp_interconnect_type}}\n{{#values.gp_max_packet_size}}gp_max_packet_size = {{{.}}}\n{{/values.gp_max_packet_size}}\n{{#values.gp_interconnect_queue_depth}}gp_interconnect_queue_depth = {{{.}}}\n{{/values.gp_interconnect_queue_depth}}\n{{#values.gp_interconnect_snd_queue_depth}}gp_interconnect_snd_queue_depth = {{{.}}}\n{{/values.gp_interconnect_snd_queue_depth}}\n{{#values.max_connections}}max_connections = {{{.}}}\n{{/values.max_connections}}\n{{#values.gp_fts_probe_timeout}}gp_fts_probe_timeout = {{{.}}}\n{{/values.gp_fts_probe_timeout}}\n{{#values.gp_fts_probe_interval}}gp_fts_probe_interval = {{{.}}}\n{{/values.gp_fts_probe_interval}}\n{{#values.gp_segment_connect_timeout}}gp_segment_connect_timeout = {{{.}}}\n{{/values.gp_segment_connect_timeout}}\n{{#values.max_wal_size}}max_wal_size = {{{.}}}MB\n{{/values.max_wal_size}}\n{{#values.custom_rendered}}\n# --- custom ---\n{{{values.custom_rendered}}}\n{{/values.custom_rendered}}\n"
+  }
+}

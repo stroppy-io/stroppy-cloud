@@ -31,6 +31,10 @@ import cfgMariadbCnf11_8Schema from './cfg.mariadb.cnf_v11.8.json';
 import type { CfgMariadbCnf11_8 } from './cfg.mariadb.cnf_v11.8';
 import cfgMaxscaleCnf24Schema from './cfg.maxscale.cnf_v24.json';
 import type { CfgMaxscaleCnf24 } from './cfg.maxscale.cnf_v24';
+import cfgMppGpinitsystem1Schema from './cfg.mpp.gpinitsystem_v1.json';
+import type { CfgMppGpinitsystem1 } from './cfg.mpp.gpinitsystem_v1';
+import cfgMppGucs1Schema from './cfg.mpp.gucs_v1.json';
+import type { CfgMppGucs1 } from './cfg.mpp.gucs_v1';
 import cfgMyCnf8Schema from './cfg.my.cnf_v8.json';
 import type { CfgMyCnf8 } from './cfg.my.cnf_v8';
 import cfgMyCnf8_4Schema from './cfg.my.cnf_v8.4.json';
@@ -69,18 +73,26 @@ import cfgYdbConfigYaml25Schema from './cfg.ydb.config.yaml_v25.json';
 import type { CfgYdbConfigYaml25 } from './cfg.ydb.config.yaml_v25';
 import cfgYdbConfigYaml26Schema from './cfg.ydb.config.yaml_v26.json';
 import type { CfgYdbConfigYaml26 } from './cfg.ydb.config.yaml_v26';
+import dbCloudberryParams1Schema from './db.cloudberry.params_v1.json';
+import type { DbCloudberryParams1 } from './db.cloudberry.params_v1';
 import dbCockroachParams1Schema from './db.cockroach.params_v1.json';
 import type { DbCockroachParams1 } from './db.cockroach.params_v1';
 import dbCustomParams1Schema from './db.custom.params_v1.json';
 import type { DbCustomParams1 } from './db.custom.params_v1';
 import dbExternalParams1Schema from './db.external.params_v1.json';
 import type { DbExternalParams1 } from './db.external.params_v1';
+import dbGreengageParams1Schema from './db.greengage.params_v1.json';
+import type { DbGreengageParams1 } from './db.greengage.params_v1';
+import dbGreenplumParams1Schema from './db.greenplum.params_v1.json';
+import type { DbGreenplumParams1 } from './db.greenplum.params_v1';
 import dbMariadbParams1Schema from './db.mariadb.params_v1.json';
 import type { DbMariadbParams1 } from './db.mariadb.params_v1';
 import dbMysqlParams1Schema from './db.mysql.params_v1.json';
 import type { DbMysqlParams1 } from './db.mysql.params_v1';
 import dbNoopParams1Schema from './db.noop.params_v1.json';
 import type { DbNoopParams1 } from './db.noop.params_v1';
+import dbOpengpdbParams1Schema from './db.opengpdb.params_v1.json';
+import type { DbOpengpdbParams1 } from './db.opengpdb.params_v1';
 import dbOrioledbParams1Schema from './db.orioledb.params_v1.json';
 import type { DbOrioledbParams1 } from './db.orioledb.params_v1';
 import dbPgNoopParams1Schema from './db.pg_noop.params_v1.json';
@@ -89,6 +101,8 @@ import dbPicodataParams1Schema from './db.picodata.params_v1.json';
 import type { DbPicodataParams1 } from './db.picodata.params_v1';
 import dbPostgresParams1Schema from './db.postgres.params_v1.json';
 import type { DbPostgresParams1 } from './db.postgres.params_v1';
+import dbWarehousepgParams1Schema from './db.warehousepg.params_v1.json';
+import type { DbWarehousepgParams1 } from './db.warehousepg.params_v1';
 import dbYdbParams1Schema from './db.ydb.params_v1.json';
 import type { DbYdbParams1 } from './db.ydb.params_v1';
 import dbYdbManagedParams1Schema from './db.ydb_managed.params_v1.json';
@@ -152,6 +166,8 @@ export const schemaIds = [
   "cfg.mariadb.cnf@11.4",
   "cfg.mariadb.cnf@11.8",
   "cfg.maxscale.cnf@24",
+  "cfg.mpp.gpinitsystem@1",
+  "cfg.mpp.gucs@1",
   "cfg.my.cnf@8",
   "cfg.my.cnf@8.4",
   "cfg.orioledb.postgresql.conf@16",
@@ -171,16 +187,21 @@ export const schemaIds = [
   "cfg.proxysql.cnf@2",
   "cfg.ydb.config.yaml@25",
   "cfg.ydb.config.yaml@26",
+  "db.cloudberry.params@1",
   "db.cockroach.params@1",
   "db.custom.params@1",
   "db.external.params@1",
+  "db.greengage.params@1",
+  "db.greenplum.params@1",
   "db.mariadb.params@1",
   "db.mysql.params@1",
   "db.noop.params@1",
+  "db.opengpdb.params@1",
   "db.orioledb.params@1",
   "db.pg_noop.params@1",
   "db.picodata.params@1",
   "db.postgres.params@1",
+  "db.warehousepg.params@1",
   "db.ydb.params@1",
   "db.ydb_managed.params@1",
   "provider.aws.credentials@1",
@@ -224,6 +245,8 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "cfg.mariadb.cnf@11.4" ? CfgMariadbCnf11_4 :
   Id extends "cfg.mariadb.cnf@11.8" ? CfgMariadbCnf11_8 :
   Id extends "cfg.maxscale.cnf@24" ? CfgMaxscaleCnf24 :
+  Id extends "cfg.mpp.gpinitsystem@1" ? CfgMppGpinitsystem1 :
+  Id extends "cfg.mpp.gucs@1" ? CfgMppGucs1 :
   Id extends "cfg.my.cnf@8" ? CfgMyCnf8 :
   Id extends "cfg.my.cnf@8.4" ? CfgMyCnf8_4 :
   Id extends "cfg.orioledb.postgresql.conf@16" ? CfgOrioledbPostgresqlConf16 :
@@ -243,16 +266,21 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "cfg.proxysql.cnf@2" ? CfgProxysqlCnf2 :
   Id extends "cfg.ydb.config.yaml@25" ? CfgYdbConfigYaml25 :
   Id extends "cfg.ydb.config.yaml@26" ? CfgYdbConfigYaml26 :
+  Id extends "db.cloudberry.params@1" ? DbCloudberryParams1 :
   Id extends "db.cockroach.params@1" ? DbCockroachParams1 :
   Id extends "db.custom.params@1" ? DbCustomParams1 :
   Id extends "db.external.params@1" ? DbExternalParams1 :
+  Id extends "db.greengage.params@1" ? DbGreengageParams1 :
+  Id extends "db.greenplum.params@1" ? DbGreenplumParams1 :
   Id extends "db.mariadb.params@1" ? DbMariadbParams1 :
   Id extends "db.mysql.params@1" ? DbMysqlParams1 :
   Id extends "db.noop.params@1" ? DbNoopParams1 :
+  Id extends "db.opengpdb.params@1" ? DbOpengpdbParams1 :
   Id extends "db.orioledb.params@1" ? DbOrioledbParams1 :
   Id extends "db.pg_noop.params@1" ? DbPgNoopParams1 :
   Id extends "db.picodata.params@1" ? DbPicodataParams1 :
   Id extends "db.postgres.params@1" ? DbPostgresParams1 :
+  Id extends "db.warehousepg.params@1" ? DbWarehousepgParams1 :
   Id extends "db.ydb.params@1" ? DbYdbParams1 :
   Id extends "db.ydb_managed.params@1" ? DbYdbManagedParams1 :
   Id extends "provider.aws.credentials@1" ? ProviderAwsCredentials1 :
@@ -294,6 +322,8 @@ export const schemas: Record<SchemaId, unknown> = {
   "cfg.mariadb.cnf@11.4": cfgMariadbCnf11_4Schema,
   "cfg.mariadb.cnf@11.8": cfgMariadbCnf11_8Schema,
   "cfg.maxscale.cnf@24": cfgMaxscaleCnf24Schema,
+  "cfg.mpp.gpinitsystem@1": cfgMppGpinitsystem1Schema,
+  "cfg.mpp.gucs@1": cfgMppGucs1Schema,
   "cfg.my.cnf@8": cfgMyCnf8Schema,
   "cfg.my.cnf@8.4": cfgMyCnf8_4Schema,
   "cfg.orioledb.postgresql.conf@16": cfgOrioledbPostgresqlConf16Schema,
@@ -313,16 +343,21 @@ export const schemas: Record<SchemaId, unknown> = {
   "cfg.proxysql.cnf@2": cfgProxysqlCnf2Schema,
   "cfg.ydb.config.yaml@25": cfgYdbConfigYaml25Schema,
   "cfg.ydb.config.yaml@26": cfgYdbConfigYaml26Schema,
+  "db.cloudberry.params@1": dbCloudberryParams1Schema,
   "db.cockroach.params@1": dbCockroachParams1Schema,
   "db.custom.params@1": dbCustomParams1Schema,
   "db.external.params@1": dbExternalParams1Schema,
+  "db.greengage.params@1": dbGreengageParams1Schema,
+  "db.greenplum.params@1": dbGreenplumParams1Schema,
   "db.mariadb.params@1": dbMariadbParams1Schema,
   "db.mysql.params@1": dbMysqlParams1Schema,
   "db.noop.params@1": dbNoopParams1Schema,
+  "db.opengpdb.params@1": dbOpengpdbParams1Schema,
   "db.orioledb.params@1": dbOrioledbParams1Schema,
   "db.pg_noop.params@1": dbPgNoopParams1Schema,
   "db.picodata.params@1": dbPicodataParams1Schema,
   "db.postgres.params@1": dbPostgresParams1Schema,
+  "db.warehousepg.params@1": dbWarehousepgParams1Schema,
   "db.ydb.params@1": dbYdbParams1Schema,
   "db.ydb_managed.params@1": dbYdbManagedParams1Schema,
   "provider.aws.credentials@1": providerAwsCredentials1Schema,
@@ -364,6 +399,8 @@ export type {
   CfgMariadbCnf11_4,
   CfgMariadbCnf11_8,
   CfgMaxscaleCnf24,
+  CfgMppGpinitsystem1,
+  CfgMppGucs1,
   CfgMyCnf8,
   CfgMyCnf8_4,
   CfgOrioledbPostgresqlConf16,
@@ -383,16 +420,21 @@ export type {
   CfgProxysqlCnf2,
   CfgYdbConfigYaml25,
   CfgYdbConfigYaml26,
+  DbCloudberryParams1,
   DbCockroachParams1,
   DbCustomParams1,
   DbExternalParams1,
+  DbGreengageParams1,
+  DbGreenplumParams1,
   DbMariadbParams1,
   DbMysqlParams1,
   DbNoopParams1,
+  DbOpengpdbParams1,
   DbOrioledbParams1,
   DbPgNoopParams1,
   DbPicodataParams1,
   DbPostgresParams1,
+  DbWarehousepgParams1,
   DbYdbParams1,
   DbYdbManagedParams1,
   ProviderAwsCredentials1,

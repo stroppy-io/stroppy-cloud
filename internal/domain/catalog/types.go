@@ -13,10 +13,16 @@ const (
 	YDBManaged DatabaseKind = "ydb_managed"
 	Cockroach  DatabaseKind = "cockroach"
 	OrioleDB   DatabaseKind = "orioledb"
-	External   DatabaseKind = "external"
-	Noop       DatabaseKind = "noop"
-	PgNoop     DatabaseKind = "pg_noop"
-	Custom     DatabaseKind = "custom"
+	// The Greenplum family.
+	Greenplum   DatabaseKind = "greenplum"
+	Greengage   DatabaseKind = "greengage"
+	WarehousePG DatabaseKind = "warehousepg"
+	OpenGPDB    DatabaseKind = "opengpdb"
+	Cloudberry  DatabaseKind = "cloudberry"
+	External    DatabaseKind = "external"
+	Noop        DatabaseKind = "noop"
+	PgNoop      DatabaseKind = "pg_noop"
+	Custom      DatabaseKind = "custom"
 )
 
 // Protocol is a stroppy driver protocol.

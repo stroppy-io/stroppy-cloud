@@ -155,6 +155,10 @@ func (c *compilation) durability(effective map[string]map[string]json.RawMessage
 	case catalog.Cockroach, catalog.YDB:
 		// Both sync their log (Raft / PDisk) before acknowledging a commit.
 		return run.DurabilityFsync, true
+	case catalog.Greenplum, catalog.Greengage, catalog.WarehousePG, catalog.OpenGPDB, catalog.Cloudberry:
+		// The cluster keeps the engine's fsync and synchronous_commit; the
+		// GUC list sets neither, and there are no mirrors to wait for.
+		return run.DurabilityFsync, true
 	default:
 		return "", false
 	}

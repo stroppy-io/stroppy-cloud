@@ -33,7 +33,7 @@ func TestCompileCatalogTopologies(t *testing.T) {
 	provider, _ := cat.Provider("yandex")
 	unsupported := map[string]bool{}
 
-	for _, kind := range []catalog.DatabaseKind{catalog.Postgres, catalog.OrioleDB, catalog.MySQL, catalog.MariaDB, catalog.Cockroach, catalog.Picodata, catalog.YDB, catalog.YDBManaged, catalog.PgNoop, catalog.Noop} {
+	for _, kind := range []catalog.DatabaseKind{catalog.Postgres, catalog.OrioleDB, catalog.MySQL, catalog.MariaDB, catalog.Cockroach, catalog.Greenplum, catalog.Greengage, catalog.WarehousePG, catalog.OpenGPDB, catalog.Cloudberry, catalog.Picodata, catalog.YDB, catalog.YDBManaged, catalog.PgNoop, catalog.Noop} {
 		db, _ := cat.Database(kind)
 		for _, topo := range db.Topologies {
 			t.Run(string(kind)+"/"+topo.ID, func(t *testing.T) {

@@ -29,7 +29,9 @@ type tuneCase struct {
 	protocol catalog.Protocol
 	vus      int
 	size     string
-	diskGB   int
+	// roleSizes override size per role.
+	roleSizes map[string]string
+	diskGB    int
 }
 
 // compileTuned compiles a tuneCase and returns the output and the
@@ -78,6 +80,9 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 	sizes := map[string]library.RoleSize{}
 	for _, n := range derived.Plan.Nodes {
 		sizes[n.Role] = library.RoleSize{Size: size, DiskGB: tc.diskGB}
+		if s, ok := tc.roleSizes[n.Role]; ok {
+			sizes[n.Role] = library.RoleSize{Size: s, DiskGB: tc.diskGB}
+		}
 	}
 	out, err := compile.Compile(ctx, reg, compile.Input{
 		RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan,

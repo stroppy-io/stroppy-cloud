@@ -2097,6 +2097,16 @@ func (s DatabaseKind) Validate() error {
 		return nil
 	case "cockroach":
 		return nil
+	case "greenplum":
+		return nil
+	case "greengage":
+		return nil
+	case "warehousepg":
+		return nil
+	case "opengpdb":
+		return nil
+	case "cloudberry":
+		return nil
 	case "pg_noop":
 		return nil
 	case "noop":

@@ -4612,18 +4612,23 @@ func (s *DatabaseExternal) SetDsn(val OptString) {
 type DatabaseKind string
 
 const (
-	DatabaseKindPostgres   DatabaseKind = "postgres"
-	DatabaseKindOrioledb   DatabaseKind = "orioledb"
-	DatabaseKindMysql      DatabaseKind = "mysql"
-	DatabaseKindMariadb    DatabaseKind = "mariadb"
-	DatabaseKindPicodata   DatabaseKind = "picodata"
-	DatabaseKindYdb        DatabaseKind = "ydb"
-	DatabaseKindYdbManaged DatabaseKind = "ydb_managed"
-	DatabaseKindCockroach  DatabaseKind = "cockroach"
-	DatabaseKindPgNoop     DatabaseKind = "pg_noop"
-	DatabaseKindNoop       DatabaseKind = "noop"
-	DatabaseKindExternal   DatabaseKind = "external"
-	DatabaseKindCustom     DatabaseKind = "custom"
+	DatabaseKindPostgres    DatabaseKind = "postgres"
+	DatabaseKindOrioledb    DatabaseKind = "orioledb"
+	DatabaseKindMysql       DatabaseKind = "mysql"
+	DatabaseKindMariadb     DatabaseKind = "mariadb"
+	DatabaseKindPicodata    DatabaseKind = "picodata"
+	DatabaseKindYdb         DatabaseKind = "ydb"
+	DatabaseKindYdbManaged  DatabaseKind = "ydb_managed"
+	DatabaseKindCockroach   DatabaseKind = "cockroach"
+	DatabaseKindGreenplum   DatabaseKind = "greenplum"
+	DatabaseKindGreengage   DatabaseKind = "greengage"
+	DatabaseKindWarehousepg DatabaseKind = "warehousepg"
+	DatabaseKindOpengpdb    DatabaseKind = "opengpdb"
+	DatabaseKindCloudberry  DatabaseKind = "cloudberry"
+	DatabaseKindPgNoop      DatabaseKind = "pg_noop"
+	DatabaseKindNoop        DatabaseKind = "noop"
+	DatabaseKindExternal    DatabaseKind = "external"
+	DatabaseKindCustom      DatabaseKind = "custom"
 )
 
 // AllValues returns all DatabaseKind values.
@@ -4637,6 +4642,11 @@ func (DatabaseKind) AllValues() []DatabaseKind {
 		DatabaseKindYdb,
 		DatabaseKindYdbManaged,
 		DatabaseKindCockroach,
+		DatabaseKindGreenplum,
+		DatabaseKindGreengage,
+		DatabaseKindWarehousepg,
+		DatabaseKindOpengpdb,
+		DatabaseKindCloudberry,
 		DatabaseKindPgNoop,
 		DatabaseKindNoop,
 		DatabaseKindExternal,
@@ -4662,6 +4672,16 @@ func (s DatabaseKind) MarshalText() ([]byte, error) {
 	case DatabaseKindYdbManaged:
 		return []byte(s), nil
 	case DatabaseKindCockroach:
+		return []byte(s), nil
+	case DatabaseKindGreenplum:
+		return []byte(s), nil
+	case DatabaseKindGreengage:
+		return []byte(s), nil
+	case DatabaseKindWarehousepg:
+		return []byte(s), nil
+	case DatabaseKindOpengpdb:
+		return []byte(s), nil
+	case DatabaseKindCloudberry:
 		return []byte(s), nil
 	case DatabaseKindPgNoop:
 		return []byte(s), nil
@@ -4702,6 +4722,21 @@ func (s *DatabaseKind) UnmarshalText(data []byte) error {
 		return nil
 	case DatabaseKindCockroach:
 		*s = DatabaseKindCockroach
+		return nil
+	case DatabaseKindGreenplum:
+		*s = DatabaseKindGreenplum
+		return nil
+	case DatabaseKindGreengage:
+		*s = DatabaseKindGreengage
+		return nil
+	case DatabaseKindWarehousepg:
+		*s = DatabaseKindWarehousepg
+		return nil
+	case DatabaseKindOpengpdb:
+		*s = DatabaseKindOpengpdb
+		return nil
+	case DatabaseKindCloudberry:
+		*s = DatabaseKindCloudberry
 		return nil
 	case DatabaseKindPgNoop:
 		*s = DatabaseKindPgNoop

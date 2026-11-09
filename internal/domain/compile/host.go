@@ -27,6 +27,13 @@ type hostTuning struct {
 	Overcommit *int
 	// HugePages is vm.nr_hugepages (2 MB pages).
 	HugePages int
+	// Fields are further cfg.host.sysctl@1 fields by name (vm_overcommit_ratio,
+	// vm_dirty_ratio, …); a field the database set itself is kept.
+	Fields map[string]any
+	// Custom are sysctl keys the schema has no field for. At most one key:
+	// the rendered order of several is not stable, and the RunSpec must be
+	// the same for the same input.
+	Custom map[string]string
 }
 
 // tuneHost records a recipe's kernel wishes for a machine.
@@ -79,6 +86,18 @@ func (c *compilation) prepareDatabaseHosts() error {
 		}
 		if t.HugePages > 0 && !explicit["vm_nr_hugepages"] {
 			value["vm_nr_hugepages"] = t.HugePages
+		}
+		for k, v := range t.Fields {
+			if !explicit[k] {
+				value[k] = v
+			}
+		}
+		if len(t.Custom) > 0 && !explicit["custom"] {
+			custom := map[string]any{}
+			for k, v := range t.Custom {
+				custom[k] = v
+			}
+			value["custom"] = custom
 		}
 		raw, err := json.Marshal(value)
 		if err != nil {

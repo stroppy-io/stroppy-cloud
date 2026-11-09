@@ -3,7 +3,7 @@
 Как платформа настраивает развёрнутые движки. Исследование по каждому движку с
 источниками и метками уверенности — в отчётах этого каталога (`postgres.md`,
 `orioledb.md`, `mysql.md`, `mariadb.md`, `cockroach.md`, `ydb.md`,
-`picodata.md`); пути и номера строк в отчётах указывают на код до тюнинга.
+`picodata.md`, `mpp.md`); пути и номера строк в отчётах указывают на код до тюнинга.
 Код профиля: `internal/domain/compile/tune*.go`, `host.go`, `summary.go`.
 
 Эталонная машина матрицы: 8 vCPU / 32 ГБ / 200 ГБ `network-ssd`, TPC-C
@@ -320,6 +320,25 @@ fsync — отчёт показывает это как «не ждёт диск
 
 `three` с RF3 — это один шард из трёх реплик, а не масштабирование. Для
 сравнения масштабирования нужен вариант RF1 × 3.
+
+### 2.8 Семейство Greenplum (Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry)
+
+Аналитические MPP-движки: координатор и сегмент-хосты, без зеркал. Профиль
+`benchmark` (память сегментам по отчёту SynxDB, не по защитным формулам вендора);
+подробно, с источниками и тем, что проверено, — `mpp.md`.
+
+| Параметр | auto |
+|---|---|
+| сегментов на хост | `segments_per_host` или `max(1, vCPU/2)` |
+| `gp_vmem_protect_limit` | 0.9 · RAM / сегментов (дефолт движка 8192 МБ) |
+| `max_statement_mem` / `statement_mem` | 0.9 / 0.75 · лимита (второй делится на число одновременных запросов) |
+| `work_mem` / `effective_cache_size` | clamp(10% RAM / сегментов, 32 МБ, 1 ГБ) / 50% RAM / сегментов |
+| `gp_autostats_mode` / `autovacuum` | `none` / `off` (stroppy делает `ANALYZE` сам; в 6.x autovacuum не меняется) |
+| `gp_max_packet_size`, глубина очередей интерконнекта | 1420, 16 / 16 |
+| `max_connections` | координатор max(250, VU+50), сегменты втрое больше |
+| FTS и таймаут подключения к сегменту | 600 с, 600 с, 1800 с |
+| `optimizer` | параметр БД (`orca` / `postgres`), пишется и под `stock` |
+| хост | `vm.overcommit_memory=2`, ratio 97, dirty ratio, `min_free_kbytes` 3% |
 
 ---
 

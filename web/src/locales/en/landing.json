@@ -36,7 +36,7 @@
     },
     "deploy": {
       "title": "The database sets itself up",
-      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata or OrioleDB, from one node to a cluster. Stroppy Cloud checks the stand before the load: a passing glitch gets retried on its own, and if something is really broken it stops the run and tells you what.",
+      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB or the Greenplum family (Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry), from one node to a cluster. Stroppy Cloud checks the stand before the load: a passing glitch gets retried on its own, and if something is really broken it stops the run and tells you what.",
       "time": "~3 min"
     },
     "load": {

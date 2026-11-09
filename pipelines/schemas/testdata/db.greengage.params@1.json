@@ -1,0 +1,116 @@
+{
+  "coerce": true,
+  "description": "Greengage cluster: one coordinator and a number of segment hosts. No mirrors and no standby coordinator are offered: a failed segment stops the cluster, which is what a benchmark wants to see.",
+  "fields": [
+    {
+      "choice": {
+        "default": {
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "Auto",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Engine defaults",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto.",
+      "group": "Tuning",
+      "name": "tuning",
+      "title": "Tuning"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "7.5.1"
+        },
+        "options": [
+          {
+            "label": "8.0.0-alpha.1 (pre-release, PostgreSQL 14)",
+            "value": {
+              "stringValue": "8.0.0-alpha.1"
+            }
+          },
+          {
+            "label": "7.5.1 (PostgreSQL 12)",
+            "value": {
+              "stringValue": "7.5.1"
+            }
+          },
+          {
+            "label": "6.32.0 (PostgreSQL 9.4)",
+            "value": {
+              "stringValue": "6.32.0"
+            }
+          }
+        ]
+      },
+      "description": "Server release; the image is pulled per release. The PostgreSQL base of the release decides the spelling of the coordinator in gpinitsystem (MASTER_* up to 9.4, COORDINATOR_* from 12).",
+      "group": "Engine",
+      "name": "version",
+      "required": true,
+      "title": "Greengage version"
+    },
+    {
+      "description": "Machines that carry the primary segments; the coordinator is one more machine.",
+      "group": "Topology",
+      "int64": {
+        "default": "4",
+        "gte": "1",
+        "lte": "32"
+      },
+      "name": "segment_hosts",
+      "title": "Segment hosts"
+    },
+    {
+      "description": "Primary segments on each segment host. 0 = auto: half of the host's vCPUs, at least 1 (what Arenadata ADB defaults to).",
+      "group": "Topology",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "64"
+      },
+      "name": "segments_per_host",
+      "title": "Segments per host"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "orca"
+        },
+        "options": [
+          {
+            "label": "GPORCA",
+            "value": {
+              "stringValue": "orca"
+            }
+          },
+          {
+            "label": "PostgreSQL planner",
+            "value": {
+              "stringValue": "postgres"
+            }
+          }
+        ]
+      },
+      "description": "Which planner the cluster uses: GPORCA (the optimizer GUC on) or the PostgreSQL-based planner (off). Set cluster-wide; every release ships with GPORCA built in.",
+      "group": "Engine",
+      "name": "optimizer",
+      "title": "Query optimizer"
+    }
+  ],
+  "id": {
+    "name": "greengage.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
+  "strict": true
+}

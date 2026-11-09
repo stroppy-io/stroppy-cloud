@@ -219,8 +219,11 @@ func CheckResources(r Run) []ResourceIssue {
 		distributed := false
 		for _, c := range r.Containers {
 			image := strings.ToLower(c.Image)
-			if strings.Contains(image, "cockroach") || strings.Contains(image, "picodata") || strings.Contains(image, "ydb") {
-				distributed = true
+			// The Greenplum family hash-distributes every table over its segment hosts.
+			for _, engine := range []string{"cockroach", "picodata", "ydb", "greenplum", "greengage", "warehousepg", "opengpdb", "cloudberry"} {
+				if strings.Contains(image, engine) {
+					distributed = true
+				}
 			}
 		}
 		available := 0.0

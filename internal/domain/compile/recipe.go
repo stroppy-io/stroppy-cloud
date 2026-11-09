@@ -16,18 +16,23 @@ type recipe func(c *compilation) error
 // recipes by kind. A kind missing here cannot be launched (the test
 // validator reports it).
 var recipes = map[catalog.DatabaseKind]recipe{
-	catalog.Postgres:   postgresRecipe,
-	catalog.OrioleDB:   orioledbRecipe,
-	catalog.MySQL:      mysqlRecipe,
-	catalog.MariaDB:    mysqlRecipe,
-	catalog.Cockroach:  cockroachRecipe,
-	catalog.Picodata:   picodataRecipe,
-	catalog.YDBManaged: managedYDBRecipe,
-	catalog.YDB:        ydbRecipe,
-	catalog.PgNoop:     pgNoopRecipe,
-	catalog.Noop:       noopRecipe,
-	catalog.External:   externalRecipe,
-	catalog.Custom:     customRecipe,
+	catalog.Postgres:    postgresRecipe,
+	catalog.OrioleDB:    orioledbRecipe,
+	catalog.MySQL:       mysqlRecipe,
+	catalog.MariaDB:     mysqlRecipe,
+	catalog.Cockroach:   cockroachRecipe,
+	catalog.Greenplum:   mppRecipe,
+	catalog.Greengage:   mppRecipe,
+	catalog.WarehousePG: mppRecipe,
+	catalog.OpenGPDB:    mppRecipe,
+	catalog.Cloudberry:  mppRecipe,
+	catalog.Picodata:    picodataRecipe,
+	catalog.YDBManaged:  managedYDBRecipe,
+	catalog.YDB:         ydbRecipe,
+	catalog.PgNoop:      pgNoopRecipe,
+	catalog.Noop:        noopRecipe,
+	catalog.External:    externalRecipe,
+	catalog.Custom:      customRecipe,
 }
 
 // Supported reports whether a kind has a recipe.

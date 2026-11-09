@@ -36,7 +36,7 @@
     },
     "deploy": {
       "title": "База настраивается сама",
-      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata или OrioleDB, от одного узла до кластера. Перед нагрузкой Stroppy Cloud проверяет стенд: временный сбой он повторит сам, а если что-то сломано всерьёз, остановит запуск и напишет, что именно.",
+      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB или семейство Greenplum (Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry), от одного узла до кластера. Перед нагрузкой Stroppy Cloud проверяет стенд: временный сбой он повторит сам, а если что-то сломано всерьёз, остановит запуск и напишет, что именно.",
       "time": "~3 мин"
     },
     "load": {

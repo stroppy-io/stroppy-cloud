@@ -33,6 +33,7 @@
             "CockroachDB",
             "OrioleDB",
             "Picodata",
+            "Greenplum, Greengage, WarehousePG, OpenGPDB, Cloudberry",
             "your own database by address"
           ]
         },
