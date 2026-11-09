@@ -4,8 +4,36 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 )
+
+// Stroppy runs a routine script on its own pool next to the main one, both
+// at the full size: the PostgreSQL connection limit has to hold both.
+func TestServerConnectionsHoldEveryClientPool(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name     string
+		protocol catalog.Protocol
+		script   string
+		want     int
+	}{
+		{"pg transactions, one pool", catalog.ProtoPg, "tpcc/tx", 300},
+		{"pg tpcc routines, two pools", catalog.ProtoPg, "tpcc/procs", 550},
+		{"pg tpcb routines, two pools", catalog.ProtoPg, "tpcb/procs", 550},
+		{"mysql opens lazily, one pool", catalog.ProtoMySQL, "tpcc/procs", 300},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			c := &compilation{in: Input{Workload: library.WorkloadSpec{Protocol: tc.protocol, Segments: []json.RawMessage{
+				json.RawMessage(`{"name":"main","workload":{"script":"` + tc.script + `","load_workers":16},"run":{"vus":256}}`),
+			}}}}
+			if got := c.pgCluster(false).MaxConnections; got != tc.want {
+				t.Fatalf("max_connections %d, want %d", got, tc.want)
+			}
+		})
+	}
+}
 
 func TestTuneDriverSizesThePoolForTheWorkload(t *testing.T) {
 	segments := []json.RawMessage{

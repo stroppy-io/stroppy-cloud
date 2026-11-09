@@ -68,10 +68,11 @@ func (c *compilation) pgCluster(oriole bool) pgCounters {
 			cpu = max(cpu, c.hostOf(m).CPU)
 		}
 	}
-	// Every virtual user holds a connection; +20 for exporters, Patroni and
-	// a psql, rounded up to 50 and never below the upstream 100.
+	// Every virtual user holds a connection in each client pool; +20 for
+	// exporters, Patroni and a psql, rounded up to 50 and never below the
+	// upstream 100.
 	// doc: runtime-config-connection.html#GUC-MAX-CONNECTIONS
-	out := pgCounters{MaxConnections: max(100, ceilTo(c.poolSize()+20, 50)), MaxWorkers: max(8, cpu)}
+	out := pgCounters{MaxConnections: max(100, ceilTo(c.clientPools()*c.poolSize()+20, 50)), MaxWorkers: max(8, cpu)}
 	if oriole {
 		// OrioleDB's bgwriters and recovery pools take worker slots too; with
 		// too few it silently falls back to single-process recovery.

@@ -141,7 +141,7 @@ VU на 16 соединениях runner'а L давали потолок 16 / �
 | `max_parallel_workers_per_gather` | 0 для OLTP | 2 |
 | `max_worker_processes` / `max_parallel_workers` | max(8, vCPU) | 8 |
 | autovacuum | naptime 10s, scale_factor 0.05, analyze 0.02, workers 5, cost_limit 2000 | дефолты |
-| `max_connections` | max(100, ceil((VU+20)/50)·50) → 150 | 100 (< 128 VU) |
+| `max_connections` | max(100, ceil((пулы·пул+20)/50)·50) → 150; процедуры (`*/procs`) — два пула: stroppy держит отдельный пул для них, оба полные из-за `minConns` | 100 (< 128 VU) |
 
 Баги, которые чиним вместе с профилем:
 
