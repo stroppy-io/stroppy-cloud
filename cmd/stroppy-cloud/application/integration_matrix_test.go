@@ -12,6 +12,26 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 )
 
+// matrixParam is one typed parameter of a stroppy script in the catalog.
+type matrixParam struct {
+	Name string `json:"name"`
+}
+
+// buildRuns reports whether the stroppy build can run a script on a kind: a
+// Greenplum-family engine runs the analytic scripts only with the build's gp
+// dialect (the compiler refuses them otherwise, mpp_dialect_unavailable).
+func buildRuns(kind, script string, params []matrixParam) bool {
+	if !dbkind.IsMPP(catalog.DatabaseKind(kind)) || (script != "tpch/tx" && script != "tpcds") {
+		return true
+	}
+	for _, p := range params {
+		if p.Name == "sql-dialect" {
+			return true
+		}
+	}
+	return false
+}
+
 // TestE2EDatabaseMatrix launches every version of every topology template
 // of every deployable database kind through the API — the server's
 // compiler, the real pipeline, the projection and the telemetry — and
@@ -58,6 +78,7 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 			Scripts []struct {
 				ID        string   `json:"id"`
 				Protocols []string `json:"protocols"`
+				Params    []matrixParam `json:"params"`
 			} `json:"scripts"`
 		} `json:"versions"`
 	}
@@ -121,6 +142,9 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 		for _, protocol := range protocols {
 			var scripts []string
 			for _, sc := range build.Scripts {
+				if !buildRuns(db.Kind, sc.ID, sc.Params) {
+					continue
+				}
 				for _, p := range sc.Protocols {
 					if p == protocol {
 						scripts = append(scripts, sc.ID)

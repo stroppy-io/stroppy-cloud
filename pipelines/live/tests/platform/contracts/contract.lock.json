@@ -2,7 +2,7 @@
   "version": "0.7.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "19267ec9fca5a6e962ddc282dde0766e1a1a27b2d482ecd668c1bdf6c2511069",
+    "openapi/openapi.yaml": "d5f0a44d3f807df5c3f4b146ff8a92723de15329db88f7102fa8143f5e7b7d47",
     "pipelines/go.mod": "18794109cb59c369c0a7dbb1f9e26070b911669685dcc0ce636e51d90c7b0a44",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
