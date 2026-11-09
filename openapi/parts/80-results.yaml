@@ -161,7 +161,8 @@ components:
     ratingMetric:
       name: metric
       in: query
-      schema: { type: string, default: tps }
+      description: One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H).
+      schema: { type: string }
     ratingKind:
       name: kind
       in: query
@@ -207,10 +208,11 @@ components:
   schemas:
     RatingEntry:
       type: object
-      required: [rank, value, unit, db_kind, scenario, hardware, run_at]
+      required: [rank, value, unit, metric, db_kind, scenario, hardware, run_at]
       properties:
         rank: { type: integer }
         value: { type: number }
+        metric: { $ref: '#/components/schemas/MetricKey', description: The metric the value is of; its definition is in the page's `metrics`. }
         unit: { type: string }
         db_kind: { $ref: '#/components/schemas/DatabaseKind' }
         db_version: { type: string }
@@ -229,9 +231,13 @@ components:
         share_token: { type: string, description: Global rating; public snapshot link. }
     RatingPage:
       type: object
-      required: [metric, scenarios, hardware, data, meta]
+      required: [metrics, scenarios, hardware, data, meta]
       properties:
-        metric: { $ref: '#/components/schemas/MetricDef' }
+        metric: { $ref: '#/components/schemas/MetricDef', description: The one metric asked for; absent when each scenario ranks by its own. }
+        metrics:
+          type: array
+          description: Definitions of the metrics the entries carry.
+          items: { $ref: '#/components/schemas/MetricDef' }
         scenarios:
           type: array
           description: Scenarios that have rated runs, to filter by.

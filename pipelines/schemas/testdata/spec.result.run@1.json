@@ -3,10 +3,10 @@
   "description": "RunResult: headline metrics, per-segment outcome, artifacts and summary of one run.",
   "fields": [
     {
-      "description": "Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments.",
+      "description": "Metrics keyed by segment and metric name; up to 2048 metrics for each of 64 segments.",
       "group": "Result",
       "map": {
-        "maxEntries": "16384",
+        "maxEntries": "131072",
         "valueSchema": {
           "fields": [
             {
@@ -115,7 +115,7 @@
                   {
                     "description": "Metrics measured over this segment's window only (bench summary counters and histogram statistics).",
                     "map": {
-                      "maxEntries": "256",
+                      "maxEntries": "2048",
                       "valueSchema": {
                         "fields": [
                           {
@@ -317,6 +317,59 @@
                     },
                     "name": "error_log",
                     "title": "Error log"
+                  },
+                  {
+                    "description": "Bench steps the Stroppy report timed, in run order.",
+                    "group": "Result",
+                    "list": {
+                      "items": [
+                        {
+                          "object": {
+                            "schema": {
+                              "fields": [
+                                {
+                                  "name": "name",
+                                  "required": true,
+                                  "string": {
+                                    "maxLen": "64"
+                                  },
+                                  "title": "Step"
+                                },
+                                {
+                                  "name": "status",
+                                  "required": true,
+                                  "string": {
+                                    "maxLen": "32"
+                                  },
+                                  "title": "Status"
+                                },
+                                {
+                                  "description": "Wall time of the step, seconds.",
+                                  "double": {
+                                    "gte": 0
+                                  },
+                                  "name": "seconds",
+                                  "required": true,
+                                  "title": "Duration"
+                                }
+                              ],
+                              "strict": true
+                            }
+                          }
+                        }
+                      ],
+                      "maxItems": "64"
+                    },
+                    "name": "steps",
+                    "title": "Steps"
+                  },
+                  {
+                    "description": "Workers that ran the measured step.",
+                    "int64": {
+                      "gte": "0"
+                    },
+                    "name": "workers",
+                    "title": "Workers"
                   }
                 ],
                 "rules": [

@@ -79,6 +79,18 @@ type SegmentResult struct {
 	Error         string `json:"error,omitempty"`
 	// ErrorLog is what Stroppy logged as errors and warnings, grouped.
 	ErrorLog []ErrorLogEntry `json:"error_log,omitempty"`
+	// Steps are the bench steps the report timed, in run order. They travel
+	// apart from Report because the inline envelope is dropped when large.
+	Steps []StepTiming `json:"steps,omitempty"`
+	// Workers is how many workers ran the measured step; 0 when it did not run.
+	Workers int `json:"workers,omitempty"`
+}
+
+// StepTiming is one bench step of a segment as the Stroppy report timed it.
+type StepTiming struct {
+	Name    string  `json:"name"`
+	Status  string  `json:"status"`
+	Seconds float64 `json:"seconds"`
 }
 
 // ErrorLogEntry is one kind of error a segment logged: the same level,

@@ -351,6 +351,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpcc/tx',
       title: 'TPC-C (transactions)',
+      rating_metric: 'tpmc',
       protocols: ['pg', 'mysql', 'cockroach', 'picodata'],
       steps: [
         { id: 'load_data', title: 'Load data', phase: 'bootstrap' },
@@ -364,6 +365,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpcc/procs',
       title: 'TPC-C (stored procedures)',
+      rating_metric: 'tpmc',
       protocols: ['pg'],
       steps: [
         { id: 'load_data', title: 'Load data', phase: 'bootstrap' },
@@ -373,6 +375,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpcb/tx',
       title: 'TPC-B',
+      rating_metric: 'tps',
       protocols: ['pg', 'mysql'],
       steps: [
         { id: 'load_data', title: 'Load data', phase: 'bootstrap' },
@@ -383,6 +386,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpch/tx',
       title: 'TPC-H',
+      rating_metric: 'query_geomean_ms',
       protocols: ['pg', 'ydb_grpc'],
       steps: [
         { id: 'load_data', title: 'Load data', phase: 'bootstrap' },
@@ -393,6 +397,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpcds',
       title: 'TPC-DS',
+      rating_metric: 'query_geomean_ms',
       protocols: ['pg'],
       steps: [
         { id: 'load_data', phase: 'bootstrap' },
@@ -402,6 +407,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'simple',
       title: 'Simple KV',
+      rating_metric: 'qps',
       protocols: ['pg', 'mysql', 'ydb_grpc', 'picodata', 'cockroach'],
       steps: [{ id: 'run', phase: 'workload' }],
       params: [{ name: 'rows', config: 'rows', type: 'int64', scope: 'workload' }],
@@ -446,6 +452,9 @@ export function metricDefs(): MetricDef[] {
   return [
     def('queries_per_second', 'Queries per second', '1/s', 'Workload', true),
     def('tps', 'Throughput', 'tps', 'Headline', true),
+    def('tpmc', 'tpmC', 'tpmC', 'Headline', true),
+    def('qps', 'Queries per second', '1/s', 'Headline', true),
+    def('query_geomean_ms', 'Query time, geometric mean', 'ms', 'Headline'),
     def('latency_p50_ms', 'Latency p50', 'ms', 'Headline'),
     def('latency_p95_ms', 'Latency p95', 'ms', 'Headline'),
     def('latency_p99_ms', 'Latency p99', 'ms', 'Headline'),
@@ -1079,7 +1088,10 @@ export function buildRun(s: RunSeed): Run {
       ? {
           metrics: {
             queries_per_second: { value: (s.tps ?? 0) * 4, unit: 'qps' },
+            qps: { value: (s.tps ?? 0) * 4, unit: '1/s' },
             tps: { value: s.tps ?? 0, unit: 'tps' },
+            // Synthetic: New-Order is about 45% of the TPC-C mix.
+            tpmc: { value: Math.round((s.tps ?? 0) * 60 * 0.45), unit: 'tpmC' },
             latency_p50_ms: { value: (s.p99 ?? 0) * 0.3, unit: 'ms' },
             latency_p95_ms: { value: (s.p99 ?? 0) * 0.7, unit: 'ms' },
             latency_p99_ms: { value: s.p99 ?? 0, unit: 'ms' },

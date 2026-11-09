@@ -18,7 +18,7 @@ func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []st
 	if lim <= 0 || lim > 200 {
 		lim = 50
 	}
-	q := rating.Query{Metric: metric.Or("tps"), Versions: versions, StroppyVersions: stroppy, Scenarios: scenarios, Hardware: hardware, Period: string(period.Or(oas.RatingPeriodAll)), Limit: lim + 1, Offset: offset}
+	q := rating.Query{Metric: metric.Or(""), Versions: versions, StroppyVersions: stroppy, Scenarios: scenarios, Hardware: hardware, Period: string(period.Or(oas.RatingPeriodAll)), Limit: lim + 1, Offset: offset}
 	for _, k := range kinds {
 		q.Kinds = append(q.Kinds, string(k))
 	}
@@ -39,7 +39,15 @@ func hardwareOf(key string) oas.HardwareClass {
 
 func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage {
 	entries, meta := page(p.Entries, offset, limit)
-	out := &oas.RatingPage{Metric: metricOf(p.Metric), Scenarios: p.Scenarios, Hardware: make([]oas.HardwareClass, 0, len(p.Hardware)), Data: make([]oas.RatingEntry, 0, len(entries)), Meta: meta}
+	out := &oas.RatingPage{Scenarios: p.Scenarios, Metrics: make([]oas.MetricDef, 0, len(p.Metrics)), Hardware: make([]oas.HardwareClass, 0, len(p.Hardware)), Data: make([]oas.RatingEntry, 0, len(entries)), Meta: meta}
+	if p.Metric.Key != "" {
+		out.Metric = oas.NewOptMetricDef(metricOf(p.Metric))
+	}
+	units := map[string]string{}
+	for _, m := range p.Metrics {
+		out.Metrics = append(out.Metrics, metricOf(m))
+		units[m.Key] = m.Unit
+	}
 	if out.Scenarios == nil {
 		out.Scenarios = []string{}
 	}
@@ -48,7 +56,7 @@ func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage
 	}
 	for _, e := range entries {
 		s := e.Run.Summary
-		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Unit: p.Metric.Unit, DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
+		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Unit: units[e.Metric], Metric: oas.MetricKey(e.Metric), DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
 		if e.Run.FinishedAt != nil {
 			item.RunAt = *e.Run.FinishedAt
 		}

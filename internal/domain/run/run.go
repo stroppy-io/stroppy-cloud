@@ -196,6 +196,8 @@ type Summary struct {
 	ProgressPct     float64            `json:"progress_pct"`
 	Segment         string             `json:"segment,omitempty"`
 	Headline        map[string]float64 `json:"headline,omitempty"`
+	// HeadlineRev is the derivation revision the headline was computed with.
+	HeadlineRev int `json:"headline_rev,omitempty"`
 	// QPSSeries is the workload throughput sampled for the list sparkline,
 	// stored when the run finishes. Empty (not nil) means the metric store
 	// was asked and had nothing: the backfill does not ask again.
@@ -465,6 +467,12 @@ type Repository interface {
 	// throughput series (backfill).
 	WithoutQPSSeries(ctx context.Context, limit int) ([]Run, error)
 	SetQPSSeries(ctx context.Context, id uuid.UUID, series []Point) error
+	// StaleHeadline lists finished runs with a result whose headline was
+	// derived by a revision older than rev (backfill).
+	StaleHeadline(ctx context.Context, rev, limit int) ([]Run, error)
+	// SetHeadline replaces the headline and its revision; the run's
+	// updated_at stays, the run did not change.
+	SetHeadline(ctx context.Context, id uuid.UUID, headline map[string]float64, rev int) error
 	SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *time.Time) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
 
@@ -640,18 +648,25 @@ type Counts struct {
 // RatingQuery selects opted-in completed runs ranked by a headline
 // metric; TenantID empty = the global (public) rating.
 type RatingQuery struct {
-	Metric          string
-	HigherIsBetter  bool
+	// Metrics is the metric each scenario ranks by; a scenario not listed
+	// is not rated.
+	Metrics         []ScenarioMetric
 	TenantID        string
 	Kinds           []string
 	Versions        []string
 	Providers       []string
 	StroppyVersions []string
-	Scenarios       []string
 	Hardware        []string
 	Since           time.Time
 	Limit           int
 	Offset          int
+}
+
+// ScenarioMetric is the headline metric one scenario ranks by.
+type ScenarioMetric struct {
+	Scenario       string
+	Metric         string
+	HigherIsBetter bool
 }
 
 // RatingRow is one ranked run with what makes its number comparable: the
@@ -663,6 +678,7 @@ type RatingRow struct {
 	TenantPublicName string
 	Scenario         string
 	Hardware         string
+	Metric           string
 	Value            float64
 }
 

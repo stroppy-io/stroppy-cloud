@@ -261,6 +261,9 @@ func stroppyVersionOf(v catalog.StroppyVersion) oas.StroppyCatalogVersionsItem {
 		if s.Description != "" {
 			script.Description = oas.NewOptString(s.Description)
 		}
+		if s.RatingMetric != "" {
+			script.RatingMetric = oas.NewOptMetricKey(oas.MetricKey(s.RatingMetric))
+		}
 		for _, p := range s.Protocols {
 			script.Protocols = append(script.Protocols, oas.Protocol(p))
 		}

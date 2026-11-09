@@ -11,7 +11,7 @@ import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 export const Route = createFileRoute('/t/$slug/rating')({
   staticData: { crumb: 'nav.rating' },
   validateSearch: ratingSearchSchema,
-  search: { middlewares: [stripSearchParams({ tab: 'tenant', metric: 'tps', period: 'all' })] },
+  search: { middlewares: [stripSearchParams({ tab: 'tenant', period: 'all' })] },
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, params, deps }) => {
     if (deps.search.tab === 'global') return

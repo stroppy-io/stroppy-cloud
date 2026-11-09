@@ -120,6 +120,7 @@ func reportOutcome(seg *spec.Segment, out *stroppyOutput, result *spec.SegmentRe
 		return reportFailure(out, err.Error())
 	}
 	result.Metrics, result.Errors, result.Compliance = summary.Metrics, summary.Errors, summary.Compliance
+	result.Steps, result.Workers = doc.Timings(), doc.Workers()
 	if out.StreamErr != nil {
 		return reportFailure(out, out.StreamErr.Error())
 	}

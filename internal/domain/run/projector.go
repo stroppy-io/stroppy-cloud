@@ -346,7 +346,7 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 			if status == StatusCompleted {
 				summary.ProgressPct = 100
 			}
-			summary.Headline = headlineOf(res)
+			summary.Headline, summary.HeadlineRev = ResultHeadline(res), HeadlineRev
 			if series, ok := p.qpsSeries(ctx, r, at); ok {
 				summary.QPSSeries = series
 			}
@@ -403,32 +403,6 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 	}
 	payload := map[string]any{"id": cur.ID, "name": cur.Name, "status": status, "status_reason": reason, "summary": cur.Summary, "test_id": cur.TestID, "suite_run_id": cur.SuiteRunID, "tps": cur.TPS}
 	_ = p.publisher.Publish(ctx, r.TenantID, event, payload) //nolint:errcheck // delivery is best-effort
-}
-
-// headlineOf picks the headline numbers of a result.
-func headlineOf(res spec.Result) map[string]float64 {
-	out := map[string]float64{}
-	if res.Summary.TPS > 0 {
-		out["tps"] = res.Summary.TPS
-	}
-	if res.Summary.LatencyP50Ms > 0 {
-		out["latency_p50_ms"] = res.Summary.LatencyP50Ms
-	}
-	if res.Summary.LatencyP95Ms > 0 {
-		out["latency_p95_ms"] = res.Summary.LatencyP95Ms
-	}
-	if res.Summary.LatencyP99Ms > 0 {
-		out["latency_p99_ms"] = res.Summary.LatencyP99Ms
-	}
-	if res.Summary.Errors > 0 {
-		out["errors"] = float64(res.Summary.Errors)
-	}
-	for k, v := range res.Metrics {
-		if _, ok := out[k]; !ok {
-			out[k] = v.Value
-		}
-	}
-	return CompleteHeadline(out)
 }
 
 // qpsSeries samples the run's throughput for the list sparkline. A store

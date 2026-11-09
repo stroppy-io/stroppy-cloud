@@ -271,6 +271,17 @@ components:
                 type: array
                 description: What Stroppy logged as errors and warnings, grouped by level, message, error and class; the most frequent first, at most 20.
                 items: { $ref: '#/components/schemas/RunErrorLogEntry' }
+              steps:
+                type: array
+                description: Bench steps the Stroppy report timed, in run order.
+                items:
+                  type: object
+                  required: [name, status, seconds]
+                  properties:
+                    name: { type: string, example: load_data }
+                    status: { type: string, example: completed }
+                    seconds: { type: number, format: double, description: Wall time of the step. }
+              workers: { type: integer, description: Workers that ran the measured step. }
         artifacts:
           type: array
           items: { type: string, description: 'artifact/<id>' }

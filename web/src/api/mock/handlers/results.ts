@@ -66,15 +66,27 @@ function ratingEntries(
   slug?: string
 ):
   | {
-      metric: Schemas['MetricDef']
+      metric?: Schemas['MetricDef']
+      metrics: Schemas['MetricDef'][]
       scenarios: string[]
       hardware: Schemas['HardwareClass'][]
       entries: RatingEntry[]
     }
   | undefined {
-  const metricKey = query.get('metric') ?? 'tps'
-  const metric = store.catalog.metrics.find((m) => m.key === metricKey)
-  if (!metric) return undefined
+  // As the server: one asked metric for every scenario, else each
+  // scenario by its scripts' rating_metric (they must agree).
+  const asked = query.get('metric')
+  const metric = asked ? store.catalog.metrics.find((m) => m.key === asked) : undefined
+  if (asked && !metric) return undefined
+  const scripts = store.catalog.stroppy.versions.find((v) => v.default)?.scripts ?? []
+  const metricOf = (scenario: string): Schemas['MetricDef'] | undefined => {
+    if (metric) return metric
+    const keys = new Set(
+      scenario.split('+').map((id) => scripts.find((s) => s.id === id)?.rating_metric)
+    )
+    const [key] = [...keys]
+    return keys.size === 1 && key ? store.catalog.metrics.find((m) => m.key === key) : undefined
+  }
   const kinds = multi(query, 'kind')
   const versions = multi(query, 'version')
   const providers = multi(query, 'provider')
@@ -92,8 +104,10 @@ function ratingEntries(
       if (r.status !== 'completed') continue
       if (scope === 'tenant' ? !r.rating?.tenant : !r.rating?.global) continue
       if (r.summary?.db_kind === 'external') continue
-      const mv = r.result?.metrics?.[metric.key]?.value
-      if (mv === undefined) continue
+      const scenario = scenarioOf(r)
+      const def = metricOf(scenario)
+      const mv = def && r.result?.metrics?.[def.key]?.value
+      if (!def || mv === undefined) continue
       const at = r.finished_at ?? r.started_at ?? r.created_at
       if (since && new Date(at).getTime() < since) continue
       const s = r.summary ?? {}
@@ -101,7 +115,6 @@ function ratingEntries(
       if (versions.length && !versions.includes(s.db_version ?? '')) continue
       if (providers.length && !providers.includes(s.provider_kind ?? '')) continue
       if (stroppy.length && !stroppy.includes(s.stroppy_version ?? '')) continue
-      const scenario = scenarioOf(r)
       const hardware = hardwareOf(r)
       facets.push({ scenario, hardware })
       if (scenarios.length && !scenarios.includes(scenario)) continue
@@ -112,7 +125,8 @@ function ratingEntries(
       raw.push({
         rank: 0,
         value: mv,
-        unit: metric.unit,
+        metric: def.key,
+        unit: def.unit,
         db_kind: s.db_kind ?? 'postgres',
         db_version: s.db_version,
         topology: s.topology,
@@ -131,18 +145,29 @@ function ratingEntries(
       })
     }
   }
-  const dir = metric.higher_is_better ? -1 : 1
-  raw.sort((a, b) => (a.value - b.value) * dir)
+  const higher = (key: string) =>
+    store.catalog.metrics.find((m) => m.key === key)?.higher_is_better ?? false
+  raw.sort(
+    (a, b) =>
+      a.scenario.localeCompare(b.scenario) || (a.value - b.value) * (higher(a.metric) ? -1 : 1)
+  )
   raw.forEach((e, i) => {
     e.rank = i + 1
   })
+  const used = new Set(raw.map((e) => e.metric))
   const scenarioList = [...new Set(facets.map((f) => f.scenario).filter(Boolean))].sort()
   const hardwareList = [
     ...new Map(
       facets.filter((f) => f.hardware.key).map((f) => [f.hardware.key, f.hardware])
     ).values(),
   ].sort((a, b) => a.key.localeCompare(b.key))
-  return { metric, scenarios: scenarioList, hardware: hardwareList, entries: raw }
+  return {
+    metric,
+    metrics: store.catalog.metrics.filter((m) => used.has(m.key)),
+    scenarios: scenarioList,
+    hardware: hardwareList,
+    entries: raw,
+  }
 }
 
 function ratingResponse(
@@ -158,6 +183,7 @@ function ratingResponse(
   return {
     json: {
       metric: r.metric,
+      metrics: r.metrics,
       scenarios: r.scenarios,
       hardware: r.hardware,
       data: page.data,

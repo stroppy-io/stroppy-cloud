@@ -11,7 +11,8 @@ import {
 import { css, cx } from '@emotion/css'
 import { type GrafanaTheme2, ThemeContext } from '@grafana/data'
 import { Icon, useStyles2, useTheme2 } from '@grafana/ui'
-import { hardwareLabel } from '@helpers/rating'
+import { metricTitle } from '@helpers/metrics'
+import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { type EmbedTheme, useEmbedBridge, useEmbedNavigationGuard } from '@hooks/useEmbedBridge'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -34,7 +35,8 @@ export const embedSearchSchema = z.object({
     .union([z.array(z.string()), z.string()])
     .optional()
     .catch(undefined),
-  metric: z.string().default('tps').catch('tps'),
+  /** One metric for every scenario; unset = each scenario by its benchmark's own. */
+  metric: z.string().optional().catch(undefined),
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
   limit: z.coerce.number().int().min(1).max(50).default(10).catch(10),
   /** 1 = the full board with its filters. */
@@ -118,21 +120,27 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
     if (settled) onReady()
   }, [settled, onReady])
   const page = rating.data?.pages[0]
+  // One ranking: the asked scenario, else the first one rated (places
+  // count within a scenario, and scenarios rank by different metrics).
+  const shown = scenario ?? page?.data[0]?.scenario
+  const rows = (page?.data ?? []).filter((e) => e.scenario === shown).slice(0, search.limit)
+  const def = page?.metrics.find((m) => m.key === rows[0]?.metric) ?? page?.metric
   const origin = window.location.origin
   const full = new URL('/leaderboard', origin)
-  if (scenario) full.searchParams.set('scenario', JSON.stringify([scenario]))
+  if (shown) full.searchParams.set('scenario', JSON.stringify([shown]))
   if (search.hardware) full.searchParams.set('hardware', search.hardware)
   const hardwareClass = page?.hardware.find((h) => h.key === hw.key)
   return (
     <>
       <div className={styles.head}>
-        {page?.metric.title ?? t('landing.rating.metric')}
-        {page?.metric.unit && <span className={styles.unit}>{page.metric.unit}</span>}
+        {def ? metricTitle(def.key, def.title) : t('landing.rating.metric')}
+        {def?.unit && <span className={styles.unit}>{def.unit}</span>}
+        {shown && <span className={styles.unit}>· {scenarioLabel(t, shown)}</span>}
         {hardwareClass && <span className={styles.unit}>· {hardwareLabel(t, hardwareClass)}</span>}
       </div>
       <RatingRows
-        rows={page?.data.slice(0, search.limit) ?? []}
-        unit={page?.metric.unit}
+        rows={rows}
+        unit={def?.unit}
         palette={palette}
         loading={!settled}
         error={rating.isError}
@@ -168,7 +176,7 @@ function Board({
   }
   const full = new URL('/leaderboard', window.location.origin)
   for (const [k, v] of Object.entries(filters))
-    if (v !== undefined && !(k === 'metric' && v === 'tps') && !(k === 'period' && v === 'all'))
+    if (v !== undefined && !(k === 'period' && v === 'all'))
       full.searchParams.set(k, Array.isArray(v) ? JSON.stringify(v) : v)
   return (
     <>

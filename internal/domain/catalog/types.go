@@ -168,6 +168,10 @@ type StroppyScript struct {
 	Protocols   []Protocol     `json:"protocols,omitempty"`
 	Steps       []StroppyStep  `json:"steps"`
 	Params      []StroppyParam `json:"params,omitempty"`
+	// RatingMetric is the metric the script's runs rank by: its benchmark's
+	// own headline (tpmC for TPC-C, the query geometric mean for TPC-H and
+	// TPC-DS); empty for scripts that are not benchmarks.
+	RatingMetric string `json:"rating_metric,omitempty"`
 }
 
 // StroppyStep is one step of a script.

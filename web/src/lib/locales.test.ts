@@ -36,6 +36,7 @@ const LATIN_BY_DESIGN = new Set([
   'library.build.steps.kinds.sysctl',
   'onboarding.concepts.test.sample',
   'onboarding.concepts.provider.sample',
+  'catalog.metrics.tpmc.title',
   'public.export.md',
   'public.export.json',
   'public.export.csv',

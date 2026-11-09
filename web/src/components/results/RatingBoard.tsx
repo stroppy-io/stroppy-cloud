@@ -47,7 +47,8 @@ export const hardwareParam = z
 export const ALL_HARDWARE = 'all'
 
 export const ratingFiltersSchema = z.object({
-  metric: z.string().default('tps').catch('tps'),
+  /** One metric for every scenario; unset = each scenario by its benchmark's own. */
+  metric: z.string().optional().catch(undefined),
   kind: z.array(z.string()).optional().catch(undefined),
   version: z.array(z.string()).optional().catch(undefined),
   provider: z.array(z.string()).optional().catch(undefined),
@@ -56,7 +57,10 @@ export const ratingFiltersSchema = z.object({
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
 })
 export type RatingFilters = z.infer<typeof ratingFiltersSchema>
-export const RATING_FILTER_DEFAULTS = { metric: 'tps', period: 'all' } as const
+export const RATING_FILTER_DEFAULTS = { period: 'all' } as const
+
+/** The metric control's value for "each scenario by its own metric". */
+const OWN_METRIC = ''
 
 /**
  * The rows the default hardware class is counted on: everything rated for
@@ -182,7 +186,7 @@ export function RatingBoard({
   const publicCatalog = useQuery({ ...catalogQueries.public(), enabled: !signedIn })
 
   const entries = useMemo(() => list.data?.pages.flatMap((p) => p.data) ?? [], [list.data])
-  const metricDef = list.data?.pages[0]?.metric
+  const metricDefs = list.data?.pages[0]?.metrics ?? []
   const facets = list.data?.pages[0] ?? census.data?.pages[0]
   const scenarios = facets?.scenarios ?? []
   const hardware = facets?.hardware ?? []
@@ -291,15 +295,22 @@ export function RatingBoard({
                   width="auto"
                   minWidth={16}
                   maxWidth={32}
-                  options={(metrics.data?.data ?? [])
-                    .filter((m) => m.rating_eligible !== false)
-                    .map((m) => ({
-                      label: metricTitle(m.key, m.title),
-                      value: m.key,
-                      description: m.unit,
-                    }))}
-                  value={search.metric}
-                  onChange={(o) => onSearchChange({ metric: o.value })}
+                  options={[
+                    {
+                      label: t('results.rating.filters.ownMetric'),
+                      value: OWN_METRIC,
+                      description: t('results.rating.filters.ownMetricHint'),
+                    },
+                    ...(metrics.data?.data ?? [])
+                      .filter((m) => m.rating_eligible !== false)
+                      .map((m) => ({
+                        label: metricTitle(m.key, m.title),
+                        value: m.key,
+                        description: m.unit,
+                      })),
+                  ]}
+                  value={search.metric ?? OWN_METRIC}
+                  onChange={(o) => onSearchChange({ metric: o.value || undefined })}
                 />
               </InlineField>
             )}
@@ -336,28 +347,32 @@ export function RatingBoard({
           />
         ) : (
           <div className={styles.sections}>
-            {byScenario.map(([scenario, rows]) => (
-              <section key={scenario}>
-                <div className={styles.sectionHead}>
-                  <Text element="h2" variant="h4">
-                    {scenarioLabel(t, scenario)}
-                  </Text>
-                  <Text color="secondary" variant="bodySmall">
-                    {t('results.rating.entries', { count: rows.length })} ·{' '}
-                    {t('results.rating.scenarioHint')}
-                  </Text>
-                </div>
-                <RatingTable
-                  rows={rows}
-                  unit={metricDef?.unit}
-                  metricTitle={metricDef ? metricTitle(metricDef.key, metricDef.title) : undefined}
-                  scope={scope}
-                  slug={slug}
-                  newTab={embedded}
-                  publicPage={catalog === 'public'}
-                />
-              </section>
-            ))}
+            {byScenario.map(([scenario, rows]) => {
+              // A scenario ranks by one metric; its rows all carry it.
+              const def = metricDefs.find((m) => m.key === rows[0]?.metric)
+              return (
+                <section key={scenario}>
+                  <div className={styles.sectionHead}>
+                    <Text element="h2" variant="h4">
+                      {scenarioLabel(t, scenario)}
+                    </Text>
+                    <Text color="secondary" variant="bodySmall">
+                      {t('results.rating.entries', { count: rows.length })} ·{' '}
+                      {t('results.rating.scenarioHint')}
+                    </Text>
+                  </div>
+                  <RatingTable
+                    rows={rows}
+                    unit={def?.unit}
+                    metricTitle={def ? metricTitle(def.key, def.title) : undefined}
+                    scope={scope}
+                    slug={slug}
+                    newTab={embedded}
+                    publicPage={catalog === 'public'}
+                  />
+                </section>
+              )
+            })}
             {list.hasNextPage && (
               <Stack justifyContent="center">
                 <Button

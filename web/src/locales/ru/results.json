@@ -8,6 +8,8 @@
     "globalDisabled": "На этой инсталляции публичный рейтинг выключен.",
     "filters": {
       "metric": "Метрика",
+      "ownMetric": "Своя у каждого теста",
+      "ownMetricHint": "tpmC для TPC-C, время запросов для TPC-H и TPC-DS, tps для TPC-B",
       "kind": "База",
       "version": "Версия",
       "provider": "Облако",

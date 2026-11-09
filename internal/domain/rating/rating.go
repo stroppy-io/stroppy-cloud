@@ -6,6 +6,7 @@ package rating
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,6 +19,8 @@ import (
 
 // Query filters a rating page.
 type Query struct {
+	// Metric ranks every scenario by one metric; empty ranks each scenario
+	// by its own benchmark's metric (catalog StroppyScript.RatingMetric).
 	Metric          string
 	Kinds           []string
 	Versions        []string
@@ -37,13 +40,18 @@ type Entry struct {
 	Run        run.Run
 	Scenario   string
 	Hardware   string
+	Metric     string
 	TenantName string
 	ShareToken string
 }
 
 // Page is a rating page.
 type Page struct {
-	Metric    catalog.Metric
+	// Metric is the one metric asked for; zero when each scenario ranks by
+	// its own.
+	Metric catalog.Metric
+	// Metrics are the definitions of the metrics the entries carry.
+	Metrics   []catalog.Metric
 	Scenarios []string
 	Hardware  []string
 	Entries   []Entry
@@ -88,38 +96,65 @@ func (s *Service) Public(ctx context.Context, q Query) (Page, error) {
 }
 
 func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, error) {
-	metric := q.Metric
-	if metric == "" {
-		metric = "tps"
-	}
-	var def catalog.Metric
-	found := false
+	defs := map[string]catalog.Metric{}
 	for _, m := range s.catalog.MetricsFor("") {
-		if m.Key == metric {
-			def, found = m, true
+		if m.RatingEligible {
+			defs[m.Key] = m
 		}
 	}
-	if !found || !def.RatingEligible {
-		return Page{}, errs.Invalid("metric "+metric+" is not rating eligible").Because("metric_not_rating_eligible", "metric", metric)
-	}
-	rq := run.RatingQuery{
-		Metric: metric, HigherIsBetter: def.HigherIsBetter, TenantID: tenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers,
-		StroppyVersions: q.StroppyVersions, Scenarios: q.Scenarios, Hardware: q.Hardware, Since: since(q.Period), Limit: q.Limit, Offset: q.Offset,
-	}
-	rows, err := s.runs.Rating(ctx, rq)
-	if err != nil {
-		return Page{}, err
+	var asked catalog.Metric
+	if q.Metric != "" {
+		def, ok := defs[q.Metric]
+		if !ok {
+			return Page{}, errs.Invalid("metric "+q.Metric+" is not rating eligible").Because("metric_not_rating_eligible", "metric", q.Metric)
+		}
+		asked = def
 	}
 	facets, err := s.runs.RatingFacets(ctx, tenantID)
 	if err != nil {
 		return Page{}, err
 	}
+	scenarios := distinct(facets, func(f run.RatingFacet) string { return f.Scenario })
+	wanted := scenarios
+	if len(q.Scenarios) > 0 {
+		wanted = q.Scenarios
+	}
+	used := map[string]bool{}
+	var metrics []run.ScenarioMetric
+	for _, sc := range wanted {
+		key := asked.Key
+		if key == "" {
+			key = s.scenarioMetric(sc)
+		}
+		def, ok := defs[key]
+		if !ok {
+			continue
+		}
+		used[key] = true
+		metrics = append(metrics, run.ScenarioMetric{Scenario: sc, Metric: key, HigherIsBetter: def.HigherIsBetter})
+	}
 	out := Page{
-		Metric: def, Scenarios: distinct(facets, func(f run.RatingFacet) string { return f.Scenario }),
-		Hardware: distinct(facets, func(f run.RatingFacet) string { return f.Hardware }), Entries: make([]Entry, 0, len(rows)),
+		Metric: asked, Scenarios: scenarios, Metrics: []catalog.Metric{},
+		Hardware: distinct(facets, func(f run.RatingFacet) string { return f.Hardware }), Entries: []Entry{},
+	}
+	for _, m := range s.catalog.MetricsFor("") {
+		if used[m.Key] {
+			out.Metrics = append(out.Metrics, m)
+		}
+	}
+	if len(metrics) == 0 {
+		return out, nil
+	}
+	rq := run.RatingQuery{
+		Metrics: metrics, TenantID: tenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers,
+		StroppyVersions: q.StroppyVersions, Hardware: q.Hardware, Since: since(q.Period), Limit: q.Limit, Offset: q.Offset,
+	}
+	rows, err := s.runs.Rating(ctx, rq)
+	if err != nil {
+		return Page{}, err
 	}
 	for i, r := range rows {
-		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, TenantName: r.TenantName}
+		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, Metric: r.Metric, TenantName: r.TenantName}
 		if tenantID == "" {
 			e.TenantName = r.TenantPublicName
 			if s.shares != nil {
@@ -131,6 +166,25 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		out.Entries = append(out.Entries, e)
 	}
 	return out, nil
+}
+
+// scenarioMetric is the metric a scenario's benchmark ranks by: the
+// scripts of the scenario ("tpcc/procs+tpcc/tx") must agree on one;
+// empty when they do not or a script is not a benchmark.
+func (s *Service) scenarioMetric(scenario string) string {
+	v, ok := s.catalog.StroppyVersion("")
+	if !ok {
+		return ""
+	}
+	metric := ""
+	for _, id := range strings.Split(scenario, "+") {
+		sc, ok := v.Script(id)
+		if !ok || sc.RatingMetric == "" || (metric != "" && sc.RatingMetric != metric) {
+			return ""
+		}
+		metric = sc.RatingMetric
+	}
+	return metric
 }
 
 // distinct is the non-empty values of one facet column, in first-seen order

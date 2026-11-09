@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math"
 	"time"
 
 	"github.com/google/uuid"
@@ -198,9 +199,16 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
+	keys := make([]string, 0, len(q.Metrics))
+	metrics := make([]string, 0, len(q.Metrics))
+	higher := make([]bool, 0, len(q.Metrics))
+	for _, m := range q.Metrics {
+		keys, metrics, higher = append(keys, m.Scenario), append(metrics, m.Metric), append(higher, m.HigherIsBetter)
+	}
 	rows, err := r.q.RatingRuns(ctx, db.RatingRunsParams{
-		Metric: q.Metric, TenantID: q.TenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers, StroppyVersions: q.StroppyVersions,
-		Scenarios: q.Scenarios, Hardware: q.Hardware, Since: &q.Since, HigherIsBetter: q.HigherIsBetter, Lim: int64(limit), Off: int64(q.Offset),
+		TenantID: q.TenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers, StroppyVersions: q.StroppyVersions,
+		ScenarioKeys: keys, ScenarioMetrics: metrics, ScenarioHigher: higher,
+		Hardware: q.Hardware, Since: &q.Since, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
 		return nil, infraf("run: rating: %v", err)
@@ -215,6 +223,9 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 		}
 		if row.Value != nil {
 			item.Value = *row.Value
+		}
+		if row.Metric != nil {
+			item.Metric = *row.Metric
 		}
 		out = append(out, item)
 	}
@@ -310,6 +321,38 @@ func (r *RunRepo) SetQPSSeries(ctx context.Context, id uuid.UUID, series []run.P
 	raw, _ := json.Marshal(series) //nolint:errcheck // plain struct slice
 	if err := r.q.SetRunQpsSeries(ctx, db.SetRunQpsSeriesParams{ID: id, Series: raw}); err != nil {
 		return infraf("run: set qps series: %v", err)
+	}
+	return nil
+}
+
+func (r *RunRepo) StaleHeadline(ctx context.Context, rev, limit int) ([]run.Run, error) {
+	if rev < 0 || rev > math.MaxInt32 {
+		return nil, infraf("run: stale headline: revision %d out of range", rev)
+	}
+	rows, err := r.q.RunsWithStaleHeadline(ctx, db.RunsWithStaleHeadlineParams{Rev: int32(rev), Lim: int64(limit)})
+	if err != nil {
+		return nil, infraf("run: stale headline: %v", err)
+	}
+	out := make([]run.Run, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, runOf(db.RunByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *RunRepo) SetHeadline(ctx context.Context, id uuid.UUID, headline map[string]float64, rev int) error {
+	if rev < 0 || rev > math.MaxInt32 {
+		return infraf("run: set headline: revision %d out of range", rev)
+	}
+	if headline == nil {
+		headline = map[string]float64{}
+	}
+	raw, err := json.Marshal(headline)
+	if err != nil {
+		return infraf("run: set headline: %v", err)
+	}
+	if err := r.q.SetRunHeadline(ctx, db.SetRunHeadlineParams{ID: id, Headline: raw, Rev: int32(rev)}); err != nil {
+		return infraf("run: set headline: %v", err)
 	}
 	return nil
 }

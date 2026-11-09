@@ -48,6 +48,17 @@ func (a *Application) startWorkers() {
 			a.log.Ctx().Info(ctx, "qps series backfill", xlog.Int("stored", stored), xlog.Int("empty", empty), xlog.Int("skipped", skipped))
 		}
 	})
+	// One pass at startup: finished runs whose headline an older
+	// derivation produced get it recomputed from their stored result.
+	a.shutdown.Go(func(ctx context.Context) {
+		n, err := a.services.Projector.BackfillHeadline(ctx)
+		if err != nil {
+			a.log.Ctx().Warn(ctx, "headline backfill", xlog.ErrorCause(err))
+		}
+		if n > 0 {
+			a.log.Ctx().Info(ctx, "headline backfill", xlog.Int("runs", n))
+		}
+	})
 	// One pass at startup: definitions, runs and share snapshots stored
 	// before the topology shape get one (runs before shares: shares copy
 	// the run's). Idempotent.

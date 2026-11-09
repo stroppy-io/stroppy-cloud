@@ -20,22 +20,24 @@ const (
 func stroppy() StroppyCatalog {
 	all := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoCockroach, ProtoNoop}
 	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach, ProtoNoop}
-	// doc: stroppy workloads/tpch and workloads/tpcds ship pg, mysql, pico and
-	// ydb dialects only; CockroachDB has its own SQL for tpcc and tpcb alone.
+	// doc: stroppy workloads/tpcds refuses CockroachDB at define time: it has
+	// no ROLLUP, CUBE or GROUPING SETS (cockroach#46280), which 11 of the 103
+	// statements use. TPC-H runs there on the PostgreSQL dialect (6.3.3,
+	// all 22 queries).
 	noCockroach := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoNoop}
 	scripts := []StroppyScript{
-		{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Protocols: all},
-		{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Protocols: procs},
-		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all},
-		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs},
-		{ID: "tpch/tx", Title: "TPC-H", Protocols: noCockroach},
-		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, Description: "Picodata: load only. YDB: baked queries only. MySQL generated streams omit queries 51, 88 and 97."},
-		{ID: "simple", Title: "Simple key-value", Protocols: all},
+		{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Protocols: all, RatingMetric: "tpmc"},
+		{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Protocols: procs, RatingMetric: "tpmc"},
+		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all, RatingMetric: "tps"},
+		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs, RatingMetric: "tps"},
+		{ID: "tpch/tx", Title: "TPC-H", Protocols: all, RatingMetric: "query_geomean_ms"},
+		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, RatingMetric: "query_geomean_ms", Description: "Picodata: load only. YDB: baked queries only. MySQL: baked queries only (generated streams lack queries 51 and 97)."},
+		{ID: "simple", Title: "Simple key-value", Protocols: all, RatingMetric: "qps"},
 		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
 		{ID: "baseline", Title: "Baseline workload", Protocols: all, Description: "A baseline workload segment; the machine self-check remains separately configurable."},
 		// doc: stroppy workloads/banking — pg, mysql, pico and ydb dialects;
 		// inject hooks PostgreSQL through the Macavity extension.
-		{ID: "banking", Title: "Banking invariants", Protocols: noCockroach, Description: "Transfers between accounts; verify checks that money and account tokens still add up. Picodata checks the total only."},
+		{ID: "banking", Title: "Banking invariants", Protocols: noCockroach, RatingMetric: "tps", Description: "Transfers between accounts; verify checks that money and account tokens still add up. Picodata checks the total only."},
 		{ID: "banking/inject", Title: "Banking invariants, fault injection", Protocols: []Protocol{ProtoPg, ProtoNoop}, Description: "Banking with Macavity faults armed inside the transfers; needs the Macavity extension in the PostgreSQL server."},
 	}
 	schema := workload.Segment()

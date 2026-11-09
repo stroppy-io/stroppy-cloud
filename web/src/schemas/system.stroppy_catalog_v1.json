@@ -322,6 +322,15 @@
                                   "title": "Steps"
                                 },
                                 {
+                                  "description": "Metric key the script's runs rank by: its benchmark's own headline (tpmc, query_geomean_ms). Empty for scripts that are not benchmarks.",
+                                  "name": "rating_metric",
+                                  "string": {
+                                    "maxLen": "64",
+                                    "pattern": "^[a-z][a-z0-9_]*$"
+                                  },
+                                  "title": "Rating metric"
+                                },
+                                {
                                   "description": "Typed parameters the script declares, as probed from the build; the segment form is generated from the known ones and passes the rest through extra_params.",
                                   "list": {
                                     "items": [

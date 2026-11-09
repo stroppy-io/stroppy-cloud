@@ -62,6 +62,16 @@ export interface SpecResultRun1ItemItem {
 }
 
 /** object  */
+export interface SpecResultRun1ItemItem2 {
+  /** Step. */
+  name: string;
+  /** Status. */
+  status: string;
+  /** Duration. Wall time of the step, seconds. */
+  seconds: number;
+}
+
+/** object  */
 export interface SpecResultRun1Item {
   /** Segment. Name of the workload segment. */
   name: string;
@@ -89,6 +99,10 @@ export interface SpecResultRun1Item {
   error?: string;
   /** Error log. Error and warning lines of the Stroppy log grouped by level, message, error and class; the most frequent first, at most 20. */
   error_log?: Array<SpecResultRun1ItemItem>;
+  /** Steps. Bench steps the Stroppy report timed, in run order. */
+  steps?: Array<SpecResultRun1ItemItem2>;
+  /** Workers. Workers that ran the measured step. */
+  workers?: number | string;
 }
 
 /** object  */
@@ -131,7 +145,7 @@ export interface SpecResultRun1Summary {
 
 /** root */
 export interface SpecResultRun1 {
-  /** Metrics. Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments. */
+  /** Metrics. Metrics keyed by segment and metric name; up to 2048 metrics for each of 64 segments. */
   metrics?: Record<string, SpecResultRun1MetricsValue>;
   /** Segments. One entry per workload segment, in execution order. */
   segments?: Array<SpecResultRun1Item>;

@@ -332,8 +332,11 @@ A healthy listener alone is insufficient: verify receiver, applier, semisync
 status and replicated test rows. `live/tools/mysql_probe.py` uses ordinary SQL access
 and does not require sudo or Docker access in an agent shell.
 
-Run results allow 256 metrics per segment and 64 segments, so aggregate metrics
-must not reuse the per-segment cap. Artifact capacity is config + log + report per segment
+Run results allow 2048 metrics per segment (`SegmentMetricsMax`: a query-set
+workload projects nine values per query histogram, TPC-DS has 103 statements)
+and 64 segments, so aggregate metrics must not reuse the per-segment cap. Each
+segment also carries the report's step timings (`steps`) and the measured
+step's `workers`, outside the inline report, which is dropped when large. Artifact capacity is config + log + report per segment
 plus the optional baseline log and two managed-readiness artifacts. Preserve every native metric instead of truncating.
 
 SDK 0.2.5 bounds OTLP metric requests to 2 MiB by splitting complete protobuf

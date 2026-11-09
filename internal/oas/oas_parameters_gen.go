@@ -8524,6 +8524,8 @@ func decodeGetProviderQuotasParams(args [2]string, argsEscaped bool, r *http.Req
 
 // GetPublicRatingParams is parameters of getPublicRating operation.
 type GetPublicRatingParams struct {
+	// One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the
+	// script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H).
 	Metric         OptString      `json:",omitempty,omitzero"`
 	Kind           []DatabaseKind `json:",omitempty"`
 	Version        []string       `json:",omitempty"`
@@ -8635,11 +8637,6 @@ func unpackGetPublicRatingParams(packed middleware.Parameters) (params GetPublic
 
 func decodeGetPublicRatingParams(args [0]string, argsEscaped bool, r *http.Request) (params GetPublicRatingParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	// Set default value for query: metric.
-	{
-		val := string("tps")
-		params.Metric.SetTo(val)
-	}
 	// Decode query: metric.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
@@ -12944,7 +12941,9 @@ func decodeGetTenantDashboardParams(args [1]string, argsEscaped bool, r *http.Re
 // GetTenantRatingParams is parameters of getTenantRating operation.
 type GetTenantRatingParams struct {
 	// Tenant slug.
-	Slug           string
+	Slug string
+	// One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the
+	// script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H).
 	Metric         OptString      `json:",omitempty,omitzero"`
 	Kind           []DatabaseKind `json:",omitempty"`
 	Version        []string       `json:",omitempty"`
@@ -13127,11 +13126,6 @@ func decodeGetTenantRatingParams(args [1]string, argsEscaped bool, r *http.Reque
 			In:   "path",
 			Err:  err,
 		}
-	}
-	// Set default value for query: metric.
-	{
-		val := string("tps")
-		params.Metric.SetTo(val)
 	}
 	// Decode query: metric.
 	if err := func() error {

@@ -54,7 +54,11 @@ func metrics() []Metric {
 		},
 		{Key: "iteration_duration_p90", Title: "Iteration duration, p90", Unit: "ms", Group: "Workload", Scope: "result", Expr: quantile("0.9")},
 		{Key: "iteration_duration_p99", Title: "Iteration duration, p99", Unit: "ms", Group: "Workload", Scope: "result", Expr: quantile("0.99")},
-		{Key: "load_duration_seconds", Title: "Data load duration", Unit: "s", Group: "Bootstrap", Scope: "result"},
+		// Numbers of the result derived from its segments (run.ResultHeadline).
+		{Key: "load_duration_seconds", Title: "Data load duration", Description: "Wall time of the steps that build the database: schema, load, indexes, keys, procedures, statistics.", Unit: "s", Group: "Bootstrap", Scope: "result", RatingEligible: true},
+		{Key: "tpmc", Title: "tpmC", Description: "TPC-C New-Order transactions per minute, from Stroppy's compliance report.", Unit: "tpmC", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true},
+		{Key: "query_geomean_ms", Title: "Query time, geometric mean", Description: "Geometric mean of the query times of a complete single-stream pass, none failed; a query under 0.1 s counts as 0.1 s.", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true},
+		{Key: "query_total_seconds", Title: "Query time, total", Description: "Sum of the query times of a complete single-stream pass, none failed.", Unit: "s", Group: "Headline", Scope: "result", RatingEligible: true},
 
 		{
 			Key: "node_cpu_usage", Title: "CPU usage", Unit: "%", Group: "Host", Scope: "host",

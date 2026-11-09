@@ -5502,6 +5502,12 @@ func (s MetricKey) Validate() error {
 		return nil
 	case "load_duration_seconds":
 		return nil
+	case "tpmc":
+		return nil
+	case "query_geomean_ms":
+		return nil
+	case "query_total_seconds":
+		return nil
 	case "node_cpu_usage":
 		return nil
 	case "node_memory_used_bytes":
@@ -6685,6 +6691,17 @@ func (s *RatingEntry) Validate() error {
 		})
 	}
 	if err := func() error {
+		if err := s.Metric.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "metric",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if err := s.DbKind.Validate(); err != nil {
 			return err
 		}
@@ -6773,13 +6790,48 @@ func (s *RatingPage) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if err := s.Metric.Validate(); err != nil {
-			return err
+		if value, ok := s.Metric.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "metric",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.Metrics == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Metrics {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "metrics",
 			Error: err,
 		})
 	}
@@ -8722,6 +8774,31 @@ func (s *RunResultSegmentsItem) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		var failures []validate.FieldError
+		for i, elem := range s.Steps {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "steps",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -8763,6 +8840,29 @@ func (s RunResultSegmentsItemStatus) Validate() error {
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
+}
+
+func (s *RunResultSegmentsItemStepsItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := (validate.Float{}).Validate(float64(s.Seconds)); err != nil {
+			return errors.Wrap(err, "float")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "seconds",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
 }
 
 func (s *RunSnapshot) Validate() error {
@@ -10591,6 +10691,24 @@ func (s *StroppyScript) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "params",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.RatingMetric.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "rating_metric",
 			Error: err,
 		})
 	}

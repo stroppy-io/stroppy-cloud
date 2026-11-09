@@ -93,13 +93,48 @@ func TestStroppyScriptMatrix(t *testing.T) {
 		{"banking", catalog.ProtoCockroach, false},
 		{"banking/inject", catalog.ProtoPg, true},
 		{"banking/inject", catalog.ProtoMySQL, false},
-		{"tpch/tx", catalog.ProtoCockroach, false},
+		{"tpch/tx", catalog.ProtoCockroach, true},
 		{"tpcds", catalog.ProtoCockroach, false},
 		{"tpch/tx", catalog.ProtoYDBGrpcs, true},
 	}
 	for _, tc := range cases {
 		if got := speaks(tc.script, tc.proto); got != tc.want {
 			t.Errorf("%s on %s = %v, want %v", tc.script, tc.proto, got, tc.want)
+		}
+	}
+}
+
+// TestScriptRatingMetric pins each benchmark's headline and that it is a
+// cataloged metric the rating accepts.
+func TestScriptRatingMetric(t *testing.T) {
+	reg := schemas.New()
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, ok := c.StroppyVersion("")
+	if !ok {
+		t.Fatal("no default stroppy version")
+	}
+	eligible := map[string]bool{}
+	for _, m := range c.MetricsFor("") {
+		eligible[m.Key] = m.RatingEligible
+	}
+	want := map[string]string{
+		"tpcc/tx": "tpmc", "tpcc/procs": "tpmc", "tpcb/tx": "tps", "tpcb/procs": "tps",
+		"tpch/tx": "query_geomean_ms", "tpcds": "query_geomean_ms", "simple": "qps", "banking": "tps",
+		"execute_sql": "", "baseline": "", "banking/inject": "",
+	}
+	for script, metric := range want {
+		s, ok := v.Script(script)
+		if !ok {
+			t.Fatalf("no script %s", script)
+		}
+		if s.RatingMetric != metric {
+			t.Errorf("%s rates by %q, want %q", script, s.RatingMetric, metric)
+		}
+		if metric != "" && !eligible[metric] {
+			t.Errorf("%s rates by %q, which is not a rating-eligible metric", script, metric)
 		}
 	}
 }

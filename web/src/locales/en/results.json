@@ -8,6 +8,8 @@
     "globalDisabled": "The public rating is turned off on this installation.",
     "filters": {
       "metric": "Metric",
+      "ownMetric": "Each benchmark's own",
+      "ownMetricHint": "tpmC for TPC-C, query time for TPC-H and TPC-DS, tps for TPC-B",
       "kind": "Database",
       "version": "Version",
       "provider": "Cloud",

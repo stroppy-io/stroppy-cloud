@@ -391,6 +391,9 @@ components:
           type: array
           description: Typed parameters the script declares, as probed from the build (`stroppy probe -o json`).
           items: { $ref: '#/components/schemas/StroppyParam' }
+        rating_metric:
+          $ref: '#/components/schemas/MetricKey'
+          description: The metric the script's runs rank by (its benchmark's own headline); absent for scripts that are not benchmarks.
     StroppyParam:
       type: object
       required: [name, config, type]

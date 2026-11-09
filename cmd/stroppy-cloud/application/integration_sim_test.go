@@ -603,6 +603,11 @@ func simAgents(w *pipelinetest.World, rr *simRecorder, sc simScenario) {
 		end := workflow.Now(ctx)
 		res := spec.SegmentResult{Name: seg.Name, Status: spec.SegmentCompleted, StartedAt: start, FinishedAt: end, Metrics: simSegmentMetrics(seg, d, sc.TPS)}
 		res.Errors = &spec.ErrorCounts{FailedQueries: 3, RetryAttempts: 3}
+		res.Workers = int(seg.Run.VUs)
+		// Stroppy's TPC-C compliance report: New-Order is about 45% of the mix.
+		if strings.HasPrefix(seg.Workload.Script, "tpcc/") {
+			res.Compliance = json.RawMessage(fmt.Sprintf(`{"workload":%q,"tpm_c":%d}`, seg.Workload.Script, int(res.Metrics["tps"].Value*60*0.45)))
+		}
 		if sc.FailSegment == seg.Name {
 			res.Status, res.ExitCode = spec.SegmentFailed, 1
 			res.Error = "stroppy exit status 1: ERROR: relation \"warehouse\" does not exist (SQLSTATE 42P01)"

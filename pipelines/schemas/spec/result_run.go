@@ -18,8 +18,13 @@ func metricValue(name schemapb.FieldName) *schemapb.MapB {
 		schemapb.Double("min").Title("Minimum").Desc("Lowest sample in the window."),
 		schemapb.Double("max").Title("Maximum").Desc("Highest sample in the window."),
 		schemapb.Double("avg").Title("Average").Desc("Mean over the window."),
-	).Strict().MaxEntries(256)
+	).Strict().MaxEntries(SegmentMetricsMax)
 }
+
+// SegmentMetricsMax bounds the metrics of one segment. A query-set workload
+// reports every query as its own histogram (nine projected values each), so
+// TPC-DS with its 103 statements needs about a thousand.
+const SegmentMetricsMax = 2048
 
 // ResultRun is spec.result.run@1 — the RunResult the stroppy-run pipeline
 // returns. It is the only run data that travels back through Graphene; raw
@@ -35,8 +40,8 @@ func ResultRun() *schemapb.Schema {
 		Strict().Coerce().
 		Fields(
 			metricValue("metrics").Title("Metrics").Group("Result").
-				Desc("Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments.").
-				MaxEntries(64*256),
+				Desc("Metrics keyed by segment and metric name; up to 2048 metrics for each of 64 segments.").
+				MaxEntries(64*SegmentMetricsMax),
 
 			schemapb.List("segments",
 				schemapb.Object("",
@@ -92,6 +97,18 @@ func ResultRun() *schemapb.Schema {
 						).Strict(),
 					).Title("Error log").Group("Result").
 						Desc("Error and warning lines of the Stroppy log grouped by level, message, error and class; the most frequent first, at most 20.").MaxItems(20),
+					// doc: stroppy pkg/report — steps[] {name, status, duration_seconds}.
+					schemapb.List("steps",
+						schemapb.Object("",
+							schemapb.Str("name").Title("Step").MaxLen(64).Required(),
+							schemapb.Str("status").Title("Status").MaxLen(32).Required(),
+							schemapb.Double("seconds").Title("Duration").Desc("Wall time of the step, seconds.").Gte(0).Required(),
+						).Strict(),
+					).Title("Steps").Group("Result").
+						Desc("Bench steps the Stroppy report timed, in run order.").MaxItems(64),
+					// doc: stroppy pkg/report — executions.<step>.workers.
+					schemapb.Int64("workers").Title("Workers").
+						Desc("Workers that ran the measured step.").Gte(0),
 				).Strict().Rule(schemapb.Rule(
 					`!("status" in this) || this.status != "failed" || ("error" in this)`,
 					"a failed segment must carry an error",

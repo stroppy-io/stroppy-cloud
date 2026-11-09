@@ -2607,7 +2607,7 @@ export interface components {
          * @description A metric of the catalog.
          * @enum {string}
          */
-        MetricKey: "tps" | "qps" | "latency_p50_ms" | "latency_p95_ms" | "latency_p99_ms" | "errors" | "iterations_total" | "iterations_per_second" | "queries_per_second" | "failed_iterations_total" | "failed_queries_total" | "iteration_duration_avg" | "iteration_duration_p90" | "iteration_duration_p99" | "load_duration_seconds" | "node_cpu_usage" | "node_memory_used_bytes" | "node_disk_io_bytes" | "node_network_bytes" | "pg_stat_database_xact_commit" | "pg_stat_database_xact_rollback" | "pg_stat_database_blks_hit_ratio" | "pg_stat_activity_count" | "pg_locks_count" | "pg_replication_lag_seconds" | "mysql_global_status_queries" | "mysql_global_status_threads_connected" | "mysql_global_status_innodb_buffer_pool_hit_ratio" | "mysql_slave_status_seconds_behind_master" | "cockroach_sql_txn_commit_count" | "cockroach_sql_service_latency_p99" | "cockroach_live_nodes" | "picodata_instances_online";
+        MetricKey: "tps" | "qps" | "latency_p50_ms" | "latency_p95_ms" | "latency_p99_ms" | "errors" | "iterations_total" | "iterations_per_second" | "queries_per_second" | "failed_iterations_total" | "failed_queries_total" | "iteration_duration_avg" | "iteration_duration_p90" | "iteration_duration_p99" | "load_duration_seconds" | "tpmc" | "query_geomean_ms" | "query_total_seconds" | "node_cpu_usage" | "node_memory_used_bytes" | "node_disk_io_bytes" | "node_network_bytes" | "pg_stat_database_xact_commit" | "pg_stat_database_xact_rollback" | "pg_stat_database_blks_hit_ratio" | "pg_stat_activity_count" | "pg_locks_count" | "pg_replication_lag_seconds" | "mysql_global_status_queries" | "mysql_global_status_threads_connected" | "mysql_global_status_innodb_buffer_pool_hit_ratio" | "mysql_slave_status_seconds_behind_master" | "cockroach_sql_txn_commit_count" | "cockroach_sql_service_latency_p99" | "cockroach_live_nodes" | "picodata_instances_online";
         /**
          * @description The group a metric is shown under; a database group reads as the product name.
          * @enum {string}
@@ -3118,6 +3118,8 @@ export interface components {
             }[];
             /** @description Typed parameters the script declares, as probed from the build (`stroppy probe -o json`). */
             params?: components["schemas"]["StroppyParam"][];
+            /** @description The metric the script's runs rank by (its benchmark's own headline); absent for scripts that are not benchmarks. */
+            rating_metric?: components["schemas"]["MetricKey"];
         };
         StroppyParam: {
             /**
@@ -3667,6 +3669,20 @@ export interface components {
                 };
                 /** @description What Stroppy logged as errors and warnings, grouped by level, message, error and class; the most frequent first, at most 20. */
                 error_log?: components["schemas"]["RunErrorLogEntry"][];
+                /** @description Bench steps the Stroppy report timed, in run order. */
+                steps?: {
+                    /** @example load_data */
+                    name: string;
+                    /** @example completed */
+                    status: string;
+                    /**
+                     * Format: double
+                     * @description Wall time of the step.
+                     */
+                    seconds: number;
+                }[];
+                /** @description Workers that ran the measured step. */
+                workers?: number;
             }[];
             artifacts?: string[];
             baseline?: components["schemas"]["RunBaselineResult"];
@@ -4328,6 +4344,8 @@ export interface components {
         RatingEntry: {
             rank: number;
             value: number;
+            /** @description The metric the value is of; its definition is in the page's `metrics`. */
+            metric: components["schemas"]["MetricKey"];
             unit: string;
             db_kind: components["schemas"]["DatabaseKind"];
             db_version?: string;
@@ -4355,7 +4373,10 @@ export interface components {
             share_token?: string;
         };
         RatingPage: {
-            metric: components["schemas"]["MetricDef"];
+            /** @description The one metric asked for; absent when each scenario ranks by its own. */
+            metric?: components["schemas"]["MetricDef"];
+            /** @description Definitions of the metrics the entries carry. */
+            metrics: components["schemas"]["MetricDef"][];
             /** @description Scenarios that have rated runs, to filter by. */
             scenarios: string[];
             /** @description Hardware classes that have rated runs, to filter by. */
@@ -4640,6 +4661,7 @@ export interface components {
         diffA: string;
         diffB: string;
         favoriteKind: "database" | "workload" | "test" | "run" | "suite" | "suite_run" | "schedule";
+        /** @description One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H). */
         ratingMetric: string;
         ratingKind: components["schemas"]["DatabaseKind"][];
         ratingVersion: string[];
@@ -4702,6 +4724,7 @@ export interface operations {
     getPublicRating: {
         parameters: {
             query?: {
+                /** @description One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H). */
                 metric?: components["parameters"]["ratingMetric"];
                 kind?: components["parameters"]["ratingKind"];
                 version?: components["parameters"]["ratingVersion"];
@@ -8913,6 +8936,7 @@ export interface operations {
     getTenantRating: {
         parameters: {
             query?: {
+                /** @description One metric for every scenario. Absent ranks each scenario by its own benchmark's metric (the script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H). */
                 metric?: components["parameters"]["ratingMetric"];
                 kind?: components["parameters"]["ratingKind"];
                 version?: components["parameters"]["ratingVersion"];

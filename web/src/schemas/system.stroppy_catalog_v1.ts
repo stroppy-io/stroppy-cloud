@@ -43,6 +43,8 @@ export interface SystemStroppyCatalog1ItemItem {
   protocols?: Array<"pg" | "mysql" | "picodata" | "ydb_grpc" | "ydb_grpcs" | "cockroach" | "noop">;
   /** Steps. Steps the script declares; the segment form filters on them. */
   steps: Array<SystemStroppyCatalog1ItemItemItem>;
+  /** Rating metric. Metric key the script's runs rank by: its benchmark's own headline (tpmc, query_geomean_ms). Empty for scripts that are not benchmarks. */
+  rating_metric?: string;
   /** Parameters. Typed parameters the script declares, as probed from the build; the segment form is generated from the known ones and passes the rest through extra_params. */
   params?: Array<SystemStroppyCatalog1ItemItemItem2>;
 }

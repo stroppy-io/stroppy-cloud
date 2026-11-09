@@ -48,7 +48,20 @@
       "title": "Iteration duration, p99"
     },
     "load_duration_seconds": {
-      "title": "Data load duration"
+      "title": "Data load duration",
+      "description": "Wall time of the steps that build the database: schema, load, indexes, keys, procedures, statistics."
+    },
+    "tpmc": {
+      "title": "tpmC",
+      "description": "TPC-C New-Order transactions per minute, from Stroppy's compliance report."
+    },
+    "query_geomean_ms": {
+      "title": "Query time, geometric mean",
+      "description": "Geometric mean of the query times of one full single-stream pass with no failed queries; a query under 0.1 s counts as 0.1 s."
+    },
+    "query_total_seconds": {
+      "title": "Query time, total",
+      "description": "Sum of the query times of one full single-stream pass with no failed queries."
     },
     "node_cpu_usage": {
       "title": "CPU usage"

@@ -2,11 +2,15 @@ package stroppycfg
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	specschema "github.com/stroppy-io/stroppy-cloud/pipelines/schemas/spec"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 func TestNativeRunReport(t *testing.T) {
@@ -67,6 +71,48 @@ func TestRunReportSchema4(t *testing.T) {
 	require.Equal(t, "ms", summary.Metrics["iteration_duration_p99"].Unit)
 	require.EqualValues(t, 46, summary.Errors.TerminalErrors)
 	require.NotEmpty(t, summary.Compliance)
+	require.Equal(t, 4, doc.Workers())
+	steps := doc.Timings()
+	require.Len(t, steps, 8)
+	require.Equal(t, spec.StepTiming{Name: "load_data", Status: "completed", Seconds: 2.031048383}, steps[2])
+	require.Equal(t, "completed_with_errors", steps[7].Status)
+}
+
+func TestReportWithoutExecutionsHasNoWorkers(t *testing.T) {
+	t.Parallel()
+	require.Zero(t, RunReport{}.Workers())
+	require.Empty(t, RunReport{}.Timings())
+}
+
+// A query-set workload projects nine values per query histogram: TPC-DS's
+// 103 statements fit, a report past the cap fails closed.
+func TestReportMetricCap(t *testing.T) {
+	t.Parallel()
+	raw, err := os.ReadFile("testdata/run-report-v4.json")
+	require.NoError(t, err)
+	for _, tc := range []struct {
+		queries int
+		fits    bool
+	}{{103, true}, {specschema.SegmentMetricsMax, false}} {
+		var doc map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(raw, &doc))
+		var metrics map[string]any
+		require.NoError(t, json.Unmarshal(doc["metrics"], &metrics))
+		for i := range tc.queries {
+			metrics[fmt.Sprintf("tpcds_query_%d_duration", i)] = map[string]any{"type": "histogram", "unit": "ms", "count": 1, "average": 1.5}
+			metrics[fmt.Sprintf("tpcds_query_%d_runs", i)] = map[string]any{"type": "counter", "total": 1}
+		}
+		doc["metrics"], err = json.Marshal(metrics)
+		require.NoError(t, err)
+		data, err := json.Marshal(doc)
+		require.NoError(t, err)
+		_, _, err = ParseReport(data)
+		if tc.fits {
+			require.NoError(t, err)
+		} else {
+			require.ErrorContains(t, err, "projected metrics")
+		}
+	}
 }
 
 func TestPercentileInterpolatesInsideTheBucket(t *testing.T) {

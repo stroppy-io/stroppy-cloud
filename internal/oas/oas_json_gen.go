@@ -19448,6 +19448,12 @@ func (s *MetricKey) Decode(d *jx.Decoder) error {
 		*s = MetricKeyIterationDurationP99
 	case MetricKeyLoadDurationSeconds:
 		*s = MetricKeyLoadDurationSeconds
+	case MetricKeyTpmc:
+		*s = MetricKeyTpmc
+	case MetricKeyQueryGeomeanMs:
+		*s = MetricKeyQueryGeomeanMs
+	case MetricKeyQueryTotalSeconds:
+		*s = MetricKeyQueryTotalSeconds
 	case MetricKeyNodeCPUUsage:
 		*s = MetricKeyNodeCPUUsage
 	case MetricKeyNodeMemoryUsedBytes:
@@ -21571,6 +21577,72 @@ func (s OptLogLineFields) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptLogLineFields) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MetricDef as json.
+func (o OptMetricDef) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes MetricDef from json.
+func (o *OptMetricDef) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptMetricDef to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptMetricDef) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptMetricDef) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MetricKey as json.
+func (o OptMetricKey) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes MetricKey from json.
+func (o *OptMetricKey) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptMetricKey to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptMetricKey) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptMetricKey) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -28935,6 +29007,10 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		e.Float64(s.Value)
 	}
 	{
+		e.FieldStart("metric")
+		s.Metric.Encode(e)
+	}
+	{
 		e.FieldStart("unit")
 		e.Str(s.Unit)
 	}
@@ -29022,25 +29098,26 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRatingEntry = [18]string{
+var jsonFieldsNameOfRatingEntry = [19]string{
 	0:  "rank",
 	1:  "value",
-	2:  "unit",
-	3:  "db_kind",
-	4:  "db_version",
-	5:  "topology",
-	6:  "node_count",
-	7:  "sizes",
-	8:  "workload_name",
-	9:  "scenario",
-	10: "hardware",
-	11: "stroppy_version",
-	12: "provider_kind",
-	13: "run_at",
-	14: "run_id",
-	15: "author",
-	16: "tenant_name",
-	17: "share_token",
+	2:  "metric",
+	3:  "unit",
+	4:  "db_kind",
+	5:  "db_version",
+	6:  "topology",
+	7:  "node_count",
+	8:  "sizes",
+	9:  "workload_name",
+	10: "scenario",
+	11: "hardware",
+	12: "stroppy_version",
+	13: "provider_kind",
+	14: "run_at",
+	15: "run_id",
+	16: "author",
+	17: "tenant_name",
+	18: "share_token",
 }
 
 // Decode decodes RatingEntry from json.
@@ -29076,8 +29153,18 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"value\"")
 			}
-		case "unit":
+		case "metric":
 			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				if err := s.Metric.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"metric\"")
+			}
+		case "unit":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := d.Str()
 				s.Unit = string(v)
@@ -29089,7 +29176,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"unit\"")
 			}
 		case "db_kind":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				if err := s.DbKind.Decode(d); err != nil {
 					return err
@@ -29149,7 +29236,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"workload_name\"")
 			}
 		case "scenario":
-			requiredBitSet[1] |= 1 << 1
+			requiredBitSet[1] |= 1 << 2
 			if err := func() error {
 				v, err := d.Str()
 				s.Scenario = string(v)
@@ -29161,7 +29248,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"scenario\"")
 			}
 		case "hardware":
-			requiredBitSet[1] |= 1 << 2
+			requiredBitSet[1] |= 1 << 3
 			if err := func() error {
 				if err := s.Hardware.Decode(d); err != nil {
 					return err
@@ -29191,7 +29278,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"provider_kind\"")
 			}
 		case "run_at":
-			requiredBitSet[1] |= 1 << 5
+			requiredBitSet[1] |= 1 << 6
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.RunAt = v
@@ -29252,8 +29339,8 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [3]uint8{
-		0b00001111,
-		0b00100110,
+		0b00011111,
+		0b01001100,
 		0b00000000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
@@ -29390,8 +29477,18 @@ func (s *RatingPage) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *RatingPage) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("metric")
-		s.Metric.Encode(e)
+		if s.Metric.Set {
+			e.FieldStart("metric")
+			s.Metric.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("metrics")
+		e.ArrStart()
+		for _, elem := range s.Metrics {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
 	}
 	{
 		e.FieldStart("scenarios")
@@ -29423,12 +29520,13 @@ func (s *RatingPage) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRatingPage = [5]string{
+var jsonFieldsNameOfRatingPage = [6]string{
 	0: "metric",
-	1: "scenarios",
-	2: "hardware",
-	3: "data",
-	4: "meta",
+	1: "metrics",
+	2: "scenarios",
+	3: "hardware",
+	4: "data",
+	5: "meta",
 }
 
 // Decode decodes RatingPage from json.
@@ -29441,8 +29539,8 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "metric":
-			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
+				s.Metric.Reset()
 				if err := s.Metric.Decode(d); err != nil {
 					return err
 				}
@@ -29450,8 +29548,26 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"metric\"")
 			}
-		case "scenarios":
+		case "metrics":
 			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				s.Metrics = make([]MetricDef, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem MetricDef
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Metrics = append(s.Metrics, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"metrics\"")
+			}
+		case "scenarios":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				s.Scenarios = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -29471,7 +29587,7 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"scenarios\"")
 			}
 		case "hardware":
-			requiredBitSet[0] |= 1 << 2
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				s.Hardware = make([]HardwareClass, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -29489,7 +29605,7 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"hardware\"")
 			}
 		case "data":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				s.Data = make([]RatingEntry, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -29507,7 +29623,7 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"data\"")
 			}
 		case "meta":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				if err := s.Meta.Decode(d); err != nil {
 					return err
@@ -29526,7 +29642,7 @@ func (s *RatingPage) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00011111,
+		0b00111110,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -38307,9 +38423,25 @@ func (s *RunResultSegmentsItem) encodeFields(e *jx.Encoder) {
 			e.ArrEnd()
 		}
 	}
+	{
+		if s.Steps != nil {
+			e.FieldStart("steps")
+			e.ArrStart()
+			for _, elem := range s.Steps {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
+		if s.Workers.Set {
+			e.FieldStart("workers")
+			s.Workers.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfRunResultSegmentsItem = [13]string{
+var jsonFieldsNameOfRunResultSegmentsItem = [15]string{
 	0:  "name",
 	1:  "status",
 	2:  "started_at",
@@ -38323,6 +38455,8 @@ var jsonFieldsNameOfRunResultSegmentsItem = [13]string{
 	10: "report_omitted",
 	11: "metrics",
 	12: "error_log",
+	13: "steps",
+	14: "workers",
 }
 
 // Decode decodes RunResultSegmentsItem from json.
@@ -38475,6 +38609,33 @@ func (s *RunResultSegmentsItem) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"error_log\"")
 			}
+		case "steps":
+			if err := func() error {
+				s.Steps = make([]RunResultSegmentsItemStepsItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem RunResultSegmentsItemStepsItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Steps = append(s.Steps, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"steps\"")
+			}
+		case "workers":
+			if err := func() error {
+				s.Workers.Reset()
+				if err := s.Workers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"workers\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -38626,6 +38787,136 @@ func (s RunResultSegmentsItemStatus) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunResultSegmentsItemStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunResultSegmentsItemStepsItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunResultSegmentsItemStepsItem) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+		e.FieldStart("status")
+		e.Str(s.Status)
+	}
+	{
+		e.FieldStart("seconds")
+		e.Float64(s.Seconds)
+	}
+}
+
+var jsonFieldsNameOfRunResultSegmentsItemStepsItem = [3]string{
+	0: "name",
+	1: "status",
+	2: "seconds",
+}
+
+// Decode decodes RunResultSegmentsItemStepsItem from json.
+func (s *RunResultSegmentsItemStepsItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunResultSegmentsItemStepsItem to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "name":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "status":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Status = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		case "seconds":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Float64()
+				s.Seconds = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"seconds\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunResultSegmentsItemStepsItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunResultSegmentsItemStepsItem) {
+					name = jsonFieldsNameOfRunResultSegmentsItemStepsItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunResultSegmentsItemStepsItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunResultSegmentsItemStepsItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -45139,15 +45430,22 @@ func (s *StroppyScript) encodeFields(e *jx.Encoder) {
 			e.ArrEnd()
 		}
 	}
+	{
+		if s.RatingMetric.Set {
+			e.FieldStart("rating_metric")
+			s.RatingMetric.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfStroppyScript = [6]string{
+var jsonFieldsNameOfStroppyScript = [7]string{
 	0: "id",
 	1: "title",
 	2: "description",
 	3: "protocols",
 	4: "steps",
 	5: "params",
+	6: "rating_metric",
 }
 
 // Decode decodes StroppyScript from json.
@@ -45244,6 +45542,16 @@ func (s *StroppyScript) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"params\"")
+			}
+		case "rating_metric":
+			if err := func() error {
+				s.RatingMetric.Reset()
+				if err := s.RatingMetric.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"rating_metric\"")
 			}
 		default:
 			return d.Skip()

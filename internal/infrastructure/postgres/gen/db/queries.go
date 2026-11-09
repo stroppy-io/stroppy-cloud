@@ -2185,6 +2185,97 @@ func (q *Queries) RunsWithoutQpsSeries(ctx context.Context, lim int64) ([]RunsWi
 	return items, nil
 }
 
+const runsWithStaleHeadlineSQL = `-- Finished runs with a result whose headline an older derivation produced (backfill).
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs
+WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND result IS NOT NULL
+  AND coalesce((summary->>'headline_rev')::int, 0) < $1::int
+ORDER BY finished_at DESC NULLS LAST
+LIMIT $2;`
+
+type RunsWithStaleHeadlineParams struct {
+	Rev int32
+	Lim int64
+}
+
+type RunsWithStaleHeadlineRow struct {
+	ID                uuid.UUID
+	TenantID          uuid.UUID
+	Name              string
+	Status            string
+	Phase             string
+	StatusReason      string
+	Trigger           string
+	SuiteRunID        *uuid.UUID
+	CellID            string
+	ScheduleID        *uuid.UUID
+	ParentRunID       *uuid.UUID
+	TestID            *uuid.UUID
+	TestName          string
+	AuthorID          *uuid.UUID
+	Snapshot          json.RawMessage
+	RunSpec           json.RawMessage
+	Summary           json.RawMessage
+	Result            json.RawMessage
+	RuntimeState      json.RawMessage
+	LastEventID       int64
+	RatingTenant      bool
+	RatingGlobal      bool
+	Keep              string
+	KeepUntil         *time.Time
+	StandKept         bool
+	Notes             string
+	Labels            json.RawMessage
+	GrapheneNamespace string
+	GrapheneRunID     string
+	PipelineRevision  string
+	Tps               *float64
+	DurationSeconds   *float64
+	CreatedAt         time.Time
+	StartedAt         *time.Time
+	FinishedAt        *time.Time
+	UpdatedAt         time.Time
+	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
+}
+
+func (q *Queries) RunsWithStaleHeadline(ctx context.Context, arg RunsWithStaleHeadlineParams) ([]RunsWithStaleHeadlineRow, error) {
+	rows, err := q.db.Query(ctx, runsWithStaleHeadlineSQL, arg.Rev, arg.Lim)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RunsWithStaleHeadlineRow
+	for rows.Next() {
+		var i RunsWithStaleHeadlineRow
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const setRunHeadlineSQL = `-- A derived field: updated_at stays, the run did not change.
+UPDATE runs SET summary = jsonb_set(jsonb_set(summary, '{headline}', $1::jsonb), '{headline_rev}', to_jsonb($2::int)) WHERE id = $3;`
+
+type SetRunHeadlineParams struct {
+	Headline json.RawMessage
+	Rev      int32
+	ID       uuid.UUID
+}
+
+func (q *Queries) SetRunHeadline(ctx context.Context, arg SetRunHeadlineParams) error {
+	_, err := q.db.Exec(ctx, setRunHeadlineSQL, arg.Headline, arg.Rev, arg.ID)
+	return err
+}
+
 const setRunQpsSeriesSQL = `-- A derived field: updated_at stays, the run did not change.
 UPDATE runs SET summary = jsonb_set(summary, '{qps_series}', $1::jsonb) WHERE id = $2;`
 
@@ -5200,16 +5291,16 @@ func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]R
 }
 
 type RatingRunsParams struct {
-	Metric          string
 	TenantID        string
 	Kinds           []string
 	Versions        []string
 	Providers       []string
 	StroppyVersions []string
 	Since           *time.Time
-	Scenarios       []string
+	ScenarioKeys    []string
+	ScenarioMetrics []string
+	ScenarioHigher  []bool
 	Hardware        []string
-	HigherIsBetter  bool
 	Lim             int64
 	Off             int64
 }
@@ -5226,6 +5317,7 @@ type RatingRunsRow struct {
 	TenantPublicName *string
 	Scenario         string
 	Hardware         string
+	Metric           *string
 	Value            *float64
 }
 
@@ -5234,43 +5326,43 @@ func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]Ratin
 	var args []any
 	positions := make(map[uint32]int)
 	if positions[1] == 0 {
-		args = append(args, arg.Metric)
+		args = append(args, arg.TenantID)
 		positions[1] = len(args)
 	}
 	if positions[2] == 0 {
-		args = append(args, arg.TenantID)
+		args = append(args, arg.Kinds)
 		positions[2] = len(args)
 	}
 	if positions[3] == 0 {
-		args = append(args, arg.Kinds)
+		args = append(args, arg.Versions)
 		positions[3] = len(args)
 	}
 	if positions[4] == 0 {
-		args = append(args, arg.Versions)
+		args = append(args, arg.Providers)
 		positions[4] = len(args)
 	}
 	if positions[5] == 0 {
-		args = append(args, arg.Providers)
+		args = append(args, arg.StroppyVersions)
 		positions[5] = len(args)
 	}
 	if positions[6] == 0 {
-		args = append(args, arg.StroppyVersions)
+		args = append(args, arg.Since)
 		positions[6] = len(args)
 	}
 	if positions[7] == 0 {
-		args = append(args, arg.Since)
+		args = append(args, arg.ScenarioKeys)
 		positions[7] = len(args)
 	}
 	if positions[8] == 0 {
-		args = append(args, arg.Scenarios)
+		args = append(args, arg.ScenarioMetrics)
 		positions[8] = len(args)
 	}
 	if positions[9] == 0 {
-		args = append(args, arg.Hardware)
+		args = append(args, arg.ScenarioHigher)
 		positions[9] = len(args)
 	}
 	if positions[10] == 0 {
-		args = append(args, arg.HigherIsBetter)
+		args = append(args, arg.Hardware)
 		positions[10] = len(args)
 	}
 	if positions[11] == 0 {
@@ -5281,7 +5373,7 @@ func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]Ratin
 		args = append(args, arg.Off)
 		positions[12] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric. A number means\n-- something only next to runs of the same scenario on the same hardware, so\n-- each row carries both: the scenario is the workload's scripts (tpcc/tx and\n-- tpcc/procs differ: one round trip per statement or per transaction), the\n-- hardware is the stand without its runner, machines grouped by vCPU and\n-- memory (\"2x4c16g+1x2c4g\").\n-- One row per configuration (tenant, database, topology, workload, scenario,\n-- hardware, provider): its latest run among the ones the filters keep. The\n-- best of several runs would rank a lucky one, and repeated nightly runs\n-- would crowd the board with the same stand.\nSELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,\n       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.value\nFROM (\nSELECT x.*,\n       row_number() OVER (PARTITION BY x.tenant_id, x.summary->>'db_kind', x.summary->>'db_version', x.summary->'topology',\n                                       x.summary->>'workload_name', x.summary->>'provider_kind', x.scenario, x.hardware\n                          ORDER BY x.finished_at DESC, x.id) AS nth\nFROM (\n  SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n         t.name AS tenant_name, t.public_name AS tenant_public_name,\n         coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')\n                   FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg\n                   WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,\n         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)\n                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n\n                         FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m\n                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware,\n         (r.summary->'headline'->>$%d::text)::float8 AS value\n  FROM runs r JOIN tenants t ON t.id = r.tenant_id\n  WHERE r.deleted_at IS NULL AND r.status = 'completed'\n    AND r.summary->'headline' ? $%d::text\n    AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')\n    AND (($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))\n    AND ($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)\n) x\nWHERE (COALESCE(cardinality($%d::text[]), 0) = 0 OR x.scenario = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR x.hardware = ANY($%d::text[]))\n) y\nWHERE y.nth = 1\nORDER BY CASE WHEN $%d::boolean THEN -y.value ELSE y.value END, y.finished_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[12]))
+	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric. A number means\n-- something only next to runs of the same scenario on the same hardware, so\n-- each row carries both: the scenario is the workload's scripts (tpcc/tx and\n-- tpcc/procs differ: one round trip per statement or per transaction), the\n-- hardware is the stand without its runner, machines grouped by vCPU and\n-- memory (\"2x4c16g+1x2c4g\").\n-- One row per configuration (tenant, database, topology, workload, scenario,\n-- hardware, provider): its latest run among the ones the filters keep. The\n-- best of several runs would rank a lucky one, and repeated nightly runs\n-- would crowd the board with the same stand.\n-- Each scenario ranks by its own metric: the parallel arrays @scenario_keys,\n-- @scenario_metrics and @scenario_higher say which, and a scenario not in\n-- them is not on the page. Places count within a scenario, so the page is\n-- ordered by scenario first.\nSELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,\n       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.metric::text AS metric, y.value\nFROM (\nSELECT z.*,\n       row_number() OVER (PARTITION BY z.tenant_id, z.summary->>'db_kind', z.summary->>'db_version', z.summary->'topology',\n                                       z.summary->>'workload_name', z.summary->>'provider_kind', z.scenario, z.hardware\n                          ORDER BY z.finished_at DESC, z.id) AS nth\nFROM (\nSELECT x.*, s.metric, s.higher, (x.summary->'headline'->>s.metric)::float8 AS value\nFROM (\n  SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n         t.name AS tenant_name, t.public_name AS tenant_public_name,\n         coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')\n                   FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg\n                   WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,\n         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)\n                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n\n                         FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m\n                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware\n  FROM runs r JOIN tenants t ON t.id = r.tenant_id\n  WHERE r.deleted_at IS NULL AND r.status = 'completed'\n    AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')\n    AND (($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))\n    AND ($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)\n) x\nJOIN unnest($%d::text[], $%d::text[], $%d::boolean[]) AS s(scenario, metric, higher)\n  ON s.scenario = x.scenario\nWHERE x.summary->'headline' ? s.metric\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR x.hardware = ANY($%d::text[]))\n) z\n) y\nWHERE y.nth = 1\nORDER BY y.scenario, CASE WHEN y.higher THEN -y.value ELSE y.value END, y.finished_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[8], positions[9], positions[10], positions[10], positions[11], positions[12]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -5290,7 +5382,7 @@ func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]Ratin
 	var items []RatingRunsRow
 	for rows.Next() {
 		var i RatingRunsRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.AuthorID, &i.Summary, &i.FinishedAt, &i.Tps, &i.TenantName, &i.TenantPublicName, &i.Scenario, &i.Hardware, &i.Value); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.AuthorID, &i.Summary, &i.FinishedAt, &i.Tps, &i.TenantName, &i.TenantPublicName, &i.Scenario, &i.Hardware, &i.Metric, &i.Value); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

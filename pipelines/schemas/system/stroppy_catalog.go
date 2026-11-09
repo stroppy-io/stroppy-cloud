@@ -105,6 +105,9 @@ func StroppyCatalog() *schemapb.Schema {
 							).Title("Steps").
 								Desc("Steps the script declares; the segment form filters on them.").
 								MaxItems(64).Required(),
+							schemapb.Str("rating_metric").Title("Rating metric").
+								Desc("Metric key the script's runs rank by: its benchmark's own headline (tpmc, query_geomean_ms). Empty for scripts that are not benchmarks.").
+								Pattern(`^[a-z][a-z0-9_]*$`).MaxLen(64),
 							// doc: `stroppy probe -o json` → workloads[].params[]
 							// {name, flag, scope, type, description, default, env, config}.
 							schemapb.List("params",

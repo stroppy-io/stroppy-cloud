@@ -155,6 +155,21 @@ WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND 
 ORDER BY finished_at DESC NULLS LAST
 LIMIT @lim;
 
+-- name: RunsWithStaleHeadline :many
+-- Finished runs with a result whose headline an older derivation produced (backfill).
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs
+WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND result IS NOT NULL
+  AND coalesce((summary->>'headline_rev')::int, 0) < @rev::int
+ORDER BY finished_at DESC NULLS LAST
+LIMIT @lim;
+
+-- name: SetRunHeadline :exec
+-- A derived field: updated_at stays, the run did not change.
+UPDATE runs SET summary = jsonb_set(jsonb_set(summary, '{headline}', @headline::jsonb), '{headline_rev}', to_jsonb(@rev::int)) WHERE id = @id;
+
 -- name: SetRunQPSSeries :exec
 -- A derived field: updated_at stays, the run did not change.
 UPDATE runs SET summary = jsonb_set(summary, '{qps_series}', @series::jsonb) WHERE id = @id;
@@ -194,13 +209,19 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- hardware, provider): its latest run among the ones the filters keep. The
 -- best of several runs would rank a lucky one, and repeated nightly runs
 -- would crowd the board with the same stand.
+-- Each scenario ranks by its own metric: the parallel arrays @scenario_keys,
+-- @scenario_metrics and @scenario_higher say which, and a scenario not in
+-- them is not on the page. Places count within a scenario, so the page is
+-- ordered by scenario first.
 SELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,
-       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.value
+       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.metric::text AS metric, y.value
 FROM (
-SELECT x.*,
-       row_number() OVER (PARTITION BY x.tenant_id, x.summary->>'db_kind', x.summary->>'db_version', x.summary->'topology',
-                                       x.summary->>'workload_name', x.summary->>'provider_kind', x.scenario, x.hardware
-                          ORDER BY x.finished_at DESC, x.id) AS nth
+SELECT z.*,
+       row_number() OVER (PARTITION BY z.tenant_id, z.summary->>'db_kind', z.summary->>'db_version', z.summary->'topology',
+                                       z.summary->>'workload_name', z.summary->>'provider_kind', z.scenario, z.hardware
+                          ORDER BY z.finished_at DESC, z.id) AS nth
+FROM (
+SELECT x.*, s.metric, s.higher, (x.summary->'headline'->>s.metric)::float8 AS value
 FROM (
   SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,
          t.name AS tenant_name, t.public_name AS tenant_public_name,
@@ -210,11 +231,9 @@ FROM (
          coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
                    FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
                          FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
-                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware,
-         (r.summary->'headline'->>@metric::text)::float8 AS value
+                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware
   FROM runs r JOIN tenants t ON t.id = r.tenant_id
   WHERE r.deleted_at IS NULL AND r.status = 'completed'
-    AND r.summary->'headline' ? @metric::text
     AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
     AND ((@tenant_id::text <> '' AND r.tenant_id::text = @tenant_id::text AND r.rating_tenant) OR (@tenant_id::text = '' AND r.rating_global))
     AND (COALESCE(cardinality(@kinds::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY(@kinds::text[]))
@@ -223,11 +242,14 @@ FROM (
     AND (COALESCE(cardinality(@stroppy_versions::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY(@stroppy_versions::text[]))
     AND (@since::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= @since::timestamptz)
 ) x
-WHERE (COALESCE(cardinality(@scenarios::text[]), 0) = 0 OR x.scenario = ANY(@scenarios::text[]))
+JOIN unnest(@scenario_keys::text[], @scenario_metrics::text[], @scenario_higher::boolean[]) AS s(scenario, metric, higher)
+  ON s.scenario = x.scenario
+WHERE x.summary->'headline' ? s.metric
   AND (COALESCE(cardinality(@hardware::text[]), 0) = 0 OR x.hardware = ANY(@hardware::text[]))
+) z
 ) y
 WHERE y.nth = 1
-ORDER BY CASE WHEN @higher_is_better::boolean THEN -y.value ELSE y.value END, y.finished_at DESC
+ORDER BY y.scenario, CASE WHEN y.higher THEN -y.value ELSE y.value END, y.finished_at DESC
 LIMIT @lim OFFSET @off;
 
 -- name: RatingFacets :many

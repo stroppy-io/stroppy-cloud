@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	specschema "github.com/stroppy-io/stroppy-cloud/pipelines/schemas/spec"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -27,6 +28,14 @@ type RunReport struct {
 		Phase  string `json:"phase"`
 		Reason string `json:"reason"`
 	} `json:"failure"`
+	Steps []struct {
+		Name            string  `json:"name"`
+		Status          string  `json:"status"`
+		DurationSeconds float64 `json:"duration_seconds"`
+	} `json:"steps"`
+	Executions map[string]struct {
+		Workers int `json:"workers"`
+	} `json:"executions"`
 	WorkloadReports []struct {
 		Kind   string          `json:"kind"`
 		Schema int             `json:"schema"`
@@ -137,8 +146,8 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 	}
 	// This is Stroppy's measured window, not activity/container wall time.
 	summary.Metrics["measurement_seconds"] = spec.MetricValue{Value: *doc.MeasurementSeconds, Unit: "s"}
-	if len(summary.Metrics) > 256 {
-		return doc, summary, fmt.Errorf("stroppy report exceeds 256 projected metrics; full report retained as artifact")
+	if len(summary.Metrics) > specschema.SegmentMetricsMax {
+		return doc, summary, fmt.Errorf("stroppy report exceeds %d projected metrics; full report retained as artifact", specschema.SegmentMetricsMax)
 	}
 	summary.Found, summary.Errors = true, doc.Errors
 	for _, payload := range doc.WorkloadReports {
@@ -147,6 +156,25 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 		}
 	}
 	return doc, summary, nil
+}
+
+// Timings are the report's bench steps as a segment result carries them.
+func (r RunReport) Timings() []spec.StepTiming {
+	out := make([]spec.StepTiming, 0, len(r.Steps))
+	for _, s := range r.Steps {
+		out = append(out, spec.StepTiming{Name: s.Name, Status: s.Status, Seconds: s.DurationSeconds})
+	}
+	return out
+}
+
+// Workers is how many workers ran the measured step: the report holds one
+// execution, keyed by that step; 0 when nothing was measured.
+func (r RunReport) Workers() int {
+	n := 0
+	for _, e := range r.Executions {
+		n = max(n, e.Workers)
+	}
+	return n
 }
 
 func nativeMetricUnit(name string) string {

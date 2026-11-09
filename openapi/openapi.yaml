@@ -4778,9 +4778,10 @@ components:
     ratingMetric:
       name: metric
       in: query
+      description: One metric for every scenario. Absent ranks each scenario by its own benchmark's metric
+        (the script's `rating_metric`, e.g. tpmC for TPC-C, the query geometric mean for TPC-H).
       schema:
         type: string
-        default: tps
     ratingKind:
       name: kind
       in: query
@@ -5431,6 +5432,9 @@ components:
       - iteration_duration_p90
       - iteration_duration_p99
       - load_duration_seconds
+      - tpmc
+      - query_geomean_ms
+      - query_total_seconds
       - node_cpu_usage
       - node_memory_used_bytes
       - node_disk_io_bytes
@@ -6932,6 +6936,10 @@ components:
             -o json`).
           items:
             $ref: '#/components/schemas/StroppyParam'
+        rating_metric:
+          $ref: '#/components/schemas/MetricKey'
+          description: The metric the script's runs rank by (its benchmark's own headline); absent for
+            scripts that are not benchmarks.
     StroppyParam:
       type: object
       required:
@@ -8084,6 +8092,29 @@ components:
                   and class; the most frequent first, at most 20.
                 items:
                   $ref: '#/components/schemas/RunErrorLogEntry'
+              steps:
+                type: array
+                description: Bench steps the Stroppy report timed, in run order.
+                items:
+                  type: object
+                  required:
+                  - name
+                  - status
+                  - seconds
+                  properties:
+                    name:
+                      type: string
+                      example: load_data
+                    status:
+                      type: string
+                      example: completed
+                    seconds:
+                      type: number
+                      format: double
+                      description: Wall time of the step.
+              workers:
+                type: integer
+                description: Workers that ran the measured step.
         artifacts:
           type: array
           items:
@@ -9582,6 +9613,7 @@ components:
       - rank
       - value
       - unit
+      - metric
       - db_kind
       - scenario
       - hardware
@@ -9591,6 +9623,9 @@ components:
           type: integer
         value:
           type: number
+        metric:
+          $ref: '#/components/schemas/MetricKey'
+          description: The metric the value is of; its definition is in the page's `metrics`.
         unit:
           type: string
         db_kind:
@@ -9634,7 +9669,7 @@ components:
     RatingPage:
       type: object
       required:
-      - metric
+      - metrics
       - scenarios
       - hardware
       - data
@@ -9642,6 +9677,12 @@ components:
       properties:
         metric:
           $ref: '#/components/schemas/MetricDef'
+          description: The one metric asked for; absent when each scenario ranks by its own.
+        metrics:
+          type: array
+          description: Definitions of the metrics the entries carry.
+          items:
+            $ref: '#/components/schemas/MetricDef'
         scenarios:
           type: array
           description: Scenarios that have rated runs, to filter by.

@@ -7,7 +7,7 @@ export const Route = createFileRoute('/embed/leaderboard')({
   staticData: { bare: true },
   validateSearch: embedSearchSchema,
   search: {
-    middlewares: [stripSearchParams({ theme: 'dark', metric: 'tps', period: 'all', limit: 10 })],
+    middlewares: [stripSearchParams({ theme: 'dark', period: 'all', limit: 10 })],
   },
   component: () => {
     const navigate = Route.useNavigate()

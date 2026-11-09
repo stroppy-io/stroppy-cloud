@@ -10874,6 +10874,9 @@ const (
 	MetricKeyIterationDurationP90                      MetricKey = "iteration_duration_p90"
 	MetricKeyIterationDurationP99                      MetricKey = "iteration_duration_p99"
 	MetricKeyLoadDurationSeconds                       MetricKey = "load_duration_seconds"
+	MetricKeyTpmc                                      MetricKey = "tpmc"
+	MetricKeyQueryGeomeanMs                            MetricKey = "query_geomean_ms"
+	MetricKeyQueryTotalSeconds                         MetricKey = "query_total_seconds"
 	MetricKeyNodeCPUUsage                              MetricKey = "node_cpu_usage"
 	MetricKeyNodeMemoryUsedBytes                       MetricKey = "node_memory_used_bytes"
 	MetricKeyNodeDiskIoBytes                           MetricKey = "node_disk_io_bytes"
@@ -10912,6 +10915,9 @@ func (MetricKey) AllValues() []MetricKey {
 		MetricKeyIterationDurationP90,
 		MetricKeyIterationDurationP99,
 		MetricKeyLoadDurationSeconds,
+		MetricKeyTpmc,
+		MetricKeyQueryGeomeanMs,
+		MetricKeyQueryTotalSeconds,
 		MetricKeyNodeCPUUsage,
 		MetricKeyNodeMemoryUsedBytes,
 		MetricKeyNodeDiskIoBytes,
@@ -10965,6 +10971,12 @@ func (s MetricKey) MarshalText() ([]byte, error) {
 	case MetricKeyIterationDurationP99:
 		return []byte(s), nil
 	case MetricKeyLoadDurationSeconds:
+		return []byte(s), nil
+	case MetricKeyTpmc:
+		return []byte(s), nil
+	case MetricKeyQueryGeomeanMs:
+		return []byte(s), nil
+	case MetricKeyQueryTotalSeconds:
 		return []byte(s), nil
 	case MetricKeyNodeCPUUsage:
 		return []byte(s), nil
@@ -11054,6 +11066,15 @@ func (s *MetricKey) UnmarshalText(data []byte) error {
 		return nil
 	case MetricKeyLoadDurationSeconds:
 		*s = MetricKeyLoadDurationSeconds
+		return nil
+	case MetricKeyTpmc:
+		*s = MetricKeyTpmc
+		return nil
+	case MetricKeyQueryGeomeanMs:
+		*s = MetricKeyQueryGeomeanMs
+		return nil
+	case MetricKeyQueryTotalSeconds:
+		*s = MetricKeyQueryTotalSeconds
 		return nil
 	case MetricKeyNodeCPUUsage:
 		*s = MetricKeyNodeCPUUsage
@@ -14301,6 +14322,98 @@ func (o OptLogLineFields) Get() (v LogLineFields, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptLogLineFields) Or(d LogLineFields) LogLineFields {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptMetricDef returns new OptMetricDef with value set to v.
+func NewOptMetricDef(v MetricDef) OptMetricDef {
+	return OptMetricDef{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMetricDef is optional MetricDef.
+type OptMetricDef struct {
+	Value MetricDef
+	Set   bool
+}
+
+// IsSet returns true if OptMetricDef was set.
+func (o OptMetricDef) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMetricDef) Reset() {
+	var v MetricDef
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMetricDef) SetTo(v MetricDef) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMetricDef) Get() (v MetricDef, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMetricDef) Or(d MetricDef) MetricDef {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptMetricKey returns new OptMetricKey with value set to v.
+func NewOptMetricKey(v MetricKey) OptMetricKey {
+	return OptMetricKey{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMetricKey is optional MetricKey.
+type OptMetricKey struct {
+	Value MetricKey
+	Set   bool
+}
+
+// IsSet returns true if OptMetricKey was set.
+func (o OptMetricKey) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMetricKey) Reset() {
+	var v MetricKey
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMetricKey) SetTo(v MetricKey) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMetricKey) Get() (v MetricKey, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMetricKey) Or(d MetricKey) MetricKey {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -21979,8 +22092,10 @@ func (s *QuotaUnit) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/RatingEntry
 type RatingEntry struct {
-	Rank         int              `json:"rank"`
-	Value        float64          `json:"value"`
+	Rank  int     `json:"rank"`
+	Value float64 `json:"value"`
+	// The metric the value is of; its definition is in the page's `metrics`.
+	Metric       MetricKey        `json:"metric"`
 	Unit         string           `json:"unit"`
 	DbKind       DatabaseKind     `json:"db_kind"`
 	DbVersion    OptString        `json:"db_version"`
@@ -22013,6 +22128,11 @@ func (s *RatingEntry) GetRank() int {
 // GetValue returns the value of Value.
 func (s *RatingEntry) GetValue() float64 {
 	return s.Value
+}
+
+// GetMetric returns the value of Metric.
+func (s *RatingEntry) GetMetric() MetricKey {
+	return s.Metric
 }
 
 // GetUnit returns the value of Unit.
@@ -22103,6 +22223,11 @@ func (s *RatingEntry) SetRank(val int) {
 // SetValue sets the value of Value.
 func (s *RatingEntry) SetValue(val float64) {
 	s.Value = val
+}
+
+// SetMetric sets the value of Metric.
+func (s *RatingEntry) SetMetric(val MetricKey) {
+	s.Metric = val
 }
 
 // SetUnit sets the value of Unit.
@@ -22213,7 +22338,10 @@ func (s *RatingFlags) SetGlobal(val OptBool) {
 
 // Ref: #/components/schemas/RatingPage
 type RatingPage struct {
-	Metric MetricDef `json:"metric"`
+	// The one metric asked for; absent when each scenario ranks by its own.
+	Metric OptMetricDef `json:"metric"`
+	// Definitions of the metrics the entries carry.
+	Metrics []MetricDef `json:"metrics"`
 	// Scenarios that have rated runs, to filter by.
 	Scenarios []string `json:"scenarios"`
 	// Hardware classes that have rated runs, to filter by.
@@ -22225,8 +22353,13 @@ type RatingPage struct {
 }
 
 // GetMetric returns the value of Metric.
-func (s *RatingPage) GetMetric() MetricDef {
+func (s *RatingPage) GetMetric() OptMetricDef {
 	return s.Metric
+}
+
+// GetMetrics returns the value of Metrics.
+func (s *RatingPage) GetMetrics() []MetricDef {
+	return s.Metrics
 }
 
 // GetScenarios returns the value of Scenarios.
@@ -22250,8 +22383,13 @@ func (s *RatingPage) GetMeta() PageMeta {
 }
 
 // SetMetric sets the value of Metric.
-func (s *RatingPage) SetMetric(val MetricDef) {
+func (s *RatingPage) SetMetric(val OptMetricDef) {
 	s.Metric = val
+}
+
+// SetMetrics sets the value of Metrics.
+func (s *RatingPage) SetMetrics(val []MetricDef) {
+	s.Metrics = val
 }
 
 // SetScenarios sets the value of Scenarios.
@@ -26159,6 +26297,10 @@ type RunResultSegmentsItem struct {
 	// What Stroppy logged as errors and warnings, grouped by level, message, error and class; the most
 	// frequent first, at most 20.
 	ErrorLog []RunErrorLogEntry `json:"error_log"`
+	// Bench steps the Stroppy report timed, in run order.
+	Steps []RunResultSegmentsItemStepsItem `json:"steps"`
+	// Workers that ran the measured step.
+	Workers OptInt `json:"workers"`
 }
 
 // GetName returns the value of Name.
@@ -26226,6 +26368,16 @@ func (s *RunResultSegmentsItem) GetErrorLog() []RunErrorLogEntry {
 	return s.ErrorLog
 }
 
+// GetSteps returns the value of Steps.
+func (s *RunResultSegmentsItem) GetSteps() []RunResultSegmentsItemStepsItem {
+	return s.Steps
+}
+
+// GetWorkers returns the value of Workers.
+func (s *RunResultSegmentsItem) GetWorkers() OptInt {
+	return s.Workers
+}
+
 // SetName sets the value of Name.
 func (s *RunResultSegmentsItem) SetName(val string) {
 	s.Name = val
@@ -26289,6 +26441,16 @@ func (s *RunResultSegmentsItem) SetMetrics(val OptRunResultSegmentsItemMetrics) 
 // SetErrorLog sets the value of ErrorLog.
 func (s *RunResultSegmentsItem) SetErrorLog(val []RunErrorLogEntry) {
 	s.ErrorLog = val
+}
+
+// SetSteps sets the value of Steps.
+func (s *RunResultSegmentsItem) SetSteps(val []RunResultSegmentsItemStepsItem) {
+	s.Steps = val
+}
+
+// SetWorkers sets the value of Workers.
+func (s *RunResultSegmentsItem) SetWorkers(val OptInt) {
+	s.Workers = val
 }
 
 type RunResultSegmentsItemMetrics map[string]MetricValue
@@ -26355,6 +26517,43 @@ func (s *RunResultSegmentsItemStatus) UnmarshalText(data []byte) error {
 	default:
 		return errors.Errorf("invalid value: %q", data)
 	}
+}
+
+type RunResultSegmentsItemStepsItem struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+	// Wall time of the step.
+	Seconds float64 `json:"seconds"`
+}
+
+// GetName returns the value of Name.
+func (s *RunResultSegmentsItemStepsItem) GetName() string {
+	return s.Name
+}
+
+// GetStatus returns the value of Status.
+func (s *RunResultSegmentsItemStepsItem) GetStatus() string {
+	return s.Status
+}
+
+// GetSeconds returns the value of Seconds.
+func (s *RunResultSegmentsItemStepsItem) GetSeconds() float64 {
+	return s.Seconds
+}
+
+// SetName sets the value of Name.
+func (s *RunResultSegmentsItemStepsItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetStatus sets the value of Status.
+func (s *RunResultSegmentsItemStepsItem) SetStatus(val string) {
+	s.Status = val
+}
+
+// SetSeconds sets the value of Seconds.
+func (s *RunResultSegmentsItemStepsItem) SetSeconds(val float64) {
+	s.Seconds = val
 }
 
 // Ref: #/components/schemas/RunSegmentErrors
@@ -29347,6 +29546,9 @@ type StroppyScript struct {
 	Steps       []StroppyScriptStepsItem `json:"steps"`
 	// Typed parameters the script declares, as probed from the build (`stroppy probe -o json`).
 	Params []StroppyParam `json:"params"`
+	// The metric the script's runs rank by (its benchmark's own headline); absent for scripts that are
+	// not benchmarks.
+	RatingMetric OptMetricKey `json:"rating_metric"`
 }
 
 // GetID returns the value of ID.
@@ -29379,6 +29581,11 @@ func (s *StroppyScript) GetParams() []StroppyParam {
 	return s.Params
 }
 
+// GetRatingMetric returns the value of RatingMetric.
+func (s *StroppyScript) GetRatingMetric() OptMetricKey {
+	return s.RatingMetric
+}
+
 // SetID sets the value of ID.
 func (s *StroppyScript) SetID(val string) {
 	s.ID = val
@@ -29407,6 +29614,11 @@ func (s *StroppyScript) SetSteps(val []StroppyScriptStepsItem) {
 // SetParams sets the value of Params.
 func (s *StroppyScript) SetParams(val []StroppyParam) {
 	s.Params = val
+}
+
+// SetRatingMetric sets the value of RatingMetric.
+func (s *StroppyScript) SetRatingMetric(val OptMetricKey) {
+	s.RatingMetric = val
 }
 
 type StroppyScriptStepsItem struct {
