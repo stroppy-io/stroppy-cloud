@@ -1357,7 +1357,7 @@
                   "duration": {
                     "default": "0s",
                     "gte": "0s",
-                    "lte": "3600s"
+                    "lte": "86400s"
                   },
                   "name": "query_timeout",
                   "title": "Query timeout"

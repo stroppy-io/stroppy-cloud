@@ -343,9 +343,11 @@ func Segment() *schemapb.Schema {
 				schemapb.Int64("iterations").Title("Iterations").
 					Desc("Total iterations of a shared-iterations scenario (iterations).").
 					Gte(1).Nullable(),
+				// An analytic statement (TPC-DS q4 on a single node) runs for
+				// hours; the bound is the iteration-bounded segment's own (24h).
 				schemapb.Duration("query_timeout").Title("Query timeout").
 					Desc("Per-statement deadline (queryTimeout); 0 disables it.").
-					Gte(0).Lte(time.Hour).Default(0),
+					Gte(0).Lte(24*time.Hour).Default(0),
 				// doc: probe — run drainTimeout string default "30s", "none" waits unbounded
 				schemapb.Str("drain_timeout").Title("Drain timeout").
 					Desc("Grace for in-flight iterations after a constant-vus duration (drainTimeout): a duration like 30s, or none to wait without a bound. Unset keeps Stroppy's 30s.").
