@@ -11370,6 +11370,8 @@ func (s *ErrorReason) Decode(d *jx.Decoder) error {
 		*s = ErrorReasonPatroniRequiresHaproxy
 	case ErrorReasonPdfExportIsNotAvailableYet:
 		*s = ErrorReasonPdfExportIsNotAvailableYet
+	case ErrorReasonPicodataScaleExceedsMemory:
+		*s = ErrorReasonPicodataScaleExceedsMemory
 	case ErrorReasonPlatformAdminRequired:
 		*s = ErrorReasonPlatformAdminRequired
 	case ErrorReasonProfileIsNotVerified:

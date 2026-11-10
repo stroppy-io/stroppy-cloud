@@ -130,7 +130,7 @@ func Picodata() *schemapb.Schema {
 				Unit("MB").Gte(1).Lte(4096),
 			// doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_motion_row_max
 			schemapb.Int64("sql_motion_row_max").Title("Rows per motion").Group("SQL runtime").
-				Desc("Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = 50000 under tuning auto, so large validation and batch queries do not stop at the limit.").
+				Desc("Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = under tuning auto 50000 per instance (so large validation and batch queries do not stop at the limit), or for TPC-H the rows of its largest table at the scale factor; a TPC-H scale the machine's memory cannot hold is refused until the limit is set here.").
 				Gte(1).Lte(100000000),
 
 			// doc: https://www.haproxy.org/download/2.9/doc/configuration.txt

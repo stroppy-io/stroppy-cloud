@@ -5647,6 +5647,7 @@ components:
       - patroni_image_required
       - patroni_requires_haproxy
       - pdf_export_is_not_available_yet
+      - picodata_scale_exceeds_memory
       - platform_admin_required
       - profile_is_not_verified
       - profile_not_found

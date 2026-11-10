@@ -254,7 +254,7 @@
       "unit": "MB"
     },
     {
-      "description": "Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = 50000 under tuning auto, so large validation and batch queries do not stop at the limit.",
+      "description": "Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = under tuning auto 50000 per instance (so large validation and batch queries do not stop at the limit), or for TPC-H the rows of its largest table at the scale factor; a TPC-H scale the machine's memory cannot hold is refused until the limit is set here.",
       "group": "SQL runtime",
       "int64": {
         "gte": "1",

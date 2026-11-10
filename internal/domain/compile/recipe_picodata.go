@@ -185,11 +185,11 @@ func picodataRecipe(c *compilation) error {
 	if proxied {
 		endpoints = len(instances)
 	}
-	stmts, err := c.picoSettings(p, endpoints, len(instances))
+	first := instances[0]
+	stmts, err := c.picoSettings(p, endpoints, picoShape{instances: len(instances), perMachine: perMachine, machines: len(nodes), memoryMB: c.hostOf(first.machine).MemoryMB})
 	if err != nil {
 		return err
 	}
-	first := instances[0]
 	sidecar := c.initSidecar(role, first.machine, image, picoInitScript(stmts, picoDataDir+"/admin.sock"), nil, containers)
 	sidecar.Mounts = []spec.Mount{{Source: first.dir(perMachine), Target: picoDataDir}}
 	c.add(sidecar)

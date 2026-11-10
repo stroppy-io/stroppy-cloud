@@ -12,6 +12,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
@@ -28,6 +29,8 @@ type tuneCase struct {
 	configs  map[string]map[string]json.RawMessage
 	protocol catalog.Protocol
 	vus      int
+	// segment replaces the TPC-C segment of the workload (a JSON object).
+	segment string
 	size     string
 	// roleSizes override size per role.
 	roleSizes map[string]string
@@ -37,6 +40,16 @@ type tuneCase struct {
 // compileTuned compiles a tuneCase and returns the output and the
 // effective configs the run's snapshot keeps.
 func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[string]json.RawMessage) {
+	t.Helper()
+	out, eff, err := compileTunedErr(t, tc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return out, eff
+}
+
+// compileTunedErr is compileTuned for a case the compiler may refuse.
+func compileTunedErr(t *testing.T, tc tuneCase) (compile.Output, map[string]map[string]json.RawMessage, error) {
 	t.Helper()
 	ctx := context.Background()
 	reg := schemas.New()
@@ -66,11 +79,17 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 	if protocol == "" {
 		protocol = catalog.ProtoPg
 	}
-	segment := fmt.Sprintf(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":%d,"duration":"10m"}}`, vus)
+	segment := tc.segment
+	if segment == "" {
+		segment = fmt.Sprintf(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":%d,"duration":"10m"}}`, vus)
+	}
 	wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{
 		StroppyVersion: catalog.StroppyRelease, Protocol: protocol, Segments: []json.RawMessage{json.RawMessage(segment)},
 	})
 	if err != nil {
+		if e, ok := errs.AsValidation(err); ok {
+			t.Fatalf("%v: %s", err, validationText(e))
+		}
 		t.Fatal(err)
 	}
 	size := tc.size
@@ -90,9 +109,9 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 		ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat,
 	})
 	if err != nil {
-		t.Fatal(err)
+		return compile.Output{}, nil, err
 	}
-	return out, compile.EffectiveWithTuned(derived.EffectiveConfigs, out.Tuned)
+	return out, compile.EffectiveWithTuned(derived.EffectiveConfigs, out.Tuned), nil
 }
 
 // effectiveOf is one role/schema of the run's effective configs.

@@ -41,7 +41,7 @@ export interface DbPicodataParams1 {
   sql_storage_cache_count_max?: number | string;
   /** Storage plan cache size. sql_storage_cache_size_max, the LRU cache of prepared statements on a storage instance (Picodata default 5 MB). Empty = 32 MB under tuning auto. [MB] */
   sql_storage_cache_size_max_mb?: number | string;
-  /** Rows per motion. Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = 50000 under tuning auto, so large validation and batch queries do not stop at the limit. */
+  /** Rows per motion. Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = under tuning auto 50000 per instance (so large validation and batch queries do not stop at the limit), or for TPC-H the rows of its largest table at the scale factor; a TPC-H scale the machine's memory cannot hold is refused until the limit is set here. */
   sql_motion_row_max?: number | string;
   /** HAProxy nodes. HAProxy instances spreading pgproto clients over the instances of the default tier. */
   haproxy?: number | string;

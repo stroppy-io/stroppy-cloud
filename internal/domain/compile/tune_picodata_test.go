@@ -73,6 +73,62 @@ func TestPicodataInstancePerCore(t *testing.T) {
 	}
 }
 
+// An analytic segment takes the rows of its largest table, not the OLTP
+// per-instance rule; a scale the machine cannot hold is refused with the
+// largest one that fits, and a limit the database sets itself is its choice.
+func TestPicodataMotionRowsOfAnalyticWorkloads(t *testing.T) {
+	tpch := func(sf float64) string {
+		return fmt.Sprintf(`{"name":"main","workload":{"script":"tpch/tx","scale_factor":%g},"run":{"vus":1,"duration":"10m"}}`, sf)
+	}
+	base := func(segment string, size string, perMachine int, extra map[string]any) tuneCase {
+		params := map[string]any{"instances_per_machine": perMachine, "haproxy": 1, "pgproto": true, "tiers": picoTiers(1, 1, nil)}
+		for k, v := range extra {
+			params[k] = v
+		}
+		c := picoCase("26.2", params)
+		c.size, c.segment = size, segment
+		return c
+	}
+	for _, tc := range []struct {
+		name string
+		tc   tuneCase
+		want string
+	}{
+		{"SF 0.1 on M with 8 instances", base(tpch(0.1), "M", 8, nil), "sql_motion_row_max = 660134"},
+		{"SF 1 on XL with 16 instances", base(tpch(1), "XL", 16, nil), "sql_motion_row_max = 6601337"},
+		{"an explicit limit is kept at SF 10", base(tpch(10), "XL", 32, map[string]any{"sql_motion_row_max": 7777}), "sql_motion_row_max = 7777"},
+		{"stock leaves the engine default", base(tpch(10), "XL", 32, map[string]any{"tuning": "stock"}), ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _ := compileTuned(t, tc.tc)
+			init := picoInit(t, out)
+			if tc.want == "" {
+				if strings.Contains(init, "sql_motion_row_max") {
+					t.Errorf("stock sets the limit:\n%s", init)
+				}
+				return
+			}
+			if !strings.Contains(init, tc.want) {
+				t.Errorf("no %q:\n%s", tc.want, init)
+			}
+		})
+	}
+}
+
+func TestPicodataRefusesAScaleThatDoesNotFit(t *testing.T) {
+	c := picoCase("26.2", map[string]any{"instances_per_machine": 0, "haproxy": 1, "pgproto": true, "tiers": picoTiers(1, 1, nil)})
+	c.size = "XL"
+	c.segment = `{"name":"main","workload":{"script":"tpch/tx","scale_factor":10},"run":{"vus":1,"duration":"10m"}}`
+	_, _, err := compileTunedErr(t, c)
+	reason, params := errs.ReasonOf(err)
+	if reason != "picodata_scale_exceeds_memory" {
+		t.Fatalf("SF 10 on XL with 32 instances: %v", err)
+	}
+	if params["max_scale_factor"] != "0.62" || params["instances_per_machine"] != "32" || params["memory_gb"] != "128" {
+		t.Errorf("params %v", params)
+	}
+}
+
 func picoTiers(instances, rf int, extra map[string]any) []any {
 	t := map[string]any{"name": "default", "instances": instances, "replication_factor": rf}
 	for k, v := range extra {

@@ -24,6 +24,10 @@ const picoMemtxStepMB = 256
 // doc: https://docs.picodata.io/picodata/26.2/reference/config/#instance_memtx_memory
 const picoMemtxMinMB = 32
 
+// picoOSReserveMB is the memory kept for the OS, Docker, the exporters and
+// the agent: 2 GB or 8% of the machine's RAM.
+func picoOSReserveMB(memoryMB int) int { return max(2048, memoryMB*8/100) }
+
 // picoAutoMemtxMB sizes instance.memtx.memory of each of perMachine
 // instances on a machine with memoryMB of RAM:
 //
@@ -39,8 +43,7 @@ const picoMemtxMinMB = 32
 // doc: https://docs.picodata.io/picodata/stable/admin/sizing/
 // doc: https://docs.picodata.io/picodata/26.2/reference/config/#instance_memtx_system_memory
 func picoAutoMemtxMB(memoryMB, perMachine, systemMB int) int {
-	reserve := max(2048, memoryMB*8/100)
-	perInstance := (memoryMB - reserve) / max(1, perMachine)
+	perInstance := (memoryMB - picoOSReserveMB(memoryMB)) / max(1, perMachine)
 	arena := int(float64(perInstance-systemMB-256) / 1.15)
 	arena -= arena % picoMemtxStepMB
 	return max(picoMemtxMinMB, arena)
@@ -108,22 +111,30 @@ const (
 // room for the router's own subqueries to storages. sql_motion_row_max is
 // raised under auto whatever the workload: it only bounds one query's
 // virtual table, so queries below 5000 rows behave the same, and
-// validation and batch inserts of large scales stop failing at the limit;
-// the memory it can take stays bounded by the concurrency cap. It is per
-// instance: every instance is a shard that sends its partial result of an
-// aggregate to the router, so 32 shards fill the router's virtual table 32
-// times faster (TPC-C validate_population on one 32-instance machine
-// overflowed 50000).
+// validation and batch inserts of large scales stop failing at the limit.
+// For the OLTP workloads it is per instance: every instance is a shard that
+// sends its partial result of an aggregate to the router, so 32 shards fill
+// the router's virtual table 32 times faster (TPC-C validate_population on
+// one 32-instance machine overflowed 50000). An analytic workload (TPC-H)
+// takes the rows of its largest table at its scale factor and is refused
+// when the memory of the machine cannot hold them (picoMotionRows).
 //
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_runtime_concurrency_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_motion_row_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_storage_cache_count_max
 // doc: https://docs.picodata.io/picodata/26.2/reference/db_config/#sql_storage_cache_size_max
 // doc: https://docs.picodata.io/picodata/25.3/reference/db_config/ — no sql_runtime_concurrency_max
-func (c *compilation) picoSettings(p map[string]any, endpoints, instances int) ([]string, error) {
+func (c *compilation) picoSettings(p map[string]any, endpoints int, shape picoShape) ([]string, error) {
 	version := strParam(p, "version", "")
 	auto := c.tuning() == tuningAuto
 	concurrency := max(picoConcurrencyFloor, int(math.Ceil(picoConcurrencyFactor*float64(c.peakVUs())/float64(max(1, endpoints)))))
+	motion := 0
+	if auto && intParam(p, "sql_motion_row_max", 0) == 0 {
+		var err error
+		if motion, err = c.picoMotionRows(shape); err != nil {
+			return nil, err
+		}
+	}
 	stmts := []string{fmt.Sprintf("sql_vdbe_opcode_max = %d", intParam(p, "sql_vdbe_opcode_max", 0))}
 	paramsSchema := ""
 	if kind, ok := c.in.Catalog.Database(c.in.Database.Kind); ok {
@@ -133,7 +144,7 @@ func (c *compilation) picoSettings(p map[string]any, endpoints, instances int) (
 		{param: "sql_runtime_concurrency_max", auto: concurrency, since: "26.1"},
 		{param: "sql_storage_cache_count_max", auto: picoCacheCountAuto},
 		{param: "sql_storage_cache_size_max_mb", setting: "sql_storage_cache_size_max", scale: 1 << 20, auto: picoCacheSizeAutoMB},
-		{param: "sql_motion_row_max", auto: picoMotionRowAuto * max(1, instances)},
+		{param: "sql_motion_row_max", auto: motion},
 	} {
 		v := intParam(p, s.param, 0)
 		supported := s.since == "" || picoSeriesAtLeast(version, s.since)

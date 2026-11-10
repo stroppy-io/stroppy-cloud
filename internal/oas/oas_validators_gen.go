@@ -2605,6 +2605,8 @@ func (s ErrorReason) Validate() error {
 		return nil
 	case "pdf_export_is_not_available_yet":
 		return nil
+	case "picodata_scale_exceeds_memory":
+		return nil
 	case "platform_admin_required":
 		return nil
 	case "profile_is_not_verified":

@@ -257,6 +257,7 @@
       "patroni_image_required": "Для Patroni нужен образ Patroni/PostgreSQL, обычный PostgreSQL не подойдёт",
       "patroni_requires_haproxy": "Patroni работает только с HAProxy. Включите его в параметрах",
       "pdf_export_is_not_available_yet": "Экспорт в PDF пока недоступен",
+      "picodata_scale_exceeds_memory": "TPC-H с масштабом {{scale_factor}} не поместится: самый тяжёлый запрос собирает в одном месте больше строк, чем держит память {{memory_gb}} ГБ при {{instances_per_machine}} инстансах Picodata на машине и {{concurrent_queries}} одновременных запросах. Наибольший масштаб, который помещается, — {{max_scale_factor}}. Уменьшите масштаб, запустите меньше инстансов на машине, возьмите машину побольше или задайте лимит строк на motion сами и примите, что большие запросы упадут.",
       "platform_admin_required": "Нужны права администратора платформы",
       "profile_is_not_verified": "Провайдер не проверен. Нажмите «Проверить»",
       "profile_not_found": "Профиль не найден",
