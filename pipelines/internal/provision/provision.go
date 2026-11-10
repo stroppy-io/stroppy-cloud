@@ -239,15 +239,24 @@ func failedOn[T any, PT interface {
 	return k8slib.WithFailed(func(live *T) error { return cloudRefusal(PT(live).GetCondition(xpv1.TypeSynced)) })
 }
 
-// permanentRefusal matches what Yandex Cloud and AWS say when a request
-// will not succeed on retry: an exhausted quota or missing rights.
-// Capacity shortages (InsufficientInstanceCapacity) pass on and do recover.
-var permanentRefusal = regexp.MustCompile(`ResourceExhausted|Quota limit|[Qq]uota exceeded|PermissionDenied|[Pp]ermission denied|UnauthorizedOperation|AccessDenied|LimitExceeded`)
+// Refusals by what the cloud says. Permanent: an exhausted quota or missing
+// rights, which do not change while the run waits. Throttled: the API's
+// request rate (Yandex Cloud answers it with ResourceExhausted "Request quota
+// exceeded", AWS with RequestLimitExceeded or Throttling); the controller
+// retries the call on its own, so it is not a refusal. Capacity shortages
+// (InsufficientInstanceCapacity) match neither and do recover.
+const (
+	permanentRefusal = `ResourceExhausted|Quota limit|[Qq]uota exceeded|PermissionDenied|[Pp]ermission denied|UnauthorizedOperation|AccessDenied|LimitExceeded`
+	throttledRequest = `Request quota exceeded|RequestLimitExceeded|Throttling|[Rr]ate exceeded`
+)
 
 // cloudRefusal is the controller's sync failure when the cloud refused the
 // object for good, nil otherwise.
 func cloudRefusal(synced xpv1.Condition) error {
-	if synced.Status != corev1.ConditionFalse || synced.Reason != xpv1.ReasonReconcileError || !permanentRefusal.MatchString(synced.Message) {
+	if synced.Status != corev1.ConditionFalse || synced.Reason != xpv1.ReasonReconcileError {
+		return nil
+	}
+	if regexp.MustCompile(throttledRequest).MatchString(synced.Message) || !regexp.MustCompile(permanentRefusal).MatchString(synced.Message) {
 		return nil
 	}
 	return errors.New(synced.Message)

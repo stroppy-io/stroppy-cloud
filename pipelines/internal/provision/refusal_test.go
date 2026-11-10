@@ -21,6 +21,10 @@ func TestCloudRefusalOnlyForGood(t *testing.T) {
 		{"aws vcpu limit", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "api error VcpuLimitExceeded: You have requested more vCPU capacity"), true},
 		{"aws capacity recovers", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "api error InsufficientInstanceCapacity"), false},
 		{"transient", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "connection reset by peer"), false},
+		// The API's request rate, not a resource quota: the controller retries it.
+		{"yandex request rate", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "create failed: apply failed: Error while waiting operation to create instance: operation (id=fv41q0ho4ppq3e58dctu) poll fail: rpc error: code = ResourceExhausted desc = Request quota exceeded: "), false},
+		{"aws request rate", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "api error RequestLimitExceeded: Request limit exceeded."), false},
+		{"aws throttling", synced(corev1.ConditionFalse, xpv1.ReasonReconcileError, "api error Throttling: Rate exceeded"), false},
 		{"synced", synced(corev1.ConditionTrue, xpv1.ReasonReconcileSuccess, ""), false},
 	} {
 		if got := cloudRefusal(tc.c) != nil; got != tc.fail {
