@@ -202,13 +202,15 @@ func TestE2EShareCompareRating(t *testing.T) {
 				Key string `json:"key"`
 			} `json:"hardware"`
 			Data []struct {
-				Rank     int     `json:"rank"`
-				Value    float64 `json:"value"`
-				Best     float64 `json:"best"`
-				Runs     int     `json:"runs"`
-				RunID    string  `json:"run_id"`
-				Scenario string  `json:"scenario"`
-				Hardware struct {
+				Rank      int     `json:"rank"`
+				Value     float64 `json:"value"`
+				Best      float64 `json:"best"`
+				Runs      int     `json:"runs"`
+				RunAt     string  `json:"run_at"`
+				LastRunAt string  `json:"last_run_at"`
+				RunID     string  `json:"run_id"`
+				Scenario  string  `json:"scenario"`
+				Hardware  struct {
 					Key string `json:"key"`
 				} `json:"hardware"`
 				TenantName string `json:"tenant_name"`
@@ -265,6 +267,11 @@ func TestE2EShareCompareRating(t *testing.T) {
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
 		if len(page.Data) != 1 || page.Data[0].RunID != a.ID || page.Data[0].Value != 1000 || page.Data[0].Best != 1100 || page.Data[0].Runs != 3 {
 			t.Fatalf("median of the configuration %+v", page)
+		}
+		// The linked run is the median's; the date is the configuration's
+		// latest (the simulated runs finish within one second).
+		if page.Data[0].LastRunAt == "" || page.Data[0].LastRunAt < page.Data[0].RunAt {
+			t.Fatalf("last run %q is before the median's run %q", page.Data[0].LastRunAt, page.Data[0].RunAt)
 		}
 	})
 

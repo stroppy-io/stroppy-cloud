@@ -231,6 +231,9 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 			item.Best = *row.Best
 		}
 		item.Runs = int(row.Runs)
+		if row.LastRunAt != nil {
+			item.LastRunAt = *row.LastRunAt
+		}
 		out = append(out, item)
 	}
 	return out, nil

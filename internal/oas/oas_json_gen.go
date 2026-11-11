@@ -29095,6 +29095,10 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		json.EncodeDateTime(e, s.RunAt)
 	}
 	{
+		e.FieldStart("last_run_at")
+		json.EncodeDateTime(e, s.LastRunAt)
+	}
+	{
 		if s.RunID.Set {
 			e.FieldStart("run_id")
 			s.RunID.Encode(e)
@@ -29120,7 +29124,7 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRatingEntry = [21]string{
+var jsonFieldsNameOfRatingEntry = [22]string{
 	0:  "rank",
 	1:  "value",
 	2:  "best",
@@ -29138,10 +29142,11 @@ var jsonFieldsNameOfRatingEntry = [21]string{
 	14: "stroppy_version",
 	15: "provider_kind",
 	16: "run_at",
-	17: "run_id",
-	18: "author",
-	19: "tenant_name",
-	20: "share_token",
+	17: "last_run_at",
+	18: "run_id",
+	19: "author",
+	20: "tenant_name",
+	21: "share_token",
 }
 
 // Decode decodes RatingEntry from json.
@@ -29337,6 +29342,18 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"run_at\"")
 			}
+		case "last_run_at":
+			requiredBitSet[2] |= 1 << 1
+			if err := func() error {
+				v, err := json.DecodeDateTime(d)
+				s.LastRunAt = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_run_at\"")
+			}
 		case "run_id":
 			if err := func() error {
 				s.RunID.Reset()
@@ -29389,7 +29406,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 	for i, mask := range [3]uint8{
 		0b01111111,
 		0b00110000,
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

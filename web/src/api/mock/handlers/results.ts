@@ -141,6 +141,7 @@ function ratingEntries(
         stroppy_version: s.stroppy_version,
         provider_kind: s.provider_kind,
         run_at: at,
+        last_run_at: at,
         run_id: scope === 'tenant' || t.tenant.slug === slug ? r.id : undefined,
         author: scope === 'tenant' ? r.author : undefined,
         tenant_name: scope === 'global' ? (t.tenant.public_name ?? t.tenant.name) : undefined,

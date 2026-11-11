@@ -42,7 +42,7 @@
       "workload": "Workload",
       "stroppy": "Stroppy",
       "provider": "Provider",
-      "date": "Date",
+      "date": "Last run",
       "author": "Author",
       "tenant": "Tenant",
       "link": "Link",

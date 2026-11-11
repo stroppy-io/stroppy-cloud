@@ -685,6 +685,8 @@ type RatingRow struct {
 	Value float64
 	Best  float64
 	Runs  int
+	// LastRunAt is when the configuration's latest run in the window finished.
+	LastRunAt time.Time
 }
 
 // RatingFacet is one scenario × hardware pair that has rated runs.

@@ -4363,8 +4363,16 @@ export interface components {
             hardware: components["schemas"]["HardwareClass"];
             stroppy_version?: string;
             provider_kind?: components["schemas"]["ProviderKind"];
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description When the linked run (the one closest to the median) finished.
+             */
             run_at: string;
+            /**
+             * Format: date-time
+             * @description When the configuration's latest run in the period finished.
+             */
+            last_run_at: string;
             /**
              * Format: uuid
              * @description Tenant rating only.
@@ -4676,6 +4684,7 @@ export interface components {
         ratingScenario: string[];
         /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
         ratingHardware: string[];
+        /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
         ratingPeriod: "7d" | "30d" | "90d" | "1y" | "all";
     };
     requestBodies: never;
@@ -4739,6 +4748,7 @@ export interface operations {
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];
+                /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -8951,6 +8961,7 @@ export interface operations {
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];
+                /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];

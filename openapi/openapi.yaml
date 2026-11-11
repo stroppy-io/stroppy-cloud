@@ -4842,6 +4842,8 @@ components:
     ratingPeriod:
       name: period
       in: query
+      description: The window a configuration's median is taken over. 30 days by default, so runs of older
+        engine and tool versions age out.
       schema:
         type: string
         enum:
@@ -4850,7 +4852,7 @@ components:
         - 90d
         - 1y
         - all
-        default: all
+        default: 30d
   responses:
     Problem:
       description: Error (RFC 9457).
@@ -9627,6 +9629,7 @@ components:
       - scenario
       - hardware
       - run_at
+      - last_run_at
       properties:
         rank:
           type: integer
@@ -9671,6 +9674,11 @@ components:
         run_at:
           type: string
           format: date-time
+          description: When the linked run (the one closest to the median) finished.
+        last_run_at:
+          type: string
+          format: date-time
+          description: When the configuration's latest run in the period finished.
         run_id:
           type: string
           format: uuid

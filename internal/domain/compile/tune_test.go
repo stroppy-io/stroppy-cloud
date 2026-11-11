@@ -31,7 +31,7 @@ type tuneCase struct {
 	vus      int
 	// segment replaces the TPC-C segment of the workload (a JSON object).
 	segment string
-	size     string
+	size    string
 	// roleSizes override size per role.
 	roleSizes map[string]string
 	diskGB    int

@@ -210,7 +210,7 @@ export function RatingTable({
           // Without its own column the date reads under the hardware.
           const secondary = full
             ? r.provider_kind
-            : [r.provider_kind, relativeTime(r.run_at)].filter(Boolean).join(' · ')
+            : [r.provider_kind, relativeTime(r.last_run_at)].filter(Boolean).join(' · ')
           return {
             primary,
             secondary,
@@ -225,7 +225,8 @@ export function RatingTable({
             col.time<RatingEntry>({
               id: 'date',
               header: t('results.rating.columns.date'),
-              value: (r) => r.run_at,
+              // The configuration's latest run, not the median's linked one.
+              value: (r) => r.last_run_at,
             }),
           ]
         : []),
@@ -269,7 +270,7 @@ export function RatingTable({
           ]
             .filter(Boolean)
             .join(' · ')
-          const where = [hardwareLabel(t, r.hardware), r.provider_kind, relativeTime(r.run_at)]
+          const where = [hardwareLabel(t, r.hardware), r.provider_kind, relativeTime(r.last_run_at)]
             .filter(Boolean)
             .join(' · ')
           return (

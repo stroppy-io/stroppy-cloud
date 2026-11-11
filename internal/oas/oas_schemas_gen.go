@@ -22163,7 +22163,10 @@ type RatingEntry struct {
 	Hardware       HardwareClass   `json:"hardware"`
 	StroppyVersion OptString       `json:"stroppy_version"`
 	ProviderKind   OptProviderKind `json:"provider_kind"`
-	RunAt          time.Time       `json:"run_at"`
+	// When the linked run (the one closest to the median) finished.
+	RunAt time.Time `json:"run_at"`
+	// When the configuration's latest run in the period finished.
+	LastRunAt time.Time `json:"last_run_at"`
 	// Tenant rating only.
 	RunID OptUUID `json:"run_id"`
 	// Tenant rating only.
@@ -22257,6 +22260,11 @@ func (s *RatingEntry) GetProviderKind() OptProviderKind {
 // GetRunAt returns the value of RunAt.
 func (s *RatingEntry) GetRunAt() time.Time {
 	return s.RunAt
+}
+
+// GetLastRunAt returns the value of LastRunAt.
+func (s *RatingEntry) GetLastRunAt() time.Time {
+	return s.LastRunAt
 }
 
 // GetRunID returns the value of RunID.
@@ -22362,6 +22370,11 @@ func (s *RatingEntry) SetProviderKind(val OptProviderKind) {
 // SetRunAt sets the value of RunAt.
 func (s *RatingEntry) SetRunAt(val time.Time) {
 	s.RunAt = val
+}
+
+// SetLastRunAt sets the value of LastRunAt.
+func (s *RatingEntry) SetLastRunAt(val time.Time) {
+	s.LastRunAt = val
 }
 
 // SetRunID sets the value of RunID.

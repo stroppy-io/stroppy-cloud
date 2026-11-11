@@ -76,8 +76,8 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 			Version string `json:"version"`
 			Default bool   `json:"default"`
 			Scripts []struct {
-				ID        string   `json:"id"`
-				Protocols []string `json:"protocols"`
+				ID        string        `json:"id"`
+				Protocols []string      `json:"protocols"`
 				Params    []matrixParam `json:"params"`
 			} `json:"scripts"`
 		} `json:"versions"`

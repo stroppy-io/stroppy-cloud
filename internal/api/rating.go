@@ -18,7 +18,7 @@ func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []st
 	if lim <= 0 || lim > 200 {
 		lim = 50
 	}
-	q := rating.Query{Metric: metric.Or(""), Versions: versions, StroppyVersions: stroppy, Scenarios: scenarios, Hardware: hardware, Period: string(period.Or(oas.RatingPeriodAll)), Limit: lim + 1, Offset: offset}
+	q := rating.Query{Metric: metric.Or(""), Versions: versions, StroppyVersions: stroppy, Scenarios: scenarios, Hardware: hardware, Period: string(period.Or(oas.RatingPeriod30d)), Limit: lim + 1, Offset: offset}
 	for _, k := range kinds {
 		q.Kinds = append(q.Kinds, string(k))
 	}
@@ -56,7 +56,7 @@ func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage
 	}
 	for _, e := range entries {
 		s := e.Run.Summary
-		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Best: e.Best, Runs: e.Runs, Unit: units[e.Metric], Metric: oas.MetricKey(e.Metric), DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
+		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Best: e.Best, Runs: e.Runs, LastRunAt: e.LastRunAt, Unit: units[e.Metric], Metric: oas.MetricKey(e.Metric), DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
 		if e.Run.FinishedAt != nil {
 			item.RunAt = *e.Run.FinishedAt
 		}

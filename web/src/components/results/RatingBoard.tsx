@@ -54,10 +54,11 @@ export const ratingFiltersSchema = z.object({
   provider: z.array(z.string()).optional().catch(undefined),
   scenario: z.array(z.string()).optional().catch(undefined),
   hardware: hardwareParam,
-  period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
+  // The median's window; 30 days as the API, so older versions age out.
+  period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('30d').catch('30d'),
 })
 export type RatingFilters = z.infer<typeof ratingFiltersSchema>
-export const RATING_FILTER_DEFAULTS = { period: 'all' } as const
+export const RATING_FILTER_DEFAULTS = { period: '30d' } as const
 
 /** The metric control's value for "each scenario by its own metric". */
 const OWN_METRIC = ''

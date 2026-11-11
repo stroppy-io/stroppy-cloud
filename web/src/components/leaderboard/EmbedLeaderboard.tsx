@@ -37,7 +37,7 @@ export const embedSearchSchema = z.object({
     .catch(undefined),
   /** One metric for every scenario; unset = each scenario by its benchmark's own. */
   metric: z.string().optional().catch(undefined),
-  period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
+  period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('30d').catch('30d'),
   limit: z.coerce.number().int().min(1).max(50).default(10).catch(10),
   /** 1 = the full board with its filters. */
   filters: z.coerce.number().int().optional().catch(undefined),
@@ -176,7 +176,7 @@ function Board({
   }
   const full = new URL('/leaderboard', window.location.origin)
   for (const [k, v] of Object.entries(filters))
-    if (v !== undefined && !(k === 'period' && v === 'all'))
+    if (v !== undefined && !(k === 'period' && v === '30d'))
       full.searchParams.set(k, Array.isArray(v) ? JSON.stringify(v) : v)
   return (
     <>

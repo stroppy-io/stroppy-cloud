@@ -204,11 +204,12 @@ components:
     ratingPeriod:
       name: period
       in: query
-      schema: { type: string, enum: [7d, 30d, 90d, 1y, all], default: all }
+      description: The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out.
+      schema: { type: string, enum: [7d, 30d, 90d, 1y, all], default: 30d }
   schemas:
     RatingEntry:
       type: object
-      required: [rank, value, best, runs, unit, metric, db_kind, scenario, hardware, run_at]
+      required: [rank, value, best, runs, unit, metric, db_kind, scenario, hardware, run_at, last_run_at]
       properties:
         rank: { type: integer }
         value: { type: number, description: "Median of the configuration's runs in the period." }
@@ -226,7 +227,8 @@ components:
         hardware: { $ref: '#/components/schemas/HardwareClass' }
         stroppy_version: { type: string }
         provider_kind: { $ref: '#/components/schemas/ProviderKind' }
-        run_at: { type: string, format: date-time }
+        run_at: { type: string, format: date-time, description: When the linked run (the one closest to the median) finished. }
+        last_run_at: { type: string, format: date-time, description: When the configuration's latest run in the period finished. }
         run_id: { type: string, format: uuid, description: Tenant rating only. }
         author: { $ref: '#/components/schemas/UserRef', description: Tenant rating only. }
         tenant_name: { type: string, description: Global rating; only when the tenant set `public_name`. }

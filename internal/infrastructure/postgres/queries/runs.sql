@@ -243,14 +243,16 @@ JOIN unnest(@scenario_keys::text[], @scenario_metrics::text[], @scenario_higher:
 WHERE x.summary->'headline' ? s.metric
   AND (COALESCE(cardinality(@hardware::text[]), 0) = 0 OR x.hardware = ANY(@hardware::text[]))
 ), agg AS (
-SELECT config, percentile_cont(0.5) WITHIN GROUP (ORDER BY value) AS median, max(value) AS top, min(value) AS bottom, count(*) AS runs
+SELECT config, percentile_cont(0.5) WITHIN GROUP (ORDER BY value) AS median, max(value) AS top, min(value) AS bottom, count(*) AS runs,
+       max(finished_at) AS last_run
 FROM z GROUP BY config
 )
 SELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,
        y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.metric::text AS metric,
-       y.median::float8 AS value, (CASE WHEN y.higher THEN y.top ELSE y.bottom END)::float8 AS best, y.runs::int8 AS runs
+       y.median::float8 AS value, (CASE WHEN y.higher THEN y.top ELSE y.bottom END)::float8 AS best, y.runs::int8 AS runs,
+       y.last_run::timestamptz AS last_run_at
 FROM (
-SELECT z.*, a.median, a.top, a.bottom, a.runs,
+SELECT z.*, a.median, a.top, a.bottom, a.runs, a.last_run,
        row_number() OVER (PARTITION BY z.config ORDER BY abs(z.value - a.median), z.finished_at DESC, z.id) AS nth
 FROM z JOIN agg a ON a.config = z.config
 ) y

@@ -8535,10 +8535,12 @@ type GetPublicRatingParams struct {
 	// scenario; all when omitted.
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
-	Hardware []string        `json:",omitempty"`
-	Period   OptRatingPeriod `json:",omitempty,omitzero"`
-	Cursor   OptString       `json:",omitempty,omitzero"`
-	Limit    OptInt          `json:",omitempty,omitzero"`
+	Hardware []string `json:",omitempty"`
+	// The window a configuration's median is taken over. 30 days by default, so runs of older engine and
+	// tool versions age out.
+	Period OptRatingPeriod `json:",omitempty,omitzero"`
+	Cursor OptString       `json:",omitempty,omitzero"`
+	Limit  OptInt          `json:",omitempty,omitzero"`
 }
 
 func unpackGetPublicRatingParams(packed middleware.Parameters) (params GetPublicRatingParams) {
@@ -8982,7 +8984,7 @@ func decodeGetPublicRatingParams(args [0]string, argsEscaped bool, r *http.Reque
 	}
 	// Set default value for query: period.
 	{
-		val := RatingPeriod("all")
+		val := RatingPeriod("30d")
 		params.Period.SetTo(val)
 	}
 	// Decode query: period.
@@ -12953,10 +12955,12 @@ type GetTenantRatingParams struct {
 	// scenario; all when omitted.
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
-	Hardware []string        `json:",omitempty"`
-	Period   OptRatingPeriod `json:",omitempty,omitzero"`
-	Cursor   OptString       `json:",omitempty,omitzero"`
-	Limit    OptInt          `json:",omitempty,omitzero"`
+	Hardware []string `json:",omitempty"`
+	// The window a configuration's median is taken over. 30 days by default, so runs of older engine and
+	// tool versions age out.
+	Period OptRatingPeriod `json:",omitempty,omitzero"`
+	Cursor OptString       `json:",omitempty,omitzero"`
+	Limit  OptInt          `json:",omitempty,omitzero"`
 }
 
 func unpackGetTenantRatingParams(packed middleware.Parameters) (params GetTenantRatingParams) {
@@ -13472,7 +13476,7 @@ func decodeGetTenantRatingParams(args [1]string, argsEscaped bool, r *http.Reque
 	}
 	// Set default value for query: period.
 	{
-		val := RatingPeriod("all")
+		val := RatingPeriod("30d")
 		params.Period.SetTo(val)
 	}
 	// Decode query: period.
