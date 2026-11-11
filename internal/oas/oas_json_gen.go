@@ -29021,6 +29021,14 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		e.Float64(s.Value)
 	}
 	{
+		e.FieldStart("best")
+		e.Float64(s.Best)
+	}
+	{
+		e.FieldStart("runs")
+		e.Int(s.Runs)
+	}
+	{
 		e.FieldStart("metric")
 		s.Metric.Encode(e)
 	}
@@ -29112,26 +29120,28 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRatingEntry = [19]string{
+var jsonFieldsNameOfRatingEntry = [21]string{
 	0:  "rank",
 	1:  "value",
-	2:  "metric",
-	3:  "unit",
-	4:  "db_kind",
-	5:  "db_version",
-	6:  "topology",
-	7:  "node_count",
-	8:  "sizes",
-	9:  "workload_name",
-	10: "scenario",
-	11: "hardware",
-	12: "stroppy_version",
-	13: "provider_kind",
-	14: "run_at",
-	15: "run_id",
-	16: "author",
-	17: "tenant_name",
-	18: "share_token",
+	2:  "best",
+	3:  "runs",
+	4:  "metric",
+	5:  "unit",
+	6:  "db_kind",
+	7:  "db_version",
+	8:  "topology",
+	9:  "node_count",
+	10: "sizes",
+	11: "workload_name",
+	12: "scenario",
+	13: "hardware",
+	14: "stroppy_version",
+	15: "provider_kind",
+	16: "run_at",
+	17: "run_id",
+	18: "author",
+	19: "tenant_name",
+	20: "share_token",
 }
 
 // Decode decodes RatingEntry from json.
@@ -29167,8 +29177,32 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"value\"")
 			}
-		case "metric":
+		case "best":
 			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Float64()
+				s.Best = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"best\"")
+			}
+		case "runs":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Int()
+				s.Runs = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"runs\"")
+			}
+		case "metric":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				if err := s.Metric.Decode(d); err != nil {
 					return err
@@ -29178,7 +29212,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"metric\"")
 			}
 		case "unit":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := d.Str()
 				s.Unit = string(v)
@@ -29190,7 +29224,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"unit\"")
 			}
 		case "db_kind":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				if err := s.DbKind.Decode(d); err != nil {
 					return err
@@ -29250,7 +29284,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"workload_name\"")
 			}
 		case "scenario":
-			requiredBitSet[1] |= 1 << 2
+			requiredBitSet[1] |= 1 << 4
 			if err := func() error {
 				v, err := d.Str()
 				s.Scenario = string(v)
@@ -29262,7 +29296,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"scenario\"")
 			}
 		case "hardware":
-			requiredBitSet[1] |= 1 << 3
+			requiredBitSet[1] |= 1 << 5
 			if err := func() error {
 				if err := s.Hardware.Decode(d); err != nil {
 					return err
@@ -29292,7 +29326,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"provider_kind\"")
 			}
 		case "run_at":
-			requiredBitSet[1] |= 1 << 6
+			requiredBitSet[2] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.RunAt = v
@@ -29353,9 +29387,9 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [3]uint8{
-		0b00011111,
-		0b01001100,
-		0b00000000,
+		0b01111111,
+		0b00110000,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

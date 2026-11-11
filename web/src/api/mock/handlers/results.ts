@@ -124,7 +124,10 @@ function ratingEntries(
       )
       raw.push({
         rank: 0,
+        // The mock keeps one row per run, so the median is the run itself.
         value: mv,
+        best: mv,
+        runs: 1,
         metric: def.key,
         unit: def.unit,
         db_kind: s.db_kind ?? 'postgres',

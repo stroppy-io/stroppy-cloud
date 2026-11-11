@@ -9619,6 +9619,8 @@ components:
       required:
       - rank
       - value
+      - best
+      - runs
       - unit
       - metric
       - db_kind
@@ -9630,6 +9632,15 @@ components:
           type: integer
         value:
           type: number
+          description: Median of the configuration's runs in the period.
+        best:
+          type: number
+          description: Best of those runs (the highest
+          or the lowest for a lower-is-better metric).: null
+        runs:
+          type: integer
+          minimum: 1
+          description: How many runs the median is taken over.
         metric:
           $ref: '#/components/schemas/MetricKey'
           description: The metric the value is of; its definition is in the page's `metrics`.
@@ -9703,7 +9714,7 @@ components:
         data:
           type: array
           description: One entry per configuration (tenant, database, topology, workload, scenario, hardware,
-            provider) — its latest run among the ones the filters keep.
+            provider) over the runs the filters keep — their median, linking the run closest to it.
           items:
             $ref: '#/components/schemas/RatingEntry'
         meta:

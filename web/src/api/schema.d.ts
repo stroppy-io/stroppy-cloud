@@ -4343,7 +4343,12 @@ export interface components {
         };
         RatingEntry: {
             rank: number;
+            /** @description Median of the configuration's runs in the period. */
             value: number;
+            /** @description Best of those runs (the highest */
+            best: number;
+            /** @description How many runs the median is taken over. */
+            runs: number;
             /** @description The metric the value is of; its definition is in the page's `metrics`. */
             metric: components["schemas"]["MetricKey"];
             unit: string;
@@ -4381,7 +4386,7 @@ export interface components {
             scenarios: string[];
             /** @description Hardware classes that have rated runs, to filter by. */
             hardware: components["schemas"]["HardwareClass"][];
-            /** @description One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) — its latest run among the ones the filters keep. */
+            /** @description One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) over the runs the filters keep — their median, linking the run closest to it. */
             data: components["schemas"]["RatingEntry"][];
             meta: components["schemas"]["PageMeta"];
         };

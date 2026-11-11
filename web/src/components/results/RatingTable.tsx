@@ -177,11 +177,28 @@ export function RatingTable({
       }),
       col.number<RatingEntry>({
         id: 'value',
-        header: metricTitle ?? t('results.rating.columns.value'),
+        // The value is the median of the configuration's runs in the period.
+        header: t('results.rating.columns.median', {
+          metric: metricTitle ?? t('results.rating.columns.value'),
+        }),
         width: full ? 190 : 144,
         bar: true,
         value: (r) => r.value,
         format: (v) => formatMetric(v, unit ?? rows[0]?.unit),
+      }),
+      col.number<RatingEntry>({
+        id: 'best',
+        header: t('results.rating.columns.best'),
+        width: full ? 150 : 120,
+        value: (r) => r.best,
+        format: (v) => formatMetric(v, unit ?? rows[0]?.unit),
+      }),
+      col.number<RatingEntry>({
+        id: 'runs',
+        header: t('results.rating.columns.runs'),
+        width: 96,
+        value: (r) => r.runs,
+        format: (v) => String(v),
       }),
       col.stack<RatingEntry>({
         id: 'hardware',
@@ -269,6 +286,12 @@ export function RatingTable({
               </span>
               <span className={styles.db}>{dbLabel(r.db_kind, r.db_version)}</span>
               <span className={styles.value}>{formatMetric(r.value, unit ?? r.unit)}</span>
+              <span className={styles.line}>
+                {t('results.rating.cardSpread', {
+                  best: formatMetric(r.best, unit ?? r.unit),
+                  count: r.runs,
+                })}
+              </span>
               {topo && <span className={styles.line}>{topo}</span>}
               <span className={styles.line}>{workload}</span>
               <span className={styles.line}>{where}</span>

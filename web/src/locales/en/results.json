@@ -27,11 +27,16 @@
       "1y": "1y",
       "all": "All time"
     },
+    "cardSpread_one": "median of {{count}} run, best {{best}}",
+    "cardSpread_other": "median of {{count}} runs, best {{best}}",
     "entries_one": "{{count}} result",
     "entries_other": "{{count}} results",
     "columns": {
       "rank": "#",
       "value": "Value",
+      "median": "{{metric}}, median",
+      "best": "Best",
+      "runs": "Runs",
       "database": "Database",
       "topology": "Topology",
       "workload": "Workload",

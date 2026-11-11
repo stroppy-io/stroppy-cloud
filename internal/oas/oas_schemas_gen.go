@@ -22141,8 +22141,13 @@ func (s *QuotaUnit) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/RatingEntry
 type RatingEntry struct {
-	Rank  int     `json:"rank"`
+	Rank int `json:"rank"`
+	// Median of the configuration's runs in the period.
 	Value float64 `json:"value"`
+	// Best of those runs (the highest.
+	Best float64 `json:"best"`
+	// How many runs the median is taken over.
+	Runs int `json:"runs"`
 	// The metric the value is of; its definition is in the page's `metrics`.
 	Metric       MetricKey        `json:"metric"`
 	Unit         string           `json:"unit"`
@@ -22177,6 +22182,16 @@ func (s *RatingEntry) GetRank() int {
 // GetValue returns the value of Value.
 func (s *RatingEntry) GetValue() float64 {
 	return s.Value
+}
+
+// GetBest returns the value of Best.
+func (s *RatingEntry) GetBest() float64 {
+	return s.Best
+}
+
+// GetRuns returns the value of Runs.
+func (s *RatingEntry) GetRuns() int {
+	return s.Runs
 }
 
 // GetMetric returns the value of Metric.
@@ -22272,6 +22287,16 @@ func (s *RatingEntry) SetRank(val int) {
 // SetValue sets the value of Value.
 func (s *RatingEntry) SetValue(val float64) {
 	s.Value = val
+}
+
+// SetBest sets the value of Best.
+func (s *RatingEntry) SetBest(val float64) {
+	s.Best = val
+}
+
+// SetRuns sets the value of Runs.
+func (s *RatingEntry) SetRuns(val int) {
+	s.Runs = val
 }
 
 // SetMetric sets the value of Metric.
@@ -22396,7 +22421,7 @@ type RatingPage struct {
 	// Hardware classes that have rated runs, to filter by.
 	Hardware []HardwareClass `json:"hardware"`
 	// One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider)
-	// — its latest run among the ones the filters keep.
+	// over the runs the filters keep — their median, linking the run closest to it.
 	Data []RatingEntry `json:"data"`
 	Meta PageMeta      `json:"meta"`
 }

@@ -679,7 +679,12 @@ type RatingRow struct {
 	Scenario         string
 	Hardware         string
 	Metric           string
-	Value            float64
+	// Value is the median of the configuration's runs in the window; Best
+	// its best run and Runs how many it stands on. Run is the one closest
+	// to the median.
+	Value float64
+	Best  float64
+	Runs  int
 }
 
 // RatingFacet is one scenario × hardware pair that has rated runs.

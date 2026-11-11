@@ -27,6 +27,10 @@
       "1y": "1г",
       "all": "Всё время"
     },
+    "cardSpread_one": "медиана {{count}} прогона, лучший {{best}}",
+    "cardSpread_few": "медиана {{count}} прогонов, лучший {{best}}",
+    "cardSpread_many": "медиана {{count}} прогонов, лучший {{best}}",
+    "cardSpread_other": "медиана {{count}} прогонов, лучший {{best}}",
     "entries_one": "{{count}} результат",
     "entries_few": "{{count}} результата",
     "entries_many": "{{count}} результатов",
@@ -34,6 +38,9 @@
     "columns": {
       "rank": "#",
       "value": "Значение",
+      "median": "{{metric}}, медиана",
+      "best": "Лучший",
+      "runs": "Прогонов",
       "database": "База",
       "topology": "Топология",
       "workload": "Нагрузка",

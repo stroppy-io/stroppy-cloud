@@ -2,7 +2,7 @@
   "version": "0.7.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "8b2bd3a6f8468735575291167673b27b4a6add2435c27e15c1cfde0296c14370",
+    "openapi/openapi.yaml": "1f5a38373e34e0a575a6de74d6b0aef99a4568e1ce97cbd66fcaa20060a46cc2",
     "pipelines/go.mod": "18794109cb59c369c0a7dbb1f9e26070b911669685dcc0ce636e51d90c7b0a44",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
@@ -94,7 +94,7 @@
     "pipelines/stroppycfg/testdata/stroppy-run.schema.json": "e35645556ca27bda3ab2e93a52defd7ab57ba856f3df71fd8290afe0122d2ff9",
     "web/src/api/enums.ts": "e12ffc758732f335228db9013ac0628cb2ac3f4f6eb9f3ba51816c2f9df0b675",
     "web/src/api/json.ts": "fa18ed250071e855612c04227f3f6f20c79875811bbe1d2a95a2d42f1c84d341",
-    "web/src/api/schema.d.ts": "8cc989724adf47379485fc5de4fe406916b9299df4495560e201416b3fb3f9a0",
+    "web/src/api/schema.d.ts": "bf94c2bbcc41fd033c987f627b973e4a86b54c3f22b653d79fb4167399c2cc40",
     "web/src/schemas/cfg.cockroach.flags_v24.json": "ec2ddec106a25d078149532a363fe1b09ceec6912dd906bff3768dfe2b77cef9",
     "web/src/schemas/cfg.cockroach.flags_v24.ts": "7387515f9669fc1f52d6c83bcbb1cb57094c81c212c50bdc399697bea0026a36",
     "web/src/schemas/cfg.cockroach.flags_v25.json": "b3a1f7403aeed307e0e542d6f21aabbb02bc45d4a5405c819294dce42978fbae",
