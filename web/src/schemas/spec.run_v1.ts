@@ -450,8 +450,6 @@ export interface SpecRun1YandexSettings {
   zone: "ru-central1-a" | "ru-central1-b" | "ru-central1-d" | "ru-central1-e";
   /** Distributed topology zones. Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone. */
   zones?: Array<string>;
-  /** Platform. Compute platform (CPU generation) the machines are created on. */
-  platform_id?: "standard-v1" | "standard-v2" | "standard-v3" | "standard-v4a" | "amd-v1" | "highfreq-v3" | "highfreq-v4a";
   /** Network. Create one network for the profile, or place runs into an existing one. Every run gets its own subnets and security group in it. */
   network?: SpecRun1YandexSettingsNetworkCreate | SpecRun1YandexSettingsNetworkExisting;
   /** Public IPs. Assign a one-to-one NAT public address to every machine. Without them a created network gets one shared NAT gateway for the profile. */

@@ -4400,12 +4400,16 @@ export interface components {
         };
         /** @description The stand a run measured, without its runner — machines grouped by shape, biggest first. */
         HardwareClass: {
-            /** @description Stable key to filter by, e.g. `2x4c16g+1x2c4g`. */
+            /** @description Stable key to filter by, e.g. `2x4c16g:standard-v3:network-ssd+1x2c4g:standard-v3:`. */
             key: string;
             machines: {
                 count: number;
                 cpu: number;
                 memory_gb: number;
+                /** @description Provider platform or instance type (`standard-v3`, `highfreq-v3`); empty for a run recorded without it. */
+                platform: string;
+                /** @description Data disk type (`network-ssd-nonreplicated`); empty for a machine without a data disk. */
+                disk_type: string;
             }[];
         };
         /** @enum {string} */

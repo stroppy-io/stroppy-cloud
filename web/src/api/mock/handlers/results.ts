@@ -41,18 +41,37 @@ function scenarioOf(r: Run): string {
 }
 
 function hardwareOf(r: Run): Schemas['HardwareClass'] {
-  const groups = new Map<string, { count: number; cpu: number; memory_gb: number }>()
+  const groups = new Map<string, Schemas['HardwareClass']['machines'][number]>()
   for (const m of r.snapshot.machines ?? []) {
     if (m.role === 'runner' || !m.cpu || !m.memory_gb) continue
-    const k = `${m.cpu}c${m.memory_gb}g`
-    const g = groups.get(k) ?? { count: 0, cpu: m.cpu, memory_gb: m.memory_gb }
+    const platform = m.instance_type ?? ''
+    const disk = m.disk_type ?? ''
+    const k = `${m.cpu}c${m.memory_gb}g:${platform}:${disk}`
+    const g = groups.get(k) ?? {
+      count: 0,
+      cpu: m.cpu,
+      memory_gb: m.memory_gb,
+      platform,
+      disk_type: disk,
+    }
     g.count++
     groups.set(k, g)
   }
+  // Same order as the server's rating query.
   const machines = [...groups.values()].sort(
-    (a, b) => b.cpu - a.cpu || b.memory_gb - a.memory_gb || b.count - a.count
+    (a, b) =>
+      b.cpu - a.cpu ||
+      b.memory_gb - a.memory_gb ||
+      b.count - a.count ||
+      a.platform.localeCompare(b.platform) ||
+      a.disk_type.localeCompare(b.disk_type)
   )
-  return { key: machines.map((m) => `${m.count}x${m.cpu}c${m.memory_gb}g`).join('+'), machines }
+  return {
+    key: machines
+      .map((m) => `${m.count}x${m.cpu}c${m.memory_gb}g:${m.platform}:${m.disk_type}`)
+      .join('+'),
+    machines,
+  }
 }
 
 function tenantsOf(store: MockStore): TenantData[] {

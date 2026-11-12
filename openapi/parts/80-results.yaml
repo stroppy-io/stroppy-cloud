@@ -260,16 +260,18 @@ components:
       description: The stand a run measured, without its runner — machines grouped by shape, biggest first.
       required: [key, machines]
       properties:
-        key: { type: string, description: 'Stable key to filter by, e.g. `2x4c16g+1x2c4g`.' }
+        key: { type: string, description: 'Stable key to filter by, e.g. `2x4c16g:standard-v3:network-ssd+1x2c4g:standard-v3:`.' }
         machines:
           type: array
           items:
             type: object
-            required: [count, cpu, memory_gb]
+            required: [count, cpu, memory_gb, platform, disk_type]
             properties:
               count: { type: integer, minimum: 1 }
               cpu: { type: integer, minimum: 1 }
               memory_gb: { type: integer, minimum: 1 }
+              platform: { type: string, description: 'Provider platform or instance type (`standard-v3`, `highfreq-v3`); empty for a run recorded without it.' }
+              disk_type: { type: string, description: 'Data disk type (`network-ssd-nonreplicated`); empty for a machine without a data disk.' }
     ShareTargetKind:
       type: string
       enum: [run, suite_run, comparison]

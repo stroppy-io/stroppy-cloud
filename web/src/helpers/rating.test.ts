@@ -1,6 +1,6 @@
 import { i18n } from '@lib/i18n'
 import { afterAll, describe, expect, it } from 'vitest'
-import { defaultHardware, hardwareCounts, scenarioLabel } from './rating'
+import { defaultHardware, hardwareCounts, hardwareLabel, scenarioLabel } from './rating'
 
 describe('scenarioLabel', () => {
   const initial = i18n.language
@@ -21,20 +21,39 @@ describe('scenarioLabel', () => {
   })
 })
 
-const row = (key: string) => ({ hardware: { key, machines: [] } })
+type Group = [count: number, cpu: number, memory: number]
+
+/** A rated row of a stand on standard-v3 network SSD, keyed like the server does. */
+const row = (...groups: Group[]) => {
+  const machines = groups.map(([count, cpu, memory_gb]) => ({
+    count,
+    cpu,
+    memory_gb,
+    platform: 'standard-v3',
+    disk_type: 'network-ssd',
+  }))
+  const key = machines
+    .map((m) => `${m.count}x${m.cpu}c${m.memory_gb}g:${m.platform}:${m.disk_type}`)
+    .join('+')
+  return { hardware: { key, machines } }
+}
 
 describe('defaultHardware', () => {
+  const small = row([1, 16, 64])
+  const big = row([1, 32, 128])
+
   it('picks the class with the most rows', () => {
-    const rows = ['1x16c64g', '1x32c128g', '1x32c128g', '2x32c128g', '1x16c64g', '1x32c128g']
-    expect(defaultHardware(rows.map(row))).toBe('1x32c128g')
+    const rows = [small, big, big, row([2, 32, 128]), small, big]
+    expect(defaultHardware(rows)).toBe(big.hardware.key)
   })
 
   it('on a tie picks the larger stand', () => {
-    expect(defaultHardware(['1x16c64g', '1x32c128g'].map(row))).toBe('1x32c128g')
-    expect(defaultHardware(['1x32c128g', '1x16c64g'].map(row))).toBe('1x32c128g')
-    expect(defaultHardware(['2x16c64g+1x4c8g', '1x32c128g'].map(row))).toBe('2x16c64g+1x4c8g')
+    expect(defaultHardware([small, big])).toBe(big.hardware.key)
+    expect(defaultHardware([big, small])).toBe(big.hardware.key)
+    const cluster = row([2, 16, 64], [1, 4, 8])
+    expect(defaultHardware([cluster, big])).toBe(cluster.hardware.key)
     // Same vCPU: more memory wins.
-    expect(defaultHardware(['1x32c64g', '1x32c128g'].map(row))).toBe('1x32c128g')
+    expect(defaultHardware([row([1, 32, 64]), big])).toBe(big.hardware.key)
   })
 
   it('is undefined without rows', () => {
@@ -42,9 +61,32 @@ describe('defaultHardware', () => {
   })
 })
 
+describe('hardwareLabel', () => {
+  it('names the platform and the disk of every group', async () => {
+    await i18n.changeLanguage('en')
+    const hw = {
+      key: '',
+      machines: [
+        {
+          count: 1,
+          cpu: 32,
+          memory_gb: 128,
+          platform: 'highfreq-v3',
+          disk_type: 'network-ssd-nonreplicated',
+        },
+        { count: 1, cpu: 4, memory_gb: 8, platform: 'standard-v3', disk_type: '' },
+      ],
+    }
+    expect(hardwareLabel(i18n.t, hw)).toBe(
+      '1 × 32 vCPU · 128 GB · highfreq-v3 · network-ssd-nonreplicated + 1 × 4 vCPU · 8 GB · standard-v3'
+    )
+  })
+})
+
 describe('hardwareCounts', () => {
   it('counts rows per class', () => {
-    expect([...hardwareCounts(['a', 'b', 'a'].map(row))]).toEqual([
+    const key = (k: string) => ({ hardware: { key: k, machines: [] } })
+    expect([...hardwareCounts(['a', 'b', 'a'].map(key))]).toEqual([
       ['a', 2],
       ['b', 1],
     ])

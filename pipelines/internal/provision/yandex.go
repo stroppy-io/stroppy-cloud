@@ -19,7 +19,6 @@ type YandexSettings struct {
 	CloudID     string `json:"cloud_id"`
 	FolderID    string `json:"folder_id"`
 	Zone        string `json:"zone"`
-	PlatformID  string `json:"platform_id"`
 	PublicIPs   bool   `json:"public_ips"`
 	ImageFamily string `json:"image_family"`
 	Preemptible bool   `json:"preemptible"`

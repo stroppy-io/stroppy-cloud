@@ -17,7 +17,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },
@@ -728,7 +727,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },
@@ -1439,7 +1437,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },
@@ -2150,7 +2147,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },
@@ -2443,7 +2439,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },
@@ -2736,7 +2731,6 @@
             "cloud_id": "b1gt6m4l9gfhaobcgb81",
             "folder_id": "b1ghttqg66t14ldkvfcq",
             "zone": "ru-central1-a",
-            "platform_id": "standard-v3",
             "public_ips": true,
             "preemptible": false
           },

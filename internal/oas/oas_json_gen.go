@@ -14266,12 +14266,22 @@ func (s *HardwareClassMachinesItem) encodeFields(e *jx.Encoder) {
 		e.FieldStart("memory_gb")
 		e.Int(s.MemoryGB)
 	}
+	{
+		e.FieldStart("platform")
+		e.Str(s.Platform)
+	}
+	{
+		e.FieldStart("disk_type")
+		e.Str(s.DiskType)
+	}
 }
 
-var jsonFieldsNameOfHardwareClassMachinesItem = [3]string{
+var jsonFieldsNameOfHardwareClassMachinesItem = [5]string{
 	0: "count",
 	1: "cpu",
 	2: "memory_gb",
+	3: "platform",
+	4: "disk_type",
 }
 
 // Decode decodes HardwareClassMachinesItem from json.
@@ -14319,6 +14329,30 @@ func (s *HardwareClassMachinesItem) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"memory_gb\"")
 			}
+		case "platform":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.Platform = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"platform\"")
+			}
+		case "disk_type":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Str()
+				s.DiskType = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_type\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -14329,7 +14363,7 @@ func (s *HardwareClassMachinesItem) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

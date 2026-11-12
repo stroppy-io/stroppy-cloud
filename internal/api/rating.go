@@ -32,7 +32,7 @@ func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []st
 func hardwareOf(key string) oas.HardwareClass {
 	out := oas.HardwareClass{Key: key, Machines: []oas.HardwareClassMachinesItem{}}
 	for _, g := range run.ParseHardware(key) {
-		out.Machines = append(out.Machines, oas.HardwareClassMachinesItem{Count: g.Count, CPU: g.CPU, MemoryGB: g.MemoryGB})
+		out.Machines = append(out.Machines, oas.HardwareClassMachinesItem{Count: g.Count, CPU: g.CPU, MemoryGB: g.MemoryGB, Platform: g.Platform, DiskType: g.DiskType})
 	}
 	return out
 }

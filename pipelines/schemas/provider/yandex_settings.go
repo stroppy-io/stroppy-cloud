@@ -53,18 +53,6 @@ func YandexSettings() *schemapb.Schema {
 				// An empty list is the omitted one: a form sends [] for an untouched list.
 				Rules(schemapb.Rule(`size(this) == 0 || size(this) == 3`, "give three zones or none").ID("zones-none-or-three")),
 
-			// doc: https://yandex.cloud/en/docs/compute/concepts/vm-platforms
-			schemapb.Choice("platform_id").Title("Platform").Group("Placement").
-				Desc("Compute platform (CPU generation) the machines are created on.").
-				Opt(schemapb.StrV("standard-v1"), "Intel Broadwell (standard-v1)").
-				Opt(schemapb.StrV("standard-v2"), "Intel Cascade Lake (standard-v2)").
-				Opt(schemapb.StrV("standard-v3"), "Intel Ice Lake (standard-v3)").
-				Opt(schemapb.StrV("standard-v4a"), "AMD Zen 4 (standard-v4a)").
-				Opt(schemapb.StrV("amd-v1"), "AMD Zen 3 (amd-v1)").
-				Opt(schemapb.StrV("highfreq-v3"), "Intel Ice Lake compute-optimized (highfreq-v3)").
-				Opt(schemapb.StrV("highfreq-v4a"), "AMD Zen 4 compute-optimized (highfreq-v4a)").
-				Default(schemapb.StrV("standard-v3")),
-
 			// One network per profile: stroppy-provider-config creates it with
 			// the profile (create) or the user names one (existing); every run
 			// cuts its zonal subnets out of pool_cidr. Subnets take /28 to /16

@@ -9737,7 +9737,7 @@ components:
       properties:
         key:
           type: string
-          description: Stable key to filter by, e.g. `2x4c16g+1x2c4g`.
+          description: Stable key to filter by, e.g. `2x4c16g:standard-v3:network-ssd+1x2c4g:standard-v3:`.
         machines:
           type: array
           items:
@@ -9746,6 +9746,8 @@ components:
             - count
             - cpu
             - memory_gb
+            - platform
+            - disk_type
             properties:
               count:
                 type: integer
@@ -9756,6 +9758,14 @@ components:
               memory_gb:
                 type: integer
                 minimum: 1
+              platform:
+                type: string
+                description: Provider platform or instance type (`standard-v3`, `highfreq-v3`); empty
+                  for a run recorded without it.
+              disk_type:
+                type: string
+                description: Data disk type (`network-ssd-nonreplicated`); empty for a machine without
+                  a data disk.
     ShareTargetKind:
       type: string
       enum:

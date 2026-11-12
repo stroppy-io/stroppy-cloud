@@ -95,61 +95,6 @@
       "title": "Distributed topology zones"
     },
     {
-      "choice": {
-        "default": {
-          "stringValue": "standard-v3"
-        },
-        "options": [
-          {
-            "label": "Intel Broadwell (standard-v1)",
-            "value": {
-              "stringValue": "standard-v1"
-            }
-          },
-          {
-            "label": "Intel Cascade Lake (standard-v2)",
-            "value": {
-              "stringValue": "standard-v2"
-            }
-          },
-          {
-            "label": "Intel Ice Lake (standard-v3)",
-            "value": {
-              "stringValue": "standard-v3"
-            }
-          },
-          {
-            "label": "AMD Zen 4 (standard-v4a)",
-            "value": {
-              "stringValue": "standard-v4a"
-            }
-          },
-          {
-            "label": "AMD Zen 3 (amd-v1)",
-            "value": {
-              "stringValue": "amd-v1"
-            }
-          },
-          {
-            "label": "Intel Ice Lake compute-optimized (highfreq-v3)",
-            "value": {
-              "stringValue": "highfreq-v3"
-            }
-          },
-          {
-            "label": "AMD Zen 4 compute-optimized (highfreq-v4a)",
-            "value": {
-              "stringValue": "highfreq-v4a"
-            }
-          }
-        ]
-      },
-      "description": "Compute platform (CPU generation) the machines are created on.",
-      "group": "Placement",
-      "name": "platform_id",
-      "title": "Platform"
-    },
-    {
       "description": "Create one network for the profile, or place runs into an existing one. Every run gets its own subnets and security group in it.",
       "group": "Network",
       "name": "network",

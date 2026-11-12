@@ -870,7 +870,6 @@
               "kind": "create",
               "subnet_cidr": "10.130.0.0/24"
             },
-            "platform_id": "standard-v3",
             "preemptible": false,
             "public_ips": true,
             "zone": "ru-central1-d"

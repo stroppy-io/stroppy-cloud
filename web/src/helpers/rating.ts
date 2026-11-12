@@ -43,17 +43,27 @@ export function scenarioLabel(t: TFunction, scenario: string): string {
     .join(' + ')
 }
 
-/** "2 × 4 vCPU · 16 GB + 1 × 2 vCPU · 4 GB": the stand without its runner. */
+/**
+ * "2 × 4 vCPU · 16 GB · standard-v3 · network-ssd + 1 × 2 vCPU · 4 GB · standard-v3":
+ * the stand without its runner. Platform and disk are provider ids, shown as they are.
+ */
 export function hardwareLabel(t: TFunction, hw: HardwareClass | undefined): string {
   if (!hw || hw.machines.length === 0) return '—'
   return hw.machines
-    .map((m) => t('common.hardware.group', { count: m.count, cpu: m.cpu, memory: m.memory_gb }))
+    .map((m) =>
+      [
+        t('common.hardware.group', { count: m.count, cpu: m.cpu, memory: m.memory_gb }),
+        m.platform,
+        m.disk_type,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    )
     .join(' + ')
 }
 
-/** The total of a stand, for a compact chip: "3 machines · 10 vCPU · 36 GB". */
-export function hardwareTotal(t: TFunction, hw: HardwareClass | undefined): string {
-  if (!hw || hw.machines.length === 0) return '—'
+/** Machines, vCPU and memory of a whole stand. */
+function hardwareSize(hw: HardwareClass): [machines: number, cpu: number, memory: number] {
   let machines = 0
   let cpu = 0
   let memory = 0
@@ -62,20 +72,14 @@ export function hardwareTotal(t: TFunction, hw: HardwareClass | undefined): stri
     cpu += m.count * m.cpu
     memory += m.count * m.memory_gb
   }
-  return t('common.hardware.total', { count: machines, cpu, memory })
+  return [machines, cpu, memory]
 }
 
-/** Total vCPU and memory of a class key ("2x32c128g+1x4c8g"), to say which stand is larger. */
-function hardwareSize(key: string): [cpu: number, memory: number] {
-  let cpu = 0
-  let memory = 0
-  for (const group of key.split('+')) {
-    const m = /^(\d+)x(\d+)c(\d+)g$/.exec(group)
-    if (!m) continue
-    cpu += Number(m[1]) * Number(m[2])
-    memory += Number(m[1]) * Number(m[3])
-  }
-  return [cpu, memory]
+/** The total of a stand, for a compact chip: "3 machines · 10 vCPU · 36 GB". */
+export function hardwareTotal(t: TFunction, hw: HardwareClass | undefined): string {
+  if (!hw || hw.machines.length === 0) return '—'
+  const [machines, cpu, memory] = hardwareSize(hw)
+  return t('common.hardware.total', { count: machines, cpu, memory })
 }
 
 /** Rated rows per hardware class key. */
@@ -91,22 +95,26 @@ export function hardwareCounts(rows: readonly { hardware: HardwareClass }[]): Ma
  * stand, then the key. Undefined when there are no rows.
  */
 export function defaultHardware(rows: readonly { hardware: HardwareClass }[]): string | undefined {
-  let best: string | undefined
+  const classes = new Map<string, HardwareClass>()
+  for (const r of rows) classes.set(r.hardware.key, r.hardware)
+  let best: HardwareClass | undefined
   let bestCount = 0
   for (const [key, count] of hardwareCounts(rows)) {
+    const hw = classes.get(key)
+    if (!hw) continue
     if (best === undefined || count > bestCount) {
-      best = key
+      best = hw
       bestCount = count
       continue
     }
     if (count < bestCount) continue
-    const [cpu, memory] = hardwareSize(key)
-    const [bestCpu, bestMemory] = hardwareSize(best)
+    const [, cpu, memory] = hardwareSize(hw)
+    const [, bestCpu, bestMemory] = hardwareSize(best)
     if (
       cpu > bestCpu ||
-      (cpu === bestCpu && (memory > bestMemory || (memory === bestMemory && key < best)))
+      (cpu === bestCpu && (memory > bestMemory || (memory === bestMemory && key < best.key)))
     )
-      best = key
+      best = hw
   }
-  return best
+  return best?.key
 }

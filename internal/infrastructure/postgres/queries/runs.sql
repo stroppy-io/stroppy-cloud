@@ -203,8 +203,8 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- something only next to runs of the same scenario on the same hardware, so
 -- each row carries both: the scenario is the workload's scripts (tpcc/tx and
 -- tpcc/procs differ: one round trip per statement or per transaction), the
--- hardware is the stand without its runner, machines grouped by vCPU and
--- memory ("2x4c16g+1x2c4g").
+-- hardware is the stand without its runner, machines grouped by vCPU, memory,
+-- platform and data disk type ("2x4c16g:standard-v3:network-ssd+1x2c4g:standard-v3:").
 -- One row per configuration (tenant, database, topology, workload, scenario,
 -- hardware, provider) over the runs the filters keep (the period is the
 -- window, the last 30 days by default): its value is the best of those
@@ -224,10 +224,12 @@ FROM (
          coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')
                    FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
                    WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
-         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
-                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
+         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g:' || h.platform || ':' || h.disk, '+'
+                                     ORDER BY h.cpu DESC, h.mem DESC, h.n DESC, h.platform, h.disk)
+                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem,
+                                coalesce(m->>'instance_type', '') AS platform, coalesce(m->>'disk_type', '') AS disk, count(*) AS n
                          FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
-                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware
+                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2, 3, 4) h), '') AS hardware
   FROM runs r JOIN tenants t ON t.id = r.tenant_id
   WHERE r.deleted_at IS NULL AND r.status = 'completed'
     AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
@@ -267,10 +269,12 @@ SELECT DISTINCT
        coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')
                  FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
                  WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
-       coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
-                 FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
+       coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g:' || h.platform || ':' || h.disk, '+'
+                                   ORDER BY h.cpu DESC, h.mem DESC, h.n DESC, h.platform, h.disk)
+                 FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem,
+                              coalesce(m->>'instance_type', '') AS platform, coalesce(m->>'disk_type', '') AS disk, count(*) AS n
                        FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
-                       WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware
+                       WHERE m->>'role' <> 'runner' GROUP BY 1, 2, 3, 4) h), '') AS hardware
 FROM runs r
 WHERE r.deleted_at IS NULL AND r.status = 'completed'
   AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')

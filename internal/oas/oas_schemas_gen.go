@@ -8128,7 +8128,7 @@ func (s *GrafanaSessionDashboardsItem) SetPerMachine(val OptBool) {
 // The stand a run measured, without its runner — machines grouped by shape, biggest first.
 // Ref: #/components/schemas/HardwareClass
 type HardwareClass struct {
-	// Stable key to filter by, e.g. `2x4c16g+1x2c4g`.
+	// Stable key to filter by, e.g. `2x4c16g:standard-v3:network-ssd+1x2c4g:standard-v3:`.
 	Key      string                      `json:"key"`
 	Machines []HardwareClassMachinesItem `json:"machines"`
 }
@@ -8157,6 +8157,11 @@ type HardwareClassMachinesItem struct {
 	Count    int `json:"count"`
 	CPU      int `json:"cpu"`
 	MemoryGB int `json:"memory_gb"`
+	// Provider platform or instance type (`standard-v3`, `highfreq-v3`); empty for a run recorded
+	// without it.
+	Platform string `json:"platform"`
+	// Data disk type (`network-ssd-nonreplicated`); empty for a machine without a data disk.
+	DiskType string `json:"disk_type"`
 }
 
 // GetCount returns the value of Count.
@@ -8174,6 +8179,16 @@ func (s *HardwareClassMachinesItem) GetMemoryGB() int {
 	return s.MemoryGB
 }
 
+// GetPlatform returns the value of Platform.
+func (s *HardwareClassMachinesItem) GetPlatform() string {
+	return s.Platform
+}
+
+// GetDiskType returns the value of DiskType.
+func (s *HardwareClassMachinesItem) GetDiskType() string {
+	return s.DiskType
+}
+
 // SetCount sets the value of Count.
 func (s *HardwareClassMachinesItem) SetCount(val int) {
 	s.Count = val
@@ -8187,6 +8202,16 @@ func (s *HardwareClassMachinesItem) SetCPU(val int) {
 // SetMemoryGB sets the value of MemoryGB.
 func (s *HardwareClassMachinesItem) SetMemoryGB(val int) {
 	s.MemoryGB = val
+}
+
+// SetPlatform sets the value of Platform.
+func (s *HardwareClassMachinesItem) SetPlatform(val string) {
+	s.Platform = val
+}
+
+// SetDiskType sets the value of DiskType.
+func (s *HardwareClassMachinesItem) SetDiskType(val string) {
+	s.DiskType = val
 }
 
 // Ref: #/components/schemas/Health

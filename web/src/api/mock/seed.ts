@@ -1573,7 +1573,6 @@ function providersFor(): ProviderProfile[] {
         cloud_id: 'b1gxxxxxxxxxxxxxxxxx',
         folder_id: 'b1gyyyyyyyyyyyyyyyyy',
         zone: 'ru-central1-a',
-        platform_id: 'standard-v3',
       },
       quotas_observed_at: minutesAgo(4),
       created_at: daysAgo(45),

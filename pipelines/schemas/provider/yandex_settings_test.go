@@ -14,10 +14,9 @@ func TestYandexSettings(t *testing.T) {
 		"network":   map[string]any{"kind": "create"},
 	}
 	full := map[string]any{
-		"cloud_id":    "b1glku4lgd6gabcdefgh",
-		"folder_id":   "b1gia87mbaomkfvsleds",
-		"zone":        "ru-central1-b",
-		"platform_id": "highfreq-v3",
+		"cloud_id":  "b1glku4lgd6gabcdefgh",
+		"folder_id": "b1gia87mbaomkfvsleds",
+		"zone":      "ru-central1-b",
 		"network": map[string]any{
 			"kind":           "existing",
 			"network_id":     "enp2v5nl4h1mabcdefgh",
@@ -81,6 +80,14 @@ func TestYandexSettings(t *testing.T) {
 				"network":   map[string]any{"kind": "existing"},
 			}, Code: "REQUIRED_MISSING", Path: "network.network_id"},
 			{Value: withZones("ru-central1-a", "ru-central1-b"), Code: "RULE_VIOLATED", Path: "zones"},
+			// The platform is hardware of a test (sizes.<role>.machine.instance_type), not of the account.
+			{Value: map[string]any{
+				"cloud_id":    "b1glku4lgd6gabcdefgh",
+				"folder_id":   "b1gia87mbaomkfvsleds",
+				"zone":        "ru-central1-d",
+				"platform_id": "highfreq-v3",
+				"network":     map[string]any{"kind": "create"},
+			}, Code: "UNKNOWN_FIELD", Path: "platform_id"},
 			{Value: map[string]any{
 				"zone":    "ru-central1-d",
 				"network": map[string]any{"kind": "create"},

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"testing"
@@ -507,11 +508,29 @@ func TestE2ERuns(t *testing.T) {
 			Data      []struct {
 				RunID    string `json:"run_id"`
 				Scenario string `json:"scenario"`
+				Hardware struct {
+					Key      string `json:"key"`
+					Machines []struct {
+						Platform string `json:"platform"`
+						DiskType string `json:"disk_type"`
+					} `json:"machines"`
+				} `json:"hardware"`
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?scenario=tpcc/tx", nil, tok), http.StatusOK, &rating)
 		if !slices.Contains(rating.Scenarios, "tpcc/tx") || len(rating.Data) == 0 || rating.Data[0].Scenario != "tpcc/tx" {
 			t.Fatalf("rating %+v", rating)
+		}
+		// The hardware class is the platform and the data disk too: a number
+		// is comparable only on the same machines.
+		hw := rating.Data[0].Hardware
+		if len(hw.Machines) == 0 || hw.Machines[0].Platform == "" || hw.Machines[0].DiskType == "" ||
+			!strings.Contains(hw.Key, ":"+hw.Machines[0].Platform+":"+hw.Machines[0].DiskType) {
+			t.Fatalf("hardware %+v", hw)
+		}
+		e.want(e.req(http.MethodGet, base+"/rating?scenario=tpcc/tx&hardware="+url.QueryEscape(hw.Key), nil, tok), http.StatusOK, &rating)
+		if len(rating.Data) == 0 || rating.Data[0].Hardware.Key != hw.Key {
+			t.Fatalf("rating by hardware %q: %+v", hw.Key, rating)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?scenario=tpcc/procs", nil, tok), http.StatusOK, &rating)
 		if len(rating.Data) != 0 {
