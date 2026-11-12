@@ -614,10 +614,13 @@ func runDemand(res pipelinespec.Run) (total demand, byZone map[string]demand) {
 
 func (d *demand) add(m pipelinespec.Machine, kind pipelinespec.ProviderKind) {
 	d.machines++
-	d.cpu += m.CPU
 	d.mem += m.MemoryGB
+	// Yandex counts Compute Optimized vCPUs in their own quota only, not in
+	// instanceCores; memory is one quota for every platform.
 	if strings.HasPrefix(m.InstanceType, "highfreq-") {
 		d.highFreqCPU += m.CPU
+	} else {
+		d.cpu += m.CPU
 	}
 	boot := pipelinespec.BootDisk{GB: 40, Type: "network-ssd"}
 	if kind == pipelinespec.ProviderAWS {

@@ -33,7 +33,11 @@ func TestQuotasUseFinalMachineResources(t *testing.T) {
 		never    bool // more than the whole limit
 		launchOK bool
 	}{
-		{"all cores", provider.Quota{Name: "compute.instanceCores.count", Limit: 9}, true, true, false},
+		// YC counts Compute Optimized vCPUs in instanceHighFreqCores only: with a
+		// standard-v3 and a highfreq-v3 VM up, instanceCores grew by the
+		// standard one alone (observed 2026-11-12).
+		{"standard cores only", provider.Quota{Name: "compute.instanceCores.count", Limit: 8}, false, false, true},
+		{"standard cores", provider.Quota{Name: "compute.instanceCores.count", Limit: 7}, true, true, false},
 		{"memory bytes", provider.Quota{Name: "compute.instanceMemory.size", Limit: 39 * (1 << 30), Unit: "bytes"}, true, true, false},
 		{"both boot disks", provider.Quota{Name: "compute.ssdDisks.size", Limit: 119, Unit: "GiB"}, true, true, false},
 		{"disk count", provider.Quota{Name: "compute.disks.count", Limit: 2}, true, true, false},
