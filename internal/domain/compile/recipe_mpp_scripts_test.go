@@ -17,6 +17,52 @@ func scriptParts(only string) mppScriptParts {
 	}
 }
 
+// TestMPPSetGUC runs the script's set_guc against a fake gpconfig: a key that
+// did not reach every instance's postgresql.conf stops the script, since
+// gpconfig itself exits 0 then and the segment later fails to start.
+func TestMPPSetGUC(t *testing.T) {
+	t.Parallel()
+	if _, err := exec.LookPath("bash"); err != nil {
+		t.Skip("no bash")
+	}
+	_, clusterScript, err := mppScripts(scriptParts("--coordinatoronly"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	start := strings.Index(clusterScript, "set_guc() {")
+	if start < 0 {
+		t.Fatal("no set_guc in the cluster script")
+	}
+	end := strings.Index(clusterScript[start:], "\n}\n")
+	if end < 0 {
+		t.Fatal("set_guc does not end")
+	}
+	fn := clusterScript[start : start+end+3]
+	for _, tc := range []struct {
+		name, show string
+		ok         bool
+	}{
+		{"consistent", "Values on all segments are consistent\nGUC : work_mem", true},
+		{"a segment missed it", "WARNING: GUCS ARE OUT OF SYNC: \n[context: 0] [dbid: 2] [name: work_mem] [not set in file]", false},
+		{"a host unreachable", "[ERROR]:-failed on host: db-4 msg:kex_exchange_identification: Connection closed by remote host", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			bin := t.TempDir()
+			fake := "#!/usr/bin/env bash\nif [ \"$1\" = -s ]; then printf '%s\\n' \"$SHOW\"; fi\nexit 0\n"
+			if err := os.WriteFile(filepath.Join(bin, "gpconfig"), []byte(fake), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			cmd := exec.Command("bash", "-c", "set -euo pipefail\n"+fn+"set_guc work_mem -v 819MB\necho applied")
+			cmd.Env = append(os.Environ(), "PATH="+bin+":"+os.Getenv("PATH"), "SHOW="+tc.show)
+			out, err := cmd.CombinedOutput()
+			if got := err == nil && strings.Contains(string(out), "applied"); got != tc.ok {
+				t.Errorf("set_guc ok = %v, want %v\n%s", got, tc.ok, out)
+			}
+		})
+	}
+}
+
 func TestMPPScripts(t *testing.T) {
 	t.Parallel()
 	for _, only := range []string{"--masteronly", "--coordinatoronly"} {

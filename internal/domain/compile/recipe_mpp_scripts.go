@@ -93,6 +93,20 @@ if [ "$rc" -gt 1 ]; then exit "$rc"; fi
 # the coordinator. Then a restart (max_connections and the memory limits
 # need one).
 gucs() { grep -v -E '^([[:space:]]*#|[[:space:]]*$)' "$1" || true; }
+# set_guc sets a key on the whole cluster and reads it back from every
+# instance's postgresql.conf: gpconfig exits 0 even when it could not reach a
+# segment, and a segment left with statement_mem but not max_statement_mem
+# refuses to start.
+set_guc() {
+  gpconfig -c "$@"
+  local check
+  check=$(gpconfig -s "$1" --file 2>&1 || true)
+  if ! grep -q "Values on all segments are consistent" <<<"$check"; then
+    echo "gpconfig: $1 did not reach every instance:" >&2
+    echo "$check" >&2
+    exit 1
+  fi
+}
 segment_gucs=$(gucs {{.ScriptDir}}/mpp-gucs-segments.conf)
 coordinator_gucs=$(gucs {{.ScriptDir}}/mpp-gucs-coordinator.conf)
 while IFS= read -r line; do
@@ -101,9 +115,9 @@ while IFS= read -r line; do
   value=${line#* = }
   own=$(grep -E "^${key} = " <<<"$coordinator_gucs" || true)
   if [ -n "$own" ] && [ "${own#* = }" != "$value" ]; then
-    gpconfig -c "$key" -v "$value" -m "${own#* = }"
+    set_guc "$key" -v "$value" -m "${own#* = }"
   else
-    gpconfig -c "$key" -v "$value"
+    set_guc "$key" -v "$value"
   fi
 done <<<"$segment_gucs"
 while IFS= read -r line; do
