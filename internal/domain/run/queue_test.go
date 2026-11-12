@@ -137,6 +137,11 @@ func TestQueueDecides(t *testing.T) {
 		return map[uuid.UUID]quotaRead{profile: {profile: provider.Profile{Status: provider.StatusReady}, quotas: []provider.Quota{{Name: "compute.ssdDisks.size", Zone: "ru-central1-d", Limit: 1600, Used: used, Unit: "GiB"}}}}
 	}
 	sr := uuid.New()
+	nightly := uuid.New()
+	scheduled := func(r Run) Run {
+		r.ScheduleID = &nightly
+		return r
+	}
 	for _, tc := range []struct {
 		name      string
 		svc       *Service
@@ -208,6 +213,22 @@ func TestQueueDecides(t *testing.T) {
 			waitingOn: []WaitReason{WaitQuota},
 		},
 		{
+			name:      "a scheduled cell waiting for its suite slot keeps its SSD from a manual run",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, suites: queueSuites{sr: 1}},
+			runs:      []Run{scheduled(queued(spec(1000), &sr)), queued(spec(800), nil), queued(spec(400), nil)},
+			quotas:    ssd(0),
+			admit:     []bool{false, false, true},
+			waitingOn: []WaitReason{WaitSuiteSlot, WaitQuota, ""},
+		},
+		{
+			name:      "a scheduled run waiting for SSD is not overtaken by a manual one that fits",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}},
+			runs:      []Run{scheduled(queued(spec(1000), nil)), queued(spec(400), nil)},
+			quotas:    ssd(800),
+			admit:     []bool{false, false},
+			waitingOn: []WaitReason{WaitQuota, WaitQuota},
+		},
+		{
 			name:      "suite concurrency",
 			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, suites: queueSuites{sr: 2}},
 			runs:      []Run{queued(spec(40), &sr), queued(spec(40), &sr), queued(spec(40), nil)},
@@ -246,5 +267,64 @@ func TestQueueDecides(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestPrioritizePutsScheduledRunsFirst(t *testing.T) {
+	t.Parallel()
+	schedule := uuid.New()
+	manual1, manual2 := Run{ID: uuid.New()}, Run{ID: uuid.New()}
+	cell1, cell2 := Run{ID: uuid.New(), ScheduleID: &schedule}, Run{ID: uuid.New(), ScheduleID: &schedule}
+	queued := []Run{manual1, cell1, manual2, cell2}
+	prioritize(queued)
+	want := []uuid.UUID{cell1.ID, cell2.ID, manual1.ID, manual2.ID}
+	for i, r := range queued {
+		if r.ID != want[i] {
+			t.Fatalf("position %d: %s, want %s (scheduled first, each in queued order)", i, r.ID, want[i])
+		}
+	}
+}
+
+func TestScheduledReservation(t *testing.T) {
+	t.Parallel()
+	schedule := uuid.New()
+	spec := mustJSON(pipelinespec.Run{Machines: []pipelinespec.Machine{{Name: "db-1"}}})
+	resumed := mustJSON(pipelinespec.Run{Resume: &pipelinespec.Resume{}})
+	for _, tc := range []struct {
+		name     string
+		r        Run
+		admitted bool
+		waiting  WaitReason
+		keeps    bool
+	}{
+		{"scheduled, waiting for its suite slot", Run{ScheduleID: &schedule, RunSpec: spec}, false, WaitSuiteSlot, true},
+		{"scheduled, waiting for quota", Run{ScheduleID: &schedule, RunSpec: spec}, false, WaitQuota, true},
+		{"scheduled, waiting for subnets", Run{ScheduleID: &schedule, RunSpec: spec}, false, WaitSubnets, true},
+		{"scheduled and admitted holds through the start", Run{ScheduleID: &schedule, RunSpec: spec}, true, "", false},
+		{"scheduled, the tenant suspended", Run{ScheduleID: &schedule, RunSpec: spec}, false, WaitSuspended, false},
+		{"scheduled resume holds nothing new", Run{ScheduleID: &schedule, RunSpec: resumed}, false, WaitQuota, false},
+		{"manual run", Run{RunSpec: spec}, false, WaitQuota, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			if _, keeps := scheduledReservation(tc.r, tc.admitted, tc.waiting); keeps != tc.keeps {
+				t.Fatalf("keeps %v, want %v", keeps, tc.keeps)
+			}
+		})
+	}
+}
+
+func BenchmarkPrioritize(b *testing.B) {
+	schedule := uuid.New()
+	base := make([]Run, 64)
+	for i := range base {
+		if i%3 == 0 {
+			base[i].ScheduleID = &schedule
+		}
+	}
+	queued := make([]Run, len(base))
+	for b.Loop() {
+		copy(queued, base)
+		prioritize(queued)
 	}
 }
