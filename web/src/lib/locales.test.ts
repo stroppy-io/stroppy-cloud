@@ -63,9 +63,9 @@ const LATIN_BY_DESIGN = new Set([
   'suites.suiteRuns.summary.columns.tps',
   'suites.suiteRuns.cells.columns.tps',
 ])
-// The architecture diagram names technologies, and the onboarding fact
-// lists name products — neither is UI wording.
-const LATIN_PREFIXES = ['how.arch.']
+// The architecture diagram names technologies, the onboarding fact lists and
+// the CPU platforms and disk types name products — none is UI wording.
+const LATIN_PREFIXES = ['how.arch.', 'common.hardware.platform.', 'common.hardware.disk.']
 const PRODUCT_LIST = /\.items\.\d+$/
 
 const ru = import.meta.glob('../locales/ru/*.json', { eager: true, import: 'default' }) as Record<

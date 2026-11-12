@@ -1,6 +1,13 @@
 import { i18n } from '@lib/i18n'
 import { afterAll, describe, expect, it } from 'vitest'
-import { defaultHardware, hardwareCounts, hardwareLabel, scenarioLabel } from './rating'
+import {
+  defaultHardware,
+  defaultHardwareByScenario,
+  hardwareCounts,
+  hardwareLabel,
+  scenarioLabel,
+  sharedHardware,
+} from './rating'
 
 describe('scenarioLabel', () => {
   const initial = i18n.language
@@ -78,8 +85,70 @@ describe('hardwareLabel', () => {
       ],
     }
     expect(hardwareLabel(i18n.t, hw)).toBe(
-      '1 × 32 vCPU · 128 GB · highfreq-v3 · network-ssd-nonreplicated + 1 × 4 vCPU · 8 GB · standard-v3'
+      '1 × 32 vCPU · 128 GB · Intel Ice Lake, compute-optimized · non-replicated SSD + 1 × 4 vCPU · 8 GB · Intel Ice Lake'
     )
+    await i18n.changeLanguage('ru')
+    expect(hardwareLabel(i18n.t, hw)).toBe(
+      '1 × 32 vCPU · 128 ГБ · Intel Ice Lake, Compute Optimized · нереплицируемый SSD + 1 × 4 vCPU · 8 ГБ · Intel Ice Lake'
+    )
+  })
+
+  it('shows an id it has no name for as it is', async () => {
+    await i18n.changeLanguage('en')
+    const hw = {
+      key: '',
+      machines: [{ count: 1, cpu: 8, memory_gb: 32, platform: 'm7i.2xlarge', disk_type: 'gp3' }],
+    }
+    expect(hardwareLabel(i18n.t, hw)).toBe('1 × 8 vCPU · 32 GB · m7i.2xlarge · gp3')
+  })
+})
+
+describe('defaultHardwareByScenario', () => {
+  const at = (scenario: string, r: ReturnType<typeof row>) => ({ ...r, scenario })
+  it('picks each scenario its own class with the most rows', () => {
+    const standard = row([1, 32, 128])
+    const highfreq = {
+      hardware: {
+        key: '1x32c128g:highfreq-v3:network-ssd-nonreplicated',
+        machines: [
+          {
+            count: 1,
+            cpu: 32,
+            memory_gb: 128,
+            platform: 'highfreq-v3',
+            disk_type: 'network-ssd-nonreplicated',
+          },
+        ],
+      },
+    }
+    const rows = [
+      at('tpcc/tx', standard),
+      at('tpcc/tx', standard),
+      at('tpcc/tx', row([3, 32, 128])),
+      at('tpch/tx', highfreq),
+      at('tpch/tx', highfreq),
+      at('tpch/tx', standard),
+    ]
+    expect(defaultHardwareByScenario(rows)).toEqual(
+      new Map([
+        ['tpcc/tx', standard.hardware.key],
+        ['tpch/tx', highfreq.hardware.key],
+      ])
+    )
+  })
+
+  it('is empty without rows', () => {
+    expect(defaultHardwareByScenario([]).size).toBe(0)
+  })
+})
+
+describe('sharedHardware', () => {
+  it('is the class every row has, or undefined when they differ', () => {
+    const a = row([1, 32, 128])
+    const b = row([3, 32, 128])
+    expect(sharedHardware([a, a])).toEqual(a.hardware)
+    expect(sharedHardware([a, b])).toBeUndefined()
+    expect(sharedHardware([])).toBeUndefined()
   })
 })
 

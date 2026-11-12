@@ -541,7 +541,22 @@
   "hardware": {
     "group": "{{count}} × {{cpu}} vCPU · {{memory}} GB",
     "total_one": "{{count}} machine · {{cpu}} vCPU · {{memory}} GB",
-    "total_other": "{{count}} machines · {{cpu}} vCPU · {{memory}} GB"
+    "total_other": "{{count}} machines · {{cpu}} vCPU · {{memory}} GB",
+    "platform": {
+      "standard-v1": "Intel Broadwell",
+      "standard-v2": "Intel Cascade Lake",
+      "standard-v3": "Intel Ice Lake",
+      "standard-v4a": "AMD Zen 4",
+      "amd-v1": "AMD Zen 3",
+      "highfreq-v3": "Intel Ice Lake, compute-optimized",
+      "highfreq-v4a": "AMD Zen 4, compute-optimized"
+    },
+    "disk": {
+      "network-ssd": "SSD",
+      "network-ssd-nonreplicated": "non-replicated SSD",
+      "network-ssd-io-m3": "io-m3 SSD",
+      "network-hdd": "HDD"
+    }
   },
   "rank": {
     "gold": "First place",

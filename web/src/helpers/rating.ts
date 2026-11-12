@@ -44,8 +44,17 @@ export function scenarioLabel(t: TFunction, scenario: string): string {
 }
 
 /**
- * "2 × 4 vCPU · 16 GB · standard-v3 · network-ssd + 1 × 2 vCPU · 4 GB · standard-v3":
- * the stand without its runner. Platform and disk are provider ids, shown as they are.
+ * A provider's platform or disk type in words ("highfreq-v3" → "Intel Ice
+ * Lake, compute-optimized"); an id without a name (an AWS instance type, a
+ * new platform) shows as it is.
+ */
+function providerName(t: TFunction, kind: 'platform' | 'disk', id: string): string {
+  return id ? t(`common.hardware.${kind}.${id}`, { defaultValue: id }) : ''
+}
+
+/**
+ * "2 × 4 vCPU · 16 GB · Intel Ice Lake · SSD + 1 × 2 vCPU · 4 GB · Intel Ice Lake":
+ * the stand without its runner, each machine group with its platform and data disk.
  */
 export function hardwareLabel(t: TFunction, hw: HardwareClass | undefined): string {
   if (!hw || hw.machines.length === 0) return '—'
@@ -53,13 +62,40 @@ export function hardwareLabel(t: TFunction, hw: HardwareClass | undefined): stri
     .map((m) =>
       [
         t('common.hardware.group', { count: m.count, cpu: m.cpu, memory: m.memory_gb }),
-        m.platform,
-        m.disk_type,
+        providerName(t, 'platform', m.platform),
+        providerName(t, 'disk', m.disk_type),
       ]
         .filter(Boolean)
         .join(' · ')
     )
     .join(' + ')
+}
+
+/**
+ * The class each scenario shows when the viewer picked none: its own class
+ * with the most rated rows. Scenarios run on different stands (TPC-C on
+ * standard machines, the analytics on compute-optimized ones), so one class
+ * for the whole board would hide all but one of them.
+ */
+export function defaultHardwareByScenario(
+  rows: readonly { scenario: string; hardware: HardwareClass }[]
+): Map<string, string> {
+  const byScenario = new Map<string, { hardware: HardwareClass }[]>()
+  for (const r of rows) byScenario.set(r.scenario, [...(byScenario.get(r.scenario) ?? []), r])
+  const out = new Map<string, string>()
+  for (const [scenario, scenarioRows] of byScenario) {
+    const key = defaultHardware(scenarioRows)
+    if (key !== undefined) out.set(scenario, key)
+  }
+  return out
+}
+
+/** The class all rows share, so it can be said once above them; undefined when they differ. */
+export function sharedHardware(
+  rows: readonly { hardware: HardwareClass }[]
+): HardwareClass | undefined {
+  const first = rows[0]?.hardware
+  return first && rows.every((r) => r.hardware.key === first.key) ? first : undefined
 }
 
 /** Machines, vCPU and memory of a whole stand. */

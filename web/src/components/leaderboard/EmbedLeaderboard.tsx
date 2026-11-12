@@ -100,16 +100,21 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
     }),
     [theme]
   )
-  const scenario = asList(search.scenario)?.[0]
-  // One hardware class, as on the board: the default is the one with the most rated rows.
   const census = useInfiniteQuery(ratingQueries.global(ratingCensusQuery(search)))
-  const hw = boardHardware(search.hardware, census.data?.pages[0]?.data)
+  const censusRows = census.data?.pages[0]?.data
+  // One ranking: the asked scenario, else the first one rated (places count
+  // within a scenario, and scenarios rank by different metrics).
+  const scenario = asList(search.scenario)?.[0] ?? censusRows?.[0]?.scenario
+  // One hardware class, as on the board: by default the scenario's own, the
+  // one with the most rated rows in it.
+  const hw = boardHardware(search.hardware, censusRows)
+  const hardwareKey = hw.isDefault && scenario ? hw.byScenario.get(scenario) : hw.key
   const hardwareResolved = !hw.isDefault || !census.isPending
   const rating = useInfiniteQuery({
     ...ratingQueries.global({
       metric: search.metric,
       scenario: scenario ? [scenario] : undefined,
-      hardware: hw.key ? [hw.key] : undefined,
+      hardware: hardwareKey ? [hardwareKey] : undefined,
       period: search.period,
       limit: search.limit,
     }),
@@ -120,8 +125,6 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
     if (settled) onReady()
   }, [settled, onReady])
   const page = rating.data?.pages[0]
-  // One ranking: the asked scenario, else the first one rated (places
-  // count within a scenario, and scenarios rank by different metrics).
   const shown = scenario ?? page?.data[0]?.scenario
   const rows = (page?.data ?? []).filter((e) => e.scenario === shown).slice(0, search.limit)
   const def = page?.metrics.find((m) => m.key === rows[0]?.metric) ?? page?.metric
@@ -129,7 +132,7 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
   const full = new URL('/leaderboard', origin)
   if (shown) full.searchParams.set('scenario', JSON.stringify([shown]))
   if (search.hardware) full.searchParams.set('hardware', search.hardware)
-  const hardwareClass = page?.hardware.find((h) => h.key === hw.key)
+  const hardwareClass = page?.hardware.find((h) => h.key === hardwareKey)
   return (
     <>
       <div className={styles.head}>

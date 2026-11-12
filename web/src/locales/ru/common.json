@@ -547,7 +547,22 @@
     "total_one": "{{count}} машина · {{cpu}} vCPU · {{memory}} ГБ",
     "total_few": "{{count}} машины · {{cpu}} vCPU · {{memory}} ГБ",
     "total_many": "{{count}} машин · {{cpu}} vCPU · {{memory}} ГБ",
-    "total_other": "{{count}} машин · {{cpu}} vCPU · {{memory}} ГБ"
+    "total_other": "{{count}} машин · {{cpu}} vCPU · {{memory}} ГБ",
+    "platform": {
+      "standard-v1": "Intel Broadwell",
+      "standard-v2": "Intel Cascade Lake",
+      "standard-v3": "Intel Ice Lake",
+      "standard-v4a": "AMD Zen 4",
+      "amd-v1": "AMD Zen 3",
+      "highfreq-v3": "Intel Ice Lake, Compute Optimized",
+      "highfreq-v4a": "AMD Zen 4, Compute Optimized"
+    },
+    "disk": {
+      "network-ssd": "SSD",
+      "network-ssd-nonreplicated": "нереплицируемый SSD",
+      "network-ssd-io-m3": "SSD io-m3",
+      "network-hdd": "HDD"
+    }
   },
   "rank": {
     "gold": "Первое место",

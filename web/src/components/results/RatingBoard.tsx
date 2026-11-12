@@ -16,11 +16,12 @@ import {
 } from '@grafana/ui'
 import { metricTitle } from '@helpers/metrics'
 import {
-  defaultHardware,
+  defaultHardwareByScenario,
   hardwareCounts,
   hardwareLabel,
   hardwareTotal,
   scenarioLabel,
+  sharedHardware,
 } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { type ReactNode, useEffect, useMemo } from 'react'
@@ -33,12 +34,13 @@ import { RatingTable } from './RatingTable'
 // /leaderboard: filters over the top, then one table per workload scenario.
 // A tps figure means something only next to runs of the same scenario, so
 // scenarios never share a table; numbers from different stands do not rank
-// either, so the board shows one hardware class unless the viewer asks for all.
+// either, so each scenario shows one hardware class (by default its own, the
+// one with the most rated rows) unless the viewer asks for all.
 
 /**
  * One hardware class: its key, or `all` for every class at once. Unset means
- * the default class (the one with the most rated rows). Older links carry a
- * JSON array; its first class is taken.
+ * each scenario's own default class (the one with the most rated rows in
+ * it). Older links carry a JSON array; its first class is taken.
  */
 export const hardwareParam = z
   .union([z.string(), z.array(z.string()).transform((a) => a[0])])
@@ -46,13 +48,19 @@ export const hardwareParam = z
   .catch(undefined)
 export const ALL_HARDWARE = 'all'
 
+/** A list filter: the router writes a JSON array, a hand-made link a single value. */
+const listParam = z
+  .union([z.array(z.string()), z.string().transform((s) => [s])])
+  .optional()
+  .catch(undefined)
+
 export const ratingFiltersSchema = z.object({
   /** One metric for every scenario; unset = each scenario by its benchmark's own. */
   metric: z.string().optional().catch(undefined),
-  kind: z.array(z.string()).optional().catch(undefined),
-  version: z.array(z.string()).optional().catch(undefined),
-  provider: z.array(z.string()).optional().catch(undefined),
-  scenario: z.array(z.string()).optional().catch(undefined),
+  kind: listParam,
+  version: listParam,
+  provider: listParam,
+  scenario: listParam,
   hardware: hardwareParam,
   // The median's window; 30 days as the API, so older versions age out.
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('30d').catch('30d'),
@@ -73,18 +81,30 @@ export function ratingCensusQuery(s: Pick<RatingFilters, 'metric' | 'period'>): 
 }
 
 /**
- * The class the board shows: the one in the URL, `all`, or the default
- * counted on the census rows. `key` goes to the query (undefined = every
- * class); `value` is what the hardware control shows.
+ * The classes the board shows: the one in the URL, `all`, or by default each
+ * scenario's own class counted on the census rows (`byScenario`). `key` goes
+ * to the query (undefined = every class, the board then keeps each
+ * scenario's default); `value` is what the hardware control shows
+ * (undefined = by scenario).
  */
 export function boardHardware(
   param: string | undefined,
   census: readonly RatingEntry[] | undefined
-): { key: string | undefined; value: string; isDefault: boolean } {
-  if (param === ALL_HARDWARE) return { key: undefined, value: ALL_HARDWARE, isDefault: false }
-  if (param) return { key: param, value: param, isDefault: false }
-  const key = census ? defaultHardware(census) : undefined
-  return { key, value: key ?? ALL_HARDWARE, isDefault: true }
+): {
+  key: string | undefined
+  value: string | undefined
+  isDefault: boolean
+  byScenario: Map<string, string>
+} {
+  if (param === ALL_HARDWARE)
+    return { key: undefined, value: ALL_HARDWARE, isDefault: false, byScenario: new Map() }
+  if (param) return { key: param, value: param, isDefault: false, byScenario: new Map() }
+  return {
+    key: undefined,
+    value: undefined,
+    isDefault: true,
+    byScenario: census ? defaultHardwareByScenario(census) : new Map(),
+  }
 }
 
 export function toRatingQuery(s: RatingFilters, hardware: string | undefined): RatingQuery {
@@ -129,8 +149,8 @@ const PERIODS = ['7d', '30d', '90d', '1y', 'all'] as const
  * catalog (every rating metric) or the public one (databases only — the metric
  * stays the one the rating reports).
  *
- * Filters, in this order: hardware (one class, by default the one with the
- * most rated rows — numbers from different stands do not rank), database,
+ * Filters, in this order: hardware (one class, all, or by default each
+ * scenario's own — numbers from different stands do not rank), database,
  * scenario, cloud, database version; then metric and period. Each control
  * shows its value, "All" included.
  */
@@ -216,16 +236,19 @@ export function RatingBoard({
         .join(' · '),
     }))
 
-  // Places count within a scenario: the server ranks the whole page.
+  // Places count within a scenario and, by default, within its own hardware
+  // class: the server ranks the whole page.
   const byScenario = useMemo(() => {
     const m = new Map<string, RatingEntry[]>()
     for (const e of entries) {
+      const own = hw.byScenario.get(e.scenario)
+      if (own !== undefined && e.hardware.key !== own) continue
       const arr = m.get(e.scenario) ?? []
       arr.push({ ...e, rank: arr.length + 1 })
       m.set(e.scenario, arr)
     }
     return [...m.entries()].sort(([a], [b]) => a.localeCompare(b))
-  }, [entries])
+  }, [entries, hw.byScenario])
 
   const narrowed =
     search.hardware !== undefined ||
@@ -250,12 +273,15 @@ export function RatingBoard({
             <RatingFilter
               id="rating-hardware"
               label={t('results.rating.filters.hardware')}
-              allLabel={t('results.rating.filters.allHardware')}
+              allLabel={t('results.rating.filters.byScenario')}
               maxWidth={44}
               loading={hw.isDefault && census.isPending}
-              options={hardwareOptions}
-              values={hw.value === ALL_HARDWARE ? undefined : [hw.value]}
-              onChange={(v) => onSearchChange({ hardware: v?.[0] ?? ALL_HARDWARE })}
+              options={[
+                { label: t('results.rating.filters.allHardware'), value: ALL_HARDWARE },
+                ...hardwareOptions,
+              ]}
+              values={hw.value === undefined ? undefined : [hw.value]}
+              onChange={(v) => onSearchChange({ hardware: v?.[0] })}
             />
             <RatingFilter
               id="rating-kind"
@@ -351,16 +377,28 @@ export function RatingBoard({
             {byScenario.map(([scenario, rows]) => {
               // A scenario ranks by one metric; its rows all carry it.
               const def = metricDefs.find((m) => m.key === rows[0]?.metric)
+              // One stand for the whole section is said once, above it,
+              // instead of on every row.
+              const shared = sharedHardware(rows)
+              const providers = [...new Set(rows.map((r) => r.provider_kind).filter(Boolean))]
+              const stand = shared
+                ? [hardwareLabel(t, shared), providers.length === 1 ? providers[0] : undefined]
+                    .filter(Boolean)
+                    .join(' · ')
+                : undefined
               return (
                 <section key={scenario}>
                   <div className={styles.sectionHead}>
                     <Text element="h2" variant="h4">
                       {scenarioLabel(t, scenario)}
                     </Text>
-                    <Text color="secondary" variant="bodySmall">
-                      {t('results.rating.entries', { count: rows.length })} ·{' '}
-                      {t('results.rating.scenarioHint')}
-                    </Text>
+                    <span title={t('results.rating.scenarioHint')}>
+                      <Text color="secondary" variant="bodySmall">
+                        {[t('results.rating.entries', { count: rows.length }), stand]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </Text>
+                    </span>
                   </div>
                   <RatingTable
                     rows={rows}
@@ -370,6 +408,7 @@ export function RatingBoard({
                     slug={slug}
                     newTab={embedded}
                     publicPage={catalog === 'public'}
+                    hardware={!shared}
                   />
                 </section>
               )

@@ -81,6 +81,7 @@ export function RatingTable({
   onClearFilters,
   newTab,
   publicPage,
+  hardware = true,
 }: {
   rows: RatingEntry[]
   unit?: string
@@ -101,6 +102,11 @@ export function RatingTable({
    * so the Run column goes.
    */
   publicPage?: boolean
+  /**
+   * The Hardware column: off when every row is on one stand that the
+   * section says above the table.
+   */
+  hardware?: boolean
 }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
@@ -200,27 +206,33 @@ export function RatingTable({
         value: (r) => r.runs,
         format: (v) => String(v),
       }),
-      col.stack<RatingEntry>({
-        id: 'hardware',
-        header: t('results.rating.columns.hardware'),
-        minWidth: full ? 220 : 170,
-        value: (r) => r.hardware.key,
-        render: (r) => {
-          const primary = hardwareLabel(t, r.hardware)
-          // Without its own column the date reads under the hardware.
-          const secondary = full
-            ? r.provider_kind
-            : [r.provider_kind, relativeTime(r.last_run_at)].filter(Boolean).join(' · ')
-          return {
-            primary,
-            secondary,
-            title: [primary, secondary, t('results.rating.hardwareHint')]
-              .filter(Boolean)
-              .join('\n'),
-          }
-        },
-      }),
-      ...(full
+      ...(hardware
+        ? [
+            col.stack<RatingEntry>({
+              id: 'hardware',
+              header: t('results.rating.columns.hardware'),
+              minWidth: full ? 220 : 170,
+              value: (r) => r.hardware.key,
+              render: (r) => {
+                const primary = hardwareLabel(t, r.hardware)
+                // Without its own column the date reads under the hardware.
+                const secondary = full
+                  ? r.provider_kind
+                  : [r.provider_kind, relativeTime(r.last_run_at)].filter(Boolean).join(' · ')
+                return {
+                  primary,
+                  secondary,
+                  title: [primary, secondary, t('results.rating.hardwareHint')]
+                    .filter(Boolean)
+                    .join('\n'),
+                }
+              },
+            }),
+          ]
+        : []),
+      // The date folds under the hardware on a narrow table; without that
+      // column it keeps its own.
+      ...(full || !hardware
         ? [
             col.time<RatingEntry>({
               id: 'date',
@@ -231,7 +243,7 @@ export function RatingTable({
           ]
         : []),
     ],
-    [t, unit, metricTitle, scope, slug, rows, newTab, full]
+    [t, unit, metricTitle, scope, slug, rows, newTab, full, hardware]
   )
   const shown = useMemo(
     () => (publicPage && scope === 'global' ? columns.filter((c) => c.id !== 'run') : columns),
@@ -270,7 +282,11 @@ export function RatingTable({
           ]
             .filter(Boolean)
             .join(' · ')
-          const where = [hardwareLabel(t, r.hardware), r.provider_kind, relativeTime(r.last_run_at)]
+          const where = [
+            hardware ? hardwareLabel(t, r.hardware) : undefined,
+            hardware ? r.provider_kind : undefined,
+            relativeTime(r.last_run_at),
+          ]
             .filter(Boolean)
             .join(' · ')
           return (

@@ -18,6 +18,7 @@
       "hardware": "Hardware",
       "all": "All",
       "allHardware": "All hardware",
+      "byScenario": "Each scenario's own",
       "reset": "Reset filters"
     },
     "period": {
@@ -56,8 +57,8 @@
       "hint": "A run lands in the rating when it finishes with the rating turned on."
     },
     "anonymous": "Tenant hidden",
-    "scenarioHint": "Numbers compare only within one scenario; each row shows its hardware",
-    "hardwareHint": "The stand without its runner: how many machines and the vCPU and memory of each"
+    "scenarioHint": "Numbers compare only within one scenario on one stand: the machines without the runner, their CPU platform and data disk",
+    "hardwareHint": "The stand without its runner: how many machines, the vCPU and memory of each, their CPU platform and data disk"
   },
   "shares": {
     "title": "Shares",
