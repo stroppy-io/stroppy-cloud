@@ -56,7 +56,7 @@ func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage
 	}
 	for _, e := range entries {
 		s := e.Run.Summary
-		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Best: e.Best, Runs: e.Runs, LastRunAt: e.LastRunAt, Unit: units[e.Metric], Metric: oas.MetricKey(e.Metric), DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
+		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Median: e.Median, Runs: e.Runs, LastRunAt: e.LastRunAt, Unit: units[e.Metric], Metric: oas.MetricKey(e.Metric), DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
 		if e.Run.FinishedAt != nil {
 			item.RunAt = *e.Run.FinishedAt
 		}

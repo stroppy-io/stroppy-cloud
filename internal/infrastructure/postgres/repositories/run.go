@@ -227,8 +227,8 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 		if row.Metric != nil {
 			item.Metric = *row.Metric
 		}
-		if row.Best != nil {
-			item.Best = *row.Best
+		if row.Median != nil {
+			item.Median = *row.Median
 		}
 		item.Runs = int(row.Runs)
 		if row.LastRunAt != nil {

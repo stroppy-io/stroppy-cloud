@@ -124,9 +124,9 @@ function ratingEntries(
       )
       raw.push({
         rank: 0,
-        // The mock keeps one row per run, so the median is the run itself.
+        // The mock keeps one row per run, so the best and the median are the run.
         value: mv,
-        best: mv,
+        median: mv,
         runs: 1,
         metric: def.key,
         unit: def.unit,

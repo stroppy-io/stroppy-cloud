@@ -177,8 +177,8 @@ export function RatingTable({
       }),
       col.number<RatingEntry>({
         id: 'value',
-        // The value is the median of the configuration's runs in the period.
-        header: t('results.rating.columns.median', {
+        // The value is the best of the configuration's runs in the period.
+        header: t('results.rating.columns.best', {
           metric: metricTitle ?? t('results.rating.columns.value'),
         }),
         width: full ? 190 : 144,
@@ -187,10 +187,10 @@ export function RatingTable({
         format: (v) => formatMetric(v, unit ?? rows[0]?.unit),
       }),
       col.number<RatingEntry>({
-        id: 'best',
-        header: t('results.rating.columns.best'),
+        id: 'median',
+        header: t('results.rating.columns.median'),
         width: full ? 150 : 120,
-        value: (r) => r.best,
+        value: (r) => r.median,
         format: (v) => formatMetric(v, unit ?? rows[0]?.unit),
       }),
       col.number<RatingEntry>({
@@ -289,7 +289,7 @@ export function RatingTable({
               <span className={styles.value}>{formatMetric(r.value, unit ?? r.unit)}</span>
               <span className={styles.line}>
                 {t('results.rating.cardSpread', {
-                  best: formatMetric(r.best, unit ?? r.unit),
+                  median: formatMetric(r.median, unit ?? r.unit),
                   count: r.runs,
                 })}
               </span>

@@ -6705,13 +6705,13 @@ func (s *RatingEntry) Validate() error {
 		})
 	}
 	if err := func() error {
-		if err := (validate.Float{}).Validate(float64(s.Best)); err != nil {
+		if err := (validate.Float{}).Validate(float64(s.Median)); err != nil {
 			return errors.Wrap(err, "float")
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "best",
+			Name:  "median",
 			Error: err,
 		})
 	}

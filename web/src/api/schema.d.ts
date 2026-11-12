@@ -4343,11 +4343,11 @@ export interface components {
         };
         RatingEntry: {
             rank: number;
-            /** @description Median of the configuration's runs in the period. */
+            /** @description Best of the configuration's runs in the period (the highest, or the lowest for a lower-is-better metric); run_id and share_token point at that run. */
             value: number;
-            /** @description Best of those runs (the highest */
-            best: number;
-            /** @description How many runs the median is taken over. */
+            /** @description Median of those runs. */
+            median: number;
+            /** @description How many runs the configuration has in the period. */
             runs: number;
             /** @description The metric the value is of; its definition is in the page's `metrics`. */
             metric: components["schemas"]["MetricKey"];
@@ -4365,7 +4365,7 @@ export interface components {
             provider_kind?: components["schemas"]["ProviderKind"];
             /**
              * Format: date-time
-             * @description When the linked run (the one closest to the median) finished.
+             * @description When the best run finished.
              */
             run_at: string;
             /**
@@ -4394,7 +4394,7 @@ export interface components {
             scenarios: string[];
             /** @description Hardware classes that have rated runs, to filter by. */
             hardware: components["schemas"]["HardwareClass"][];
-            /** @description One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) over the runs the filters keep — their median, linking the run closest to it. */
+            /** @description One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) over the runs the filters keep — the best of them, linking that run, with their median beside it. */
             data: components["schemas"]["RatingEntry"][];
             meta: components["schemas"]["PageMeta"];
         };
@@ -4684,7 +4684,7 @@ export interface components {
         ratingScenario: string[];
         /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
         ratingHardware: string[];
-        /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
+        /** @description The window a configuration's runs are taken from. 30 days by default, so runs of older engine and tool versions age out. */
         ratingPeriod: "7d" | "30d" | "90d" | "1y" | "all";
     };
     requestBodies: never;
@@ -4748,7 +4748,7 @@ export interface operations {
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];
-                /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
+                /** @description The window a configuration's runs are taken from. 30 days by default, so runs of older engine and tool versions age out. */
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -8961,7 +8961,7 @@ export interface operations {
                 scenario?: components["parameters"]["ratingScenario"];
                 /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
                 hardware?: components["parameters"]["ratingHardware"];
-                /** @description The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out. */
+                /** @description The window a configuration's runs are taken from. 30 days by default, so runs of older engine and tool versions age out. */
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];

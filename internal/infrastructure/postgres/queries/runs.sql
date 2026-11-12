@@ -207,9 +207,9 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- memory ("2x4c16g+1x2c4g").
 -- One row per configuration (tenant, database, topology, workload, scenario,
 -- hardware, provider) over the runs the filters keep (the period is the
--- window): its value is the median of those runs, so one lucky or unlucky
--- night on shared cloud hardware does not move a place; best and runs say
--- what the median stands on. The row links the run closest to the median.
+-- window, the last 30 days by default): its value is the best of those
+-- runs and links that run; the median and the run count beside it say how
+-- typical the best is.
 -- Each scenario ranks by its own metric: the parallel arrays @scenario_keys,
 -- @scenario_metrics and @scenario_higher say which, and a scenario not in
 -- them is not on the page. Places count within a scenario, so the page is
@@ -243,21 +243,21 @@ JOIN unnest(@scenario_keys::text[], @scenario_metrics::text[], @scenario_higher:
 WHERE x.summary->'headline' ? s.metric
   AND (COALESCE(cardinality(@hardware::text[]), 0) = 0 OR x.hardware = ANY(@hardware::text[]))
 ), agg AS (
-SELECT config, percentile_cont(0.5) WITHIN GROUP (ORDER BY value) AS median, max(value) AS top, min(value) AS bottom, count(*) AS runs,
+SELECT config, percentile_cont(0.5) WITHIN GROUP (ORDER BY value) AS median, count(*) AS runs,
        max(finished_at) AS last_run
 FROM z GROUP BY config
 )
 SELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,
        y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.metric::text AS metric,
-       y.median::float8 AS value, (CASE WHEN y.higher THEN y.top ELSE y.bottom END)::float8 AS best, y.runs::int8 AS runs,
+       y.value::float8 AS value, y.median::float8 AS median, y.runs::int8 AS runs,
        y.last_run::timestamptz AS last_run_at
 FROM (
-SELECT z.*, a.median, a.top, a.bottom, a.runs, a.last_run,
-       row_number() OVER (PARTITION BY z.config ORDER BY abs(z.value - a.median), z.finished_at DESC, z.id) AS nth
+SELECT z.*, a.median, a.runs, a.last_run,
+       row_number() OVER (PARTITION BY z.config ORDER BY CASE WHEN z.higher THEN -z.value ELSE z.value END, z.finished_at DESC, z.id) AS nth
 FROM z JOIN agg a ON a.config = z.config
 ) y
 WHERE y.nth = 1
-ORDER BY y.scenario, CASE WHEN y.higher THEN -y.median ELSE y.median END, y.finished_at DESC
+ORDER BY y.scenario, CASE WHEN y.higher THEN -y.value ELSE y.value END, y.finished_at DESC
 LIMIT @lim OFFSET @off;
 
 -- name: RatingFacets :many

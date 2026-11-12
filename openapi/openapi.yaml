@@ -4842,7 +4842,7 @@ components:
     ratingPeriod:
       name: period
       in: query
-      description: The window a configuration's median is taken over. 30 days by default, so runs of older
+      description: The window a configuration's runs are taken from. 30 days by default, so runs of older
         engine and tool versions age out.
       schema:
         type: string
@@ -9621,7 +9621,7 @@ components:
       required:
       - rank
       - value
-      - best
+      - median
       - runs
       - unit
       - metric
@@ -9635,15 +9635,15 @@ components:
           type: integer
         value:
           type: number
-          description: Median of the configuration's runs in the period.
-        best:
+          description: Best of the configuration's runs in the period (the highest, or the lowest for
+            a lower-is-better metric); run_id and share_token point at that run.
+        median:
           type: number
-          description: Best of those runs (the highest
-          or the lowest for a lower-is-better metric).: null
+          description: Median of those runs.
         runs:
           type: integer
           minimum: 1
-          description: How many runs the median is taken over.
+          description: How many runs the configuration has in the period.
         metric:
           $ref: '#/components/schemas/MetricKey'
           description: The metric the value is of; its definition is in the page's `metrics`.
@@ -9674,7 +9674,7 @@ components:
         run_at:
           type: string
           format: date-time
-          description: When the linked run (the one closest to the median) finished.
+          description: When the best run finished.
         last_run_at:
           type: string
           format: date-time
@@ -9722,7 +9722,8 @@ components:
         data:
           type: array
           description: One entry per configuration (tenant, database, topology, workload, scenario, hardware,
-            provider) over the runs the filters keep — their median, linking the run closest to it.
+            provider) over the runs the filters keep — the best of them, linking that run, with their
+            median beside it.
           items:
             $ref: '#/components/schemas/RatingEntry'
         meta:

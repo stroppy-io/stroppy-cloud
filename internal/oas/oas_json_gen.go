@@ -29021,8 +29021,8 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		e.Float64(s.Value)
 	}
 	{
-		e.FieldStart("best")
-		e.Float64(s.Best)
+		e.FieldStart("median")
+		e.Float64(s.Median)
 	}
 	{
 		e.FieldStart("runs")
@@ -29127,7 +29127,7 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 var jsonFieldsNameOfRatingEntry = [22]string{
 	0:  "rank",
 	1:  "value",
-	2:  "best",
+	2:  "median",
 	3:  "runs",
 	4:  "metric",
 	5:  "unit",
@@ -29182,17 +29182,17 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"value\"")
 			}
-		case "best":
+		case "median":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := d.Float64()
-				s.Best = float64(v)
+				s.Median = float64(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"best\"")
+				return errors.Wrap(err, "decode field \"median\"")
 			}
 		case "runs":
 			requiredBitSet[0] |= 1 << 3

@@ -204,7 +204,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 			Data []struct {
 				Rank      int     `json:"rank"`
 				Value     float64 `json:"value"`
-				Best      float64 `json:"best"`
+				Median    float64 `json:"median"`
 				Runs      int     `json:"runs"`
 				RunAt     string  `json:"run_at"`
 				LastRunAt string  `json:"last_run_at"`
@@ -258,14 +258,14 @@ func TestE2EShareCompareRating(t *testing.T) {
 			t.Fatalf("public rating %+v", page)
 		}
 		// A third, weaker run of the configuration joins the two in the
-		// tenant rating (1000 and 1100): one row, their median, the best
-		// kept beside it, linked to the run that is the median.
+		// tenant rating (1000 and 1100): one row, the best of them, linked
+		// to that run, the median beside it.
 		launchWithTPS(t, e, base, testID, tok, 900, map[string]any{"name": "rerun"}, &c)
 		if c = finishRun(t, e, base, tok, c.ID); c.Status != "completed" {
 			t.Fatalf("rerun %s", c.Status)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
-		if len(page.Data) != 1 || page.Data[0].RunID != a.ID || page.Data[0].Value != 1000 || page.Data[0].Best != 1100 || page.Data[0].Runs != 3 {
+		if len(page.Data) != 1 || page.Data[0].RunID != b.ID || page.Data[0].Value != 1100 || page.Data[0].Median != 1000 || page.Data[0].Runs != 3 {
 			t.Fatalf("median of the configuration %+v", page)
 		}
 		// The linked run is the median's; the date is the configuration's

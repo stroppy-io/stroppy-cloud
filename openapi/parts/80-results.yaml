@@ -204,17 +204,17 @@ components:
     ratingPeriod:
       name: period
       in: query
-      description: The window a configuration's median is taken over. 30 days by default, so runs of older engine and tool versions age out.
+      description: The window a configuration's runs are taken from. 30 days by default, so runs of older engine and tool versions age out.
       schema: { type: string, enum: [7d, 30d, 90d, 1y, all], default: 30d }
   schemas:
     RatingEntry:
       type: object
-      required: [rank, value, best, runs, unit, metric, db_kind, scenario, hardware, run_at, last_run_at]
+      required: [rank, value, median, runs, unit, metric, db_kind, scenario, hardware, run_at, last_run_at]
       properties:
         rank: { type: integer }
-        value: { type: number, description: "Median of the configuration's runs in the period." }
-        best: { type: number, description: Best of those runs (the highest, or the lowest for a lower-is-better metric). }
-        runs: { type: integer, minimum: 1, description: How many runs the median is taken over. }
+        value: { type: number, description: "Best of the configuration's runs in the period (the highest, or the lowest for a lower-is-better metric); run_id and share_token point at that run." }
+        median: { type: number, description: Median of those runs. }
+        runs: { type: integer, minimum: 1, description: How many runs the configuration has in the period. }
         metric: { $ref: '#/components/schemas/MetricKey', description: The metric the value is of; its definition is in the page's `metrics`. }
         unit: { type: string }
         db_kind: { $ref: '#/components/schemas/DatabaseKind' }
@@ -227,7 +227,7 @@ components:
         hardware: { $ref: '#/components/schemas/HardwareClass' }
         stroppy_version: { type: string }
         provider_kind: { $ref: '#/components/schemas/ProviderKind' }
-        run_at: { type: string, format: date-time, description: When the linked run (the one closest to the median) finished. }
+        run_at: { type: string, format: date-time, description: When the best run finished. }
         last_run_at: { type: string, format: date-time, description: When the configuration's latest run in the period finished. }
         run_id: { type: string, format: uuid, description: Tenant rating only. }
         author: { $ref: '#/components/schemas/UserRef', description: Tenant rating only. }
@@ -252,7 +252,7 @@ components:
           items: { $ref: '#/components/schemas/HardwareClass' }
         data:
           type: array
-          description: One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) over the runs the filters keep — their median, linking the run closest to it.
+          description: One entry per configuration (tenant, database, topology, workload, scenario, hardware, provider) over the runs the filters keep — the best of them, linking that run, with their median beside it.
           items: { $ref: '#/components/schemas/RatingEntry' }
         meta: { $ref: '#/components/schemas/PageMeta' }
     HardwareClass:

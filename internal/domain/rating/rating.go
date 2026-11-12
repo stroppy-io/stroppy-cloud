@@ -36,10 +36,10 @@ type Query struct {
 // Entry is one ranked run.
 type Entry struct {
 	Rank int
-	// Value is the median over the configuration's runs in the period,
-	// Best its best run, Runs how many there are.
+	// Value is the best of the configuration's runs in the period (Run is
+	// that run), Median their median, Runs how many there are.
 	Value      float64
-	Best       float64
+	Median     float64
 	Runs       int
 	LastRunAt  time.Time
 	Run        run.Run
@@ -159,7 +159,7 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		return Page{}, err
 	}
 	for i, r := range rows {
-		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Best: r.Best, Runs: r.Runs, LastRunAt: r.LastRunAt, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, Metric: r.Metric, TenantName: r.TenantName}
+		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Median: r.Median, Runs: r.Runs, LastRunAt: r.LastRunAt, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, Metric: r.Metric, TenantName: r.TenantName}
 		if tenantID == "" {
 			e.TenantName = r.TenantPublicName
 			if s.shares != nil {

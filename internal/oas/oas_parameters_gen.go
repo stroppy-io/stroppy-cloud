@@ -8536,7 +8536,7 @@ type GetPublicRatingParams struct {
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
 	Hardware []string `json:",omitempty"`
-	// The window a configuration's median is taken over. 30 days by default, so runs of older engine and
+	// The window a configuration's runs are taken from. 30 days by default, so runs of older engine and
 	// tool versions age out.
 	Period OptRatingPeriod `json:",omitempty,omitzero"`
 	Cursor OptString       `json:",omitempty,omitzero"`
@@ -12956,7 +12956,7 @@ type GetTenantRatingParams struct {
 	Scenario []string `json:",omitempty"`
 	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
 	Hardware []string `json:",omitempty"`
-	// The window a configuration's median is taken over. 30 days by default, so runs of older engine and
+	// The window a configuration's runs are taken from. 30 days by default, so runs of older engine and
 	// tool versions age out.
 	Period OptRatingPeriod `json:",omitempty,omitzero"`
 	Cursor OptString       `json:",omitempty,omitzero"`
