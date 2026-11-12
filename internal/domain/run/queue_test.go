@@ -221,6 +221,17 @@ func TestQueueDecides(t *testing.T) {
 			waitingOn: []WaitReason{WaitSuiteSlot, WaitQuota, ""},
 		},
 		{
+			// The suite runs one cell at a time: only its next cell keeps room.
+			// Reserving every waiting cell held the whole nightly suite at once
+			// and starved every other run.
+			name:      "only the next cell of a scheduled suite run keeps its SSD",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, suites: queueSuites{sr: 1}},
+			runs:      []Run{scheduled(queued(spec(400), &sr)), scheduled(queued(spec(400), &sr)), scheduled(queued(spec(400), &sr)), queued(spec(400), nil)},
+			quotas:    ssd(200),
+			admit:     []bool{false, false, false, true},
+			waitingOn: []WaitReason{WaitSuiteSlot, WaitSuiteSlot, WaitSuiteSlot, ""},
+		},
+		{
 			name:      "a scheduled run waiting for SSD is not overtaken by a manual one that fits",
 			svc:       &Service{access: queueAccess{}, repo: queueRepo{}},
 			runs:      []Run{scheduled(queued(spec(1000), nil)), queued(spec(400), nil)},

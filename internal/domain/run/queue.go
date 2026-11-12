@@ -304,6 +304,8 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 		}
 		return nil
 	}
+	// The suite runs whose next waiting cell already keeps its room.
+	reservedSuites := map[uuid.UUID]bool{}
 	for i, r := range queued {
 		if err := one(i, r); err != nil {
 			return d, err
@@ -311,11 +313,21 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 		// A scheduled run that waits keeps its machines reserved in its
 		// profile: the runs behind it start only in the room left after it,
 		// so a long manual run cannot take the quota while the scheduled
-		// one waits for its suite slot.
-		if reserved, ok := scheduledReservation(r, d.admit[i], d.waits[i].WaitingFor); ok {
-			id := r.Snapshot.ProviderProfile.ID
-			held[id] = append(held[id], reserved)
+		// one waits for its suite slot. A suite run keeps room for its next
+		// cell only: the cells after it start one by one, each in the room
+		// the one before frees.
+		reserved, ok := scheduledReservation(r, d.admit[i], d.waits[i].WaitingFor)
+		if !ok {
+			continue
 		}
+		if r.SuiteRunID != nil {
+			if reservedSuites[*r.SuiteRunID] {
+				continue
+			}
+			reservedSuites[*r.SuiteRunID] = true
+		}
+		id := r.Snapshot.ProviderProfile.ID
+		held[id] = append(held[id], reserved)
 	}
 	return d, nil
 }
