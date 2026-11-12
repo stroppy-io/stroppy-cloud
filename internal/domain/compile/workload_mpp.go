@@ -4,22 +4,38 @@ import (
 	"encoding/json"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 )
 
 // sqlDialectParam is the stroppy flag that selects a built-in SQL dialect.
 const sqlDialectParam = "sql-dialect"
 
-// gpDialect selects stroppy's gp dialect for the analytic scripts on a
-// Greenplum-family server: its schema distributes and stores every table for
-// an MPP engine, and stroppy stops a run on such a server that did not ask
-// for it. A dialect or SQL file the workload names itself wins.
+// engineDialect is the analytic SQL dialect a database kind needs for a
+// script, "" when the driver's own one is right:
+//   - gp for TPC-H and TPC-DS on a Greenplum-family server: its schema
+//     distributes and stores every table for an MPP engine, and stroppy stops
+//     a run on such a server that did not ask for it (stroppy-io/stroppy#259);
+//   - mariadb for TPC-DS on MariaDB: the mysql queries roll up together with
+//     ORDER BY, which MariaDB refuses (stroppy-io/stroppy#271).
 //
-// The dialect is a parameter of the stroppy build (stroppy-io/stroppy#259).
-// A build without it would load the pg schema, which leaves every table's
-// placement to the server: the numbers would not be comparable, so such a
-// run is refused instead of measured.
-func gpDialect(raw json.RawMessage, build catalog.StroppyVersion) (json.RawMessage, error) {
+// required says a build without the dialect cannot measure the kind at all:
+// the pg schema on an MPP engine leaves every table's placement to the
+// server, so the numbers would not be comparable.
+func engineDialect(kind catalog.DatabaseKind, script string) (dialect string, required bool) {
+	switch {
+	case dbkind.IsMPP(kind) && (script == "tpch/tx" || script == "tpcds"):
+		return "gp", true
+	case kind == catalog.MariaDB && script == "tpcds":
+		return "mariadb", false
+	default:
+		return "", false
+	}
+}
+
+// kindDialect sets the dialect the database kind needs on an analytic
+// segment. A dialect or SQL file the workload names itself wins.
+func kindDialect(raw json.RawMessage, build catalog.StroppyVersion, kind catalog.DatabaseKind) (json.RawMessage, error) {
 	var shape struct {
 		Workload struct {
 			Script     string          `json:"script"`
@@ -31,12 +47,15 @@ func gpDialect(raw json.RawMessage, build catalog.StroppyVersion) (json.RawMessa
 		return nil, err
 	}
 	w := shape.Workload
-	if (w.Script != "tpch/tx" && w.Script != "tpcds") || set(w.SQLDialect) || set(w.SQLFile) {
+	dialect, required := engineDialect(kind, w.Script)
+	if dialect == "" || set(w.SQLDialect) || set(w.SQLFile) {
 		return raw, nil
 	}
-	script := w.Script
-	if !stroppyHasParam(build, script, sqlDialectParam) {
-		return nil, errs.Newf(errs.CodeInvalid, "stroppy %s has no Greenplum dialect for %s", build.Version, script).Because("mpp_dialect_unavailable", "script", script, "stroppy_version", build.Version)
+	if !stroppyHasParam(build, w.Script, sqlDialectParam) {
+		if required {
+			return nil, errs.Newf(errs.CodeInvalid, "stroppy %s has no Greenplum dialect for %s", build.Version, w.Script).Because("mpp_dialect_unavailable", "script", w.Script, "stroppy_version", build.Version)
+		}
+		return raw, nil
 	}
 	// Re-encode through raw maps so every other key keeps its exact value.
 	var segment, workload map[string]json.RawMessage
@@ -46,7 +65,11 @@ func gpDialect(raw json.RawMessage, build catalog.StroppyVersion) (json.RawMessa
 	if err := json.Unmarshal(segment["workload"], &workload); err != nil {
 		return nil, err
 	}
-	workload["sql_dialect"] = json.RawMessage(`"gp"`)
+	encodedDialect, err := json.Marshal(dialect)
+	if err != nil {
+		return nil, err
+	}
+	workload["sql_dialect"] = encodedDialect
 	encoded, err := json.Marshal(workload)
 	if err != nil {
 		return nil, err

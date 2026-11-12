@@ -271,7 +271,7 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
 чекаут `~/devel/github/stroppy-io/stroppy` (`stroppy probe -o json`,
 `stroppy run <workload> --help`, `stroppy help config-file|drivers|steps`).
 
-- Образ: `ghcr.io/stroppy-io/stroppy:v6.3.3.71` (тег = релиз + номер сборки),
+- Образ: `ghcr.io/stroppy-io/stroppy:v6.4.0.72` (тег = релиз + номер сборки),
   entrypoint `stroppy`, WORKDIR `/workspace`; контейнер на host-сети,
   директория сегмента примонтирована как `/workspace`.
 - Команда: `run -f /workspace/stroppy-config.json --log-mode production

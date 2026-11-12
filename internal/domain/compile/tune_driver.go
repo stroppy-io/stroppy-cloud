@@ -3,9 +3,7 @@ package compile
 import (
 	"encoding/json"
 	"sort"
-	"strings"
 
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
@@ -61,25 +59,6 @@ func (c *compilation) poolSize() int {
 		return want
 	}
 	return min(want, connectionsPerCPU*cpus)
-}
-
-// clientPools is how many pools of poolSize the client keeps open against
-// the database. On the PostgreSQL protocol Stroppy runs a routine script
-// (tpcc/procs, tpcb/procs) on a second pool with the same settings, and
-// minConns keeps both full; database/sql (MySQL) opens lazily, so the idle
-// main pool holds only what the load used.
-// doc: stroppy 6.3.3 pkg/driver/postgres/routine.go — newRoutineDriver
-func (c *compilation) clientPools() int {
-	if c.in.Workload.Protocol != catalog.ProtoPg {
-		return 1
-	}
-	for _, raw := range c.in.Workload.Segments {
-		var s spec.Segment
-		if json.Unmarshal(raw, &s) == nil && strings.HasSuffix(s.Workload.Script, "/procs") {
-			return 2
-		}
-	}
-	return 1
 }
 
 // peakConnections is the most connections one segment holds at once: its

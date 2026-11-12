@@ -1159,6 +1159,35 @@
               },
               {
                 "choice": {
+                  "options": [
+                    {
+                      "label": "PostgreSQL",
+                      "value": {
+                        "stringValue": "pg"
+                      }
+                    },
+                    {
+                      "label": "Greenplum family (MPP)",
+                      "value": {
+                        "stringValue": "gp"
+                      }
+                    },
+                    {
+                      "label": "MariaDB (mysql driver)",
+                      "value": {
+                        "stringValue": "mariadb"
+                      }
+                    }
+                  ]
+                },
+                "description": "Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself.",
+                "group": "SQL",
+                "name": "sql_dialect",
+                "nullable": true,
+                "title": "SQL dialect"
+              },
+              {
+                "choice": {
                   "default": {
                     "stringValue": "column"
                   },
@@ -1244,6 +1273,101 @@
                 "group": "Load",
                 "name": "pg_unlogged",
                 "title": "Unlogged tables while loading"
+              },
+              {
+                "description": "Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream.",
+                "group": "Queries",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "64"
+                },
+                "name": "streams",
+                "title": "Query streams"
+              },
+              {
+                "description": "One generated stream (queryStream); 0 is the Appendix A power order. Unset keeps Stroppy's 0.",
+                "group": "Queries",
+                "int64": {
+                  "gte": "0"
+                },
+                "name": "query_stream",
+                "nullable": true,
+                "title": "Query stream"
+              },
+              {
+                "description": "Base query seed (querySeed); stream s uses seed+s.",
+                "group": "Queries",
+                "int64": {
+                  "default": "19620718",
+                  "gte": "1",
+                  "lte": "2147483646"
+                },
+                "name": "query_seed",
+                "title": "Query seed"
+              },
+              {
+                "bool": {
+                  "default": false
+                },
+                "description": "Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score.",
+                "group": "Queries",
+                "name": "refresh_functions",
+                "title": "Refresh functions"
+              },
+              {
+                "description": "First DBGEN refresh-set number (refreshSet); continue with the prior report's next set.",
+                "group": "Queries",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "999"
+                },
+                "name": "refresh_set",
+                "title": "Refresh set"
+              },
+              {
+                "description": "Per-query intermediate-row limit on Picodata (picoMotionRowMax); unset keeps the server setting.",
+                "group": "Picodata",
+                "int64": {
+                  "gte": "1"
+                },
+                "name": "pico_motion_row_max",
+                "nullable": true,
+                "title": "Picodata motion row limit"
+              },
+              {
+                "description": "Per-query opcode limit on Picodata (picoVdbeOpcodeMax); unset keeps the server setting.",
+                "group": "Picodata",
+                "int64": {
+                  "gte": "1"
+                },
+                "name": "pico_vdbe_opcode_max",
+                "nullable": true,
+                "title": "Picodata opcode limit"
+              },
+              {
+                "choice": {
+                  "options": [
+                    {
+                      "label": "PostgreSQL",
+                      "value": {
+                        "stringValue": "pg"
+                      }
+                    },
+                    {
+                      "label": "Greenplum family (MPP)",
+                      "value": {
+                        "stringValue": "gp"
+                      }
+                    }
+                  ]
+                },
+                "description": "Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself.",
+                "group": "SQL",
+                "name": "sql_dialect",
+                "nullable": true,
+                "title": "SQL dialect"
               },
               {
                 "choice": {

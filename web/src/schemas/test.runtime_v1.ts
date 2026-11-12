@@ -454,6 +454,8 @@ export interface TestRuntime1SegmentWorkloadTpcds {
   query_seed?: number | string;
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
   validate_force?: boolean;
+  /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself. */
+  sql_dialect?: "pg" | "gp" | "mariadb" | null;
   /** YDB store mode. YDB table store mode (ydbStoreMode); ignored by other drivers. */
   ydb_store_mode?: "column" | "row";
   /** Schema file. Schema SQL override (schemaFile): a preset id shipped with stroppy, like tpcds/schema.pico. */
@@ -471,6 +473,22 @@ export interface TestRuntime1SegmentWorkloadTpchTx {
   load_workers?: number | string;
   /** Unlogged tables while loading. Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only. */
   pg_unlogged?: boolean;
+  /** Query streams. Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream. */
+  streams?: number | string;
+  /** Query stream. One generated stream (queryStream); 0 is the Appendix A power order. Unset keeps Stroppy's 0. */
+  query_stream?: number | string | null;
+  /** Query seed. Base query seed (querySeed); stream s uses seed+s. */
+  query_seed?: number | string;
+  /** Refresh functions. Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score. */
+  refresh_functions?: boolean;
+  /** Refresh set. First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. */
+  refresh_set?: number | string;
+  /** Picodata motion row limit. Per-query intermediate-row limit on Picodata (picoMotionRowMax); unset keeps the server setting. */
+  pico_motion_row_max?: number | string | null;
+  /** Picodata opcode limit. Per-query opcode limit on Picodata (picoVdbeOpcodeMax); unset keeps the server setting. */
+  pico_vdbe_opcode_max?: number | string | null;
+  /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself. */
+  sql_dialect?: "pg" | "gp" | null;
   /** YDB store mode. YDB table store mode (ydbStoreMode); ignored by other drivers. */
   ydb_store_mode?: "column" | "row";
   /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpch/pico. */

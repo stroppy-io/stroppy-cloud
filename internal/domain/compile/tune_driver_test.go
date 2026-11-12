@@ -8,9 +8,9 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 )
 
-// Stroppy runs a routine script on its own pool next to the main one, both
-// at the full size: the PostgreSQL connection limit has to hold both.
-func TestServerConnectionsHoldEveryClientPool(t *testing.T) {
+// Stroppy 6.4 runs routines on the main pool (stroppy-io/stroppy#261): the
+// PostgreSQL connection limit holds one full pool whatever the script.
+func TestServerConnectionsHoldTheClientPool(t *testing.T) {
 	t.Parallel()
 	for _, tc := range []struct {
 		name     string
@@ -18,10 +18,10 @@ func TestServerConnectionsHoldEveryClientPool(t *testing.T) {
 		script   string
 		want     int
 	}{
-		{"pg transactions, one pool", catalog.ProtoPg, "tpcc/tx", 300},
-		{"pg tpcc routines, two pools", catalog.ProtoPg, "tpcc/procs", 550},
-		{"pg tpcb routines, two pools", catalog.ProtoPg, "tpcb/procs", 550},
-		{"mysql opens lazily, one pool", catalog.ProtoMySQL, "tpcc/procs", 300},
+		{"pg transactions", catalog.ProtoPg, "tpcc/tx", 300},
+		{"pg tpcc routines share the pool", catalog.ProtoPg, "tpcc/procs", 300},
+		{"pg tpcb routines share the pool", catalog.ProtoPg, "tpcb/procs", 300},
+		{"mysql", catalog.ProtoMySQL, "tpcc/procs", 300},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()

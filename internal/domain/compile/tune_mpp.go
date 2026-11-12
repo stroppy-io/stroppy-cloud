@@ -156,7 +156,7 @@ func (c *compilation) tuneMPP(role, machine, schemaID string, instances int, ove
 	t.set("gp_fts_probe_timeout", mppFTSProbeSeconds)
 	t.set("gp_fts_probe_interval", mppFTSProbeSeconds)
 	t.set("gp_segment_connect_timeout", mppSegmentConnectSeconds)
-	connections := max(mppCoordinatorConnections, ceilTo(c.clientPools()*c.poolSize()+mppConnectionHeadroom, 50))
+	connections := max(mppCoordinatorConnections, ceilTo(c.poolSize()+mppConnectionHeadroom, 50))
 	if role == topology.RoleDB {
 		connections *= mppSegmentConnectionFactor
 	}

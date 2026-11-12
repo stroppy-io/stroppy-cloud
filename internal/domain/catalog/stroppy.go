@@ -11,8 +11,8 @@ import (
 // StroppyRelease is the one Stroppy release the platform runs; a workload of
 // an earlier one is moved to it by migration.
 const (
-	StroppyRelease = "6.3.3"
-	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.3.3.71"
+	StroppyRelease = "6.4.0"
+	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.4.0.72"
 )
 
 // The schemas own parameter descriptions and defaults. Catalog only adds build
@@ -22,8 +22,8 @@ func stroppy() StroppyCatalog {
 	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach, ProtoNoop}
 	// doc: stroppy workloads/tpcds refuses CockroachDB at define time: it has
 	// no ROLLUP, CUBE or GROUPING SETS (cockroach#46280), which 11 of the 103
-	// statements use. TPC-H runs there on the PostgreSQL dialect (6.3.3,
-	// all 22 queries).
+	// statements use. TPC-H runs there on the PostgreSQL dialect (checked on
+	// 6.3.3, all 22 queries).
 	noCockroach := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoNoop}
 	scripts := []StroppyScript{
 		{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Protocols: all, RatingMetric: "tpmc"},

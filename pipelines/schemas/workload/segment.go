@@ -205,9 +205,44 @@ func tpchFields() []schemapb.FieldDef {
 			Gt(0).Lte(10000).Default(1),
 		loadWorkers(0).Desc("Workers used to load each table (loadWorkers); 0 = automatic."),
 		pgUnlogged(),
+		// doc: stroppy 6.4.0 `run tpch/tx --help` — streams, query-stream,
+		// query-seed (#263), refresh-functions, refresh-set (#276),
+		// pico-motion-row-max, pico-vdbe-opcode-max (#270), sql-dialect (#259).
+		schemapb.Int64("streams").Title("Query streams").Group("Queries").
+			Desc("Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream.").Gte(1).Lte(64).Default(1),
+		schemapb.Int64("query_stream").Title("Query stream").Group("Queries").
+			Desc("One generated stream (queryStream); 0 is the Appendix A power order. Unset keeps Stroppy's 0.").Gte(0).Nullable(),
+		schemapb.Int64("query_seed").Title("Query seed").Group("Queries").
+			Desc("Base query seed (querySeed); stream s uses seed+s.").Gte(1).Lte(2147483646).Default(19620718),
+		schemapb.Bool("refresh_functions").Title("Refresh functions").Group("Queries").
+			Desc("Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score.").Default(false),
+		schemapb.Int64("refresh_set").Title("Refresh set").Group("Queries").
+			Desc("First DBGEN refresh-set number (refreshSet); continue with the prior report's next set.").Gte(1).Lte(999).Default(1),
+		schemapb.Int64("pico_motion_row_max").Title("Picodata motion row limit").Group("Picodata").
+			Desc("Per-query intermediate-row limit on Picodata (picoMotionRowMax); unset keeps the server setting.").Gte(1).Nullable(),
+		schemapb.Int64("pico_vdbe_opcode_max").Title("Picodata opcode limit").Group("Picodata").
+			Desc("Per-query opcode limit on Picodata (picoVdbeOpcodeMax); unset keeps the server setting.").Gte(1).Nullable(),
+		analyticDialect("pg", "gp"),
 		ydbStoreMode(),
 		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpch/pico."),
 	}
+}
+
+// analyticDialect is the built-in SQL dialect of an analytic script
+// (sqlDialect): unset selects it by driver. doc: stroppy 6.4.0
+// `run tpch/tx --help`, `run tpcds --help`.
+func analyticDialect(values ...string) *schemapb.ChoiceB {
+	labels := map[string]string{
+		"pg":      "PostgreSQL",
+		"gp":      "Greenplum family (MPP)",
+		"mariadb": "MariaDB (mysql driver)",
+	}
+	c := schemapb.Choice("sql_dialect").Title("SQL dialect").Group("SQL").
+		Desc("Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself.")
+	for _, v := range values {
+		c = c.Opt(schemapb.StrV(v), labels[v])
+	}
+	return c.Nullable()
 }
 
 // tpcdsFields are the parameters of tpcds.
@@ -227,6 +262,7 @@ func tpcdsFields() []schemapb.FieldDef {
 			Desc("Query generator seed (querySeed).").Default(19620718),
 		schemapb.Bool("validate_force").Title("Validate outside SF=1").Group("Queries").
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
+		analyticDialect("pg", "gp", "mariadb"),
 		ydbStoreMode(),
 		schemapb.Str("schema_file").Title("Schema file").Group("SQL").
 			Desc("Schema SQL override (schemaFile): a preset id shipped with stroppy, like tpcds/schema.pico.").

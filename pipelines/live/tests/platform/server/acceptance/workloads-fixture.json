@@ -187,6 +187,13 @@
       "scale_factor": 0.01,
       "load_workers": 2,
       "pg_unlogged": true,
+      "streams": 2,
+      "query_stream": 0,
+      "query_seed": 123,
+      "refresh_functions": true,
+      "refresh_set": 2,
+      "pico_motion_row_max": 100000,
+      "pico_vdbe_opcode_max": 100000,
       "ydb_store_mode": "row",
       "sql_file": "tpcc/postgres"
     },
@@ -194,6 +201,34 @@
       "executor": "shared-iterations",
       "vus": 1,
       "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpch-dialect",
+    "workload": {
+      "script": "tpch/tx",
+      "scale_factor": 0.01,
+      "sql_dialect": "pg"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 1,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcds-dialect",
+    "workload": {
+      "script": "tpcds",
+      "scale_factor": 0.01,
+      "sql_dialect": "pg"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 1,
       "query_timeout": "2s"
     }
   },
