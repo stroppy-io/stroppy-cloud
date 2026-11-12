@@ -63,6 +63,17 @@ describe('defaultHardware', () => {
     expect(defaultHardware([row([1, 32, 64]), big])).toBe(big.hardware.key)
   })
 
+  it('weighs a class by its runs, not its rows', () => {
+    // Four single-node configurations of 15 runs against four clusters with
+    // fewer runs each: the single node has more numbers behind it.
+    const single = (runs: number) => ({ ...big, runs })
+    const cluster = row([3, 32, 128], [1, 4, 8])
+    const clusters = (runs: number) => ({ ...cluster, runs })
+    const rows = [single(15), single(15), single(16), single(14)]
+    const others = [clusters(15), clusters(15), clusters(2), clusters(10)]
+    expect(defaultHardware([...others, ...rows])).toBe(big.hardware.key)
+  })
+
   it('is undefined without rows', () => {
     expect(defaultHardware([])).toBeUndefined()
   })

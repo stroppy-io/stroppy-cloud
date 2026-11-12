@@ -78,9 +78,9 @@ export function hardwareLabel(t: TFunction, hw: HardwareClass | undefined): stri
  * for the whole board would hide all but one of them.
  */
 export function defaultHardwareByScenario(
-  rows: readonly { scenario: string; hardware: HardwareClass }[]
+  rows: readonly { scenario: string; hardware: HardwareClass; runs?: number }[]
 ): Map<string, string> {
-  const byScenario = new Map<string, { hardware: HardwareClass }[]>()
+  const byScenario = new Map<string, { hardware: HardwareClass; runs?: number }[]>()
   for (const r of rows) byScenario.set(r.scenario, [...(byScenario.get(r.scenario) ?? []), r])
   const out = new Map<string, string>()
   for (const [scenario, scenarioRows] of byScenario) {
@@ -127,15 +127,22 @@ export function hardwareCounts(rows: readonly { hardware: HardwareClass }[]): Ma
 
 /**
  * The class a rating shows when the viewer picked none: the one with the most
- * rated rows (the largest set of comparable numbers); on a tie the larger
- * stand, then the key. Undefined when there are no rows.
+ * rated runs behind its rows (the most measurements to compare; a row without
+ * a count weighs one); on a tie the larger stand, then the key. Undefined
+ * when there are no rows.
  */
-export function defaultHardware(rows: readonly { hardware: HardwareClass }[]): string | undefined {
+export function defaultHardware(
+  rows: readonly { hardware: HardwareClass; runs?: number }[]
+): string | undefined {
   const classes = new Map<string, HardwareClass>()
-  for (const r of rows) classes.set(r.hardware.key, r.hardware)
+  const weight = new Map<string, number>()
+  for (const r of rows) {
+    classes.set(r.hardware.key, r.hardware)
+    weight.set(r.hardware.key, (weight.get(r.hardware.key) ?? 0) + (r.runs ?? 1))
+  }
   let best: HardwareClass | undefined
   let bestCount = 0
-  for (const [key, count] of hardwareCounts(rows)) {
+  for (const [key, count] of weight) {
     const hw = classes.get(key)
     if (!hw) continue
     if (best === undefined || count > bestCount) {
