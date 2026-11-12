@@ -46,6 +46,11 @@ func TestSegment(t *testing.T) {
 		"workload": map[string]any{"script": "tpch/tx", "scale_factor": 0.01, "ydb_store_mode": "row"},
 		"run":      map[string]any{"executor": "shared-iterations", "iterations": int64(1)},
 	}
+	tpchRefresh := map[string]any{
+		"name":     "tpch-refresh",
+		"workload": map[string]any{"script": "tpch/tx", "refresh_functions": true, "refresh_set": int64(3)},
+		"run":      map[string]any{"executor": "shared-iterations", "iterations": int64(1)},
+	}
 	tpcds := map[string]any{
 		"name":     "tpcds",
 		"workload": map[string]any{"script": "tpcds", "scale_factor": 1.0, "streams": int64(2), "query_stream": int64(1), "schema_file": "tpcds/schema.pico"},
@@ -74,7 +79,7 @@ func TestSegment(t *testing.T) {
 	}
 
 	schematest.Run(t, Segment(), schematest.Cases{
-		Valid: []map[string]any{minimalSegment("load"), full, tpch, tpcds, sql, simple},
+		Valid: []map[string]any{minimalSegment("load"), full, tpch, tpchRefresh, tpcds, sql, simple},
 		Invalid: []schematest.Invalid{
 			{Value: func() map[string]any { v := minimalSegment("Load"); return v }(), Code: "PATTERN_MISMATCH", Path: "name"},
 			{Value: withWorkload(map[string]any{"script": "ycsb"}), Code: "UNKNOWN_VARIANT", Path: "workload"},
@@ -88,6 +93,8 @@ func TestSegment(t *testing.T) {
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "sql_dialect": "crdb24", "sql_file": "q.sql"}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "sql_dialect": "oracle"}), Code: "CHOICE_NOT_ALLOWED", Path: "workload.sql_dialect"},
 			{Value: withWorkload(map[string]any{"script": "tpcb/tx", "sql_dialect": "crdb"}), Code: "UNKNOWN_FIELD", Path: "workload.sql_dialect"},
+			// stroppy: "refresh-set requires refresh-functions".
+			{Value: withWorkload(map[string]any{"script": "tpch/tx", "refresh_set": int64(2)}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withRun(map[string]any{"executor": "constant-vus"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "shared-iterations", "duration": "10s"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "ramping-vus", "duration": "10s"}), Code: "CHOICE_NOT_ALLOWED", Path: "run.executor"},

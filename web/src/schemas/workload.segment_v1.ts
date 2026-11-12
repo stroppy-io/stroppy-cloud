@@ -192,8 +192,8 @@ export interface WorkloadSegment1WorkloadTpchTx {
   query_seed?: number | string;
   /** Refresh functions. Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score. */
   refresh_functions?: boolean;
-  /** Refresh set. First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. */
-  refresh_set?: number | string;
+  /** Refresh set. First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. Only with refresh functions; unset keeps Stroppy's 1. */
+  refresh_set?: number | string | null;
   /** Picodata motion row limit. Per-query intermediate-row limit on Picodata (picoMotionRowMax); unset keeps the server setting. */
   pico_motion_row_max?: number | string | null;
   /** Picodata opcode limit. Per-query opcode limit on Picodata (picoVdbeOpcodeMax); unset keeps the server setting. */

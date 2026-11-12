@@ -217,7 +217,7 @@ func tpchFields() []schemapb.FieldDef {
 		schemapb.Bool("refresh_functions").Title("Refresh functions").Group("Queries").
 			Desc("Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score.").Default(false),
 		schemapb.Int64("refresh_set").Title("Refresh set").Group("Queries").
-			Desc("First DBGEN refresh-set number (refreshSet); continue with the prior report's next set.").Gte(1).Lte(999).Default(1),
+			Desc("First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. Only with refresh functions; unset keeps Stroppy's 1.").Gte(1).Lte(999).Nullable(),
 		schemapb.Int64("pico_motion_row_max").Title("Picodata motion row limit").Group("Picodata").
 			Desc("Per-query intermediate-row limit on Picodata (picoMotionRowMax); unset keeps the server setting.").Gte(1).Nullable(),
 		schemapb.Int64("pico_vdbe_opcode_max").Title("Picodata opcode limit").Group("Picodata").
@@ -469,6 +469,12 @@ func Segment() *schemapb.Schema {
 					`!("sql_file" in this.workload) || this.workload.sql_file == null`,
 				"stroppy rejects sql_dialect together with sql_file",
 			).ID("sql-source-exclusive"),
+			// doc: stroppy 6.4.0 tpch/tx: "refresh-set requires refresh-functions".
+			segmentRule(
+				`!("workload" in this) || !("refresh_set" in this.workload) || this.workload.refresh_set == null || `+
+					`("refresh_functions" in this.workload && this.workload.refresh_functions == true)`,
+				"refresh_set needs refresh_functions",
+			).ID("refresh-set-needs-functions"),
 		).
 		MustBuild()
 }

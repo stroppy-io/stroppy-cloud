@@ -3085,14 +3085,14 @@
                     "title": "Refresh functions"
                   },
                   {
-                    "description": "First DBGEN refresh-set number (refreshSet); continue with the prior report's next set.",
+                    "description": "First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. Only with refresh functions; unset keeps Stroppy's 1.",
                     "group": "Queries",
                     "int64": {
-                      "default": "1",
                       "gte": "1",
                       "lte": "999"
                     },
                     "name": "refresh_set",
+                    "nullable": true,
                     "title": "Refresh set"
                   },
                   {
@@ -3478,6 +3478,11 @@
           "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"sql_dialect\" in s.workload) || s.workload.sql_dialect == null || !(\"sql_file\" in s.workload) || s.workload.sql_file == null)",
           "id": "sql-source-exclusive",
           "message": "stroppy rejects sql_dialect together with sql_file"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"refresh_set\" in s.workload) || s.workload.refresh_set == null || (\"refresh_functions\" in s.workload \u0026\u0026 s.workload.refresh_functions == true))",
+          "id": "refresh-set-needs-functions",
+          "message": "refresh_set needs refresh_functions"
         }
       ],
       "strict": true
