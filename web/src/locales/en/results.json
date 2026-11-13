@@ -17,8 +17,8 @@
       "scenario": "Scenario",
       "hardware": "Hardware",
       "all": "All",
-      "allHardware": "All hardware",
-      "byScenario": "Each scenario's own",
+      "allHardware": "All stands in one table",
+      "byScenario": "Each stand separately",
       "reset": "Reset filters"
     },
     "period": {

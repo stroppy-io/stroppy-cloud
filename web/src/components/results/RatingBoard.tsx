@@ -18,12 +18,14 @@ import { metricTitle } from '@helpers/metrics'
 import {
   defaultHardwareByScenario,
   hardwareCounts,
+  hardwareGroups,
   hardwareLabel,
   hardwareTotal,
   scenarioLabel,
   sharedHardware,
 } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import type { TFunction } from 'i18next'
 import { type ReactNode, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -139,7 +141,25 @@ const getStyles = (theme: GrafanaTheme2) => ({
     // The scenario name stays whole; the hint wraps under it on a narrow screen.
     '& > :first-child': { whiteSpace: 'nowrap' },
   }),
+  tables: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }),
+  standHead: css({
+    display: 'flex',
+    alignItems: 'baseline',
+    flexWrap: 'wrap',
+    columnGap: theme.spacing(1),
+    marginBottom: theme.spacing(0.5),
+  }),
 })
+
+/** "1 × 32 vCPU · 128 GB · Intel Ice Lake · SSD · yandex" for rows on one stand; undefined when they differ. */
+function standOf(t: TFunction, rows: readonly RatingEntry[]): string | undefined {
+  const shared = sharedHardware(rows)
+  if (!shared) return undefined
+  const providers = [...new Set(rows.map((r) => r.provider_kind).filter(Boolean))]
+  return [hardwareLabel(t, shared), providers.length === 1 ? providers[0] : undefined]
+    .filter(Boolean)
+    .join(' · ')
+}
 
 const PERIODS = ['7d', '30d', '90d', '1y', 'all'] as const
 
@@ -236,19 +256,22 @@ export function RatingBoard({
         .join(' · '),
     }))
 
-  // Places count within a scenario and, by default, within its own hardware
-  // class: the server ranks the whole page.
+  // A scenario's rows, split by stand unless the viewer asked for every stand
+  // in one table; places count within a table (the server ranks the page).
   const byScenario = useMemo(() => {
     const m = new Map<string, RatingEntry[]>()
-    for (const e of entries) {
-      const own = hw.byScenario.get(e.scenario)
-      if (own !== undefined && e.hardware.key !== own) continue
-      const arr = m.get(e.scenario) ?? []
-      arr.push({ ...e, rank: arr.length + 1 })
-      m.set(e.scenario, arr)
-    }
-    return [...m.entries()].sort(([a], [b]) => a.localeCompare(b))
-  }, [entries, hw.byScenario])
+    for (const e of entries) m.set(e.scenario, [...(m.get(e.scenario) ?? []), e])
+    const ranked = (rows: RatingEntry[]) => rows.map((e, i) => ({ ...e, rank: i + 1 }))
+    return [...m.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([scenario, rows]) => ({
+        scenario,
+        count: rows.length,
+        tables: (hw.value === ALL_HARDWARE ? [{ rows }] : hardwareGroups(rows)).map((g) => ({
+          rows: ranked(g.rows),
+        })),
+      }))
+  }, [entries, hw.value])
 
   const narrowed =
     search.hardware !== undefined ||
@@ -374,18 +397,12 @@ export function RatingBoard({
           />
         ) : (
           <div className={styles.sections}>
-            {byScenario.map(([scenario, rows]) => {
+            {byScenario.map(({ scenario, count, tables }) => {
               // A scenario ranks by one metric; its rows all carry it.
-              const def = metricDefs.find((m) => m.key === rows[0]?.metric)
-              // One stand for the whole section is said once, above it,
-              // instead of on every row.
-              const shared = sharedHardware(rows)
-              const providers = [...new Set(rows.map((r) => r.provider_kind).filter(Boolean))]
-              const stand = shared
-                ? [hardwareLabel(t, shared), providers.length === 1 ? providers[0] : undefined]
-                    .filter(Boolean)
-                    .join(' · ')
-                : undefined
+              const def = metricDefs.find((m) => m.key === tables[0]?.rows[0]?.metric)
+              // A stand is said once above its table instead of on every row:
+              // in the section head when the scenario has one, else above each.
+              const one = tables.length === 1
               return (
                 <section key={scenario}>
                   <div className={styles.sectionHead}>
@@ -394,22 +411,41 @@ export function RatingBoard({
                     </Text>
                     <span title={t('results.rating.scenarioHint')}>
                       <Text color="secondary" variant="bodySmall">
-                        {[t('results.rating.entries', { count: rows.length }), stand]
+                        {[
+                          t('results.rating.entries', { count }),
+                          one ? standOf(t, tables[0]?.rows ?? []) : undefined,
+                        ]
                           .filter(Boolean)
                           .join(' · ')}
                       </Text>
                     </span>
                   </div>
-                  <RatingTable
-                    rows={rows}
-                    unit={def?.unit}
-                    metricTitle={def ? metricTitle(def.key, def.title) : undefined}
-                    scope={scope}
-                    slug={slug}
-                    newTab={embedded}
-                    publicPage={catalog === 'public'}
-                    hardware={!shared}
-                  />
+                  <div className={styles.tables}>
+                    {tables.map(({ rows }) => (
+                      <div key={rows[0]?.hardware.key ?? scenario}>
+                        {!one && (
+                          <div className={styles.standHead}>
+                            <Text element="h3" variant="body" weight="medium">
+                              {standOf(t, rows) ?? '—'}
+                            </Text>
+                            <Text color="secondary" variant="bodySmall">
+                              {t('results.rating.entries', { count: rows.length })}
+                            </Text>
+                          </div>
+                        )}
+                        <RatingTable
+                          rows={rows}
+                          unit={def?.unit}
+                          metricTitle={def ? metricTitle(def.key, def.title) : undefined}
+                          scope={scope}
+                          slug={slug}
+                          newTab={embedded}
+                          publicPage={catalog === 'public'}
+                          hardware={!sharedHardware(rows)}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </section>
               )
             })}

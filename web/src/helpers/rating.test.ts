@@ -4,6 +4,7 @@ import {
   defaultHardware,
   defaultHardwareByScenario,
   hardwareCounts,
+  hardwareGroups,
   hardwareLabel,
   scenarioLabel,
   sharedHardware,
@@ -150,6 +151,38 @@ describe('defaultHardwareByScenario', () => {
 
   it('is empty without rows', () => {
     expect(defaultHardwareByScenario([]).size).toBe(0)
+  })
+})
+
+describe('hardwareGroups', () => {
+  it('groups rows by stand, the stand with the most runs first, rows in their order', () => {
+    const single = row([1, 32, 128])
+    const cluster = row([4, 32, 128], [1, 2, 8])
+    const rows = [
+      { ...cluster, runs: 1, id: 'c1' },
+      { ...single, runs: 2, id: 's1' },
+      { ...cluster, runs: 1, id: 'c2' },
+      { ...single, runs: 1, id: 's2' },
+    ]
+    const groups = hardwareGroups(rows)
+    expect(groups.map((g) => g.hardware.key)).toEqual([single.hardware.key, cluster.hardware.key])
+    expect(groups.map((g) => g.rows.map((r) => r.id))).toEqual([
+      ['s1', 's2'],
+      ['c1', 'c2'],
+    ])
+  })
+
+  it('on equal runs puts the larger stand first', () => {
+    const single = row([1, 32, 128])
+    const cluster = row([4, 32, 128], [1, 2, 8])
+    expect(hardwareGroups([single, cluster]).map((g) => g.hardware.key)).toEqual([
+      cluster.hardware.key,
+      single.hardware.key,
+    ])
+  })
+
+  it('is empty without rows', () => {
+    expect(hardwareGroups([])).toEqual([])
   })
 })
 

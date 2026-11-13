@@ -126,38 +126,37 @@ export function hardwareCounts(rows: readonly { hardware: HardwareClass }[]): Ma
 }
 
 /**
- * The class a rating shows when the viewer picked none: the one with the most
- * rated runs behind its rows (the most measurements to compare; a row without
- * a count weighs one); on a tie the larger stand, then the key. Undefined
- * when there are no rows.
+ * Rows grouped by stand, the stand with the most rated runs behind its rows
+ * first (the most measurements to compare; a row without a count weighs one);
+ * on a tie the larger stand, then the key. Rows keep their order inside a
+ * group.
+ */
+export function hardwareGroups<T extends { hardware: HardwareClass; runs?: number }>(
+  rows: readonly T[]
+): { hardware: HardwareClass; rows: T[]; weight: number }[] {
+  const groups = new Map<string, { hardware: HardwareClass; rows: T[]; weight: number }>()
+  for (const r of rows) {
+    const g = groups.get(r.hardware.key) ?? { hardware: r.hardware, rows: [], weight: 0 }
+    g.rows.push(r)
+    g.weight += r.runs ?? 1
+    groups.set(r.hardware.key, g)
+  }
+  return [...groups.values()].sort((a, b) => {
+    if (a.weight !== b.weight) return b.weight - a.weight
+    const [, aCpu, aMemory] = hardwareSize(a.hardware)
+    const [, bCpu, bMemory] = hardwareSize(b.hardware)
+    if (aCpu !== bCpu) return bCpu - aCpu
+    if (aMemory !== bMemory) return bMemory - aMemory
+    return a.hardware.key.localeCompare(b.hardware.key)
+  })
+}
+
+/**
+ * The class a rating shows when it shows one and the viewer picked none: the
+ * first of `hardwareGroups`. Undefined when there are no rows.
  */
 export function defaultHardware(
   rows: readonly { hardware: HardwareClass; runs?: number }[]
 ): string | undefined {
-  const classes = new Map<string, HardwareClass>()
-  const weight = new Map<string, number>()
-  for (const r of rows) {
-    classes.set(r.hardware.key, r.hardware)
-    weight.set(r.hardware.key, (weight.get(r.hardware.key) ?? 0) + (r.runs ?? 1))
-  }
-  let best: HardwareClass | undefined
-  let bestCount = 0
-  for (const [key, count] of weight) {
-    const hw = classes.get(key)
-    if (!hw) continue
-    if (best === undefined || count > bestCount) {
-      best = hw
-      bestCount = count
-      continue
-    }
-    if (count < bestCount) continue
-    const [, cpu, memory] = hardwareSize(hw)
-    const [, bestCpu, bestMemory] = hardwareSize(best)
-    if (
-      cpu > bestCpu ||
-      (cpu === bestCpu && (memory > bestMemory || (memory === bestMemory && key < best.key)))
-    )
-      best = hw
-  }
-  return best?.key
+  return hardwareGroups(rows)[0]?.hardware.key
 }
