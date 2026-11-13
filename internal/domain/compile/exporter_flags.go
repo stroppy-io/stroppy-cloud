@@ -13,16 +13,18 @@ import "fmt"
 // nodeCollectors are node_exporter v1.12 collectors off by default, turned
 // on. Off stay drbd/runit/supervisord/wifi (nothing to read), ntp (needs an
 // NTP server to query), perf (needs CAP_PERFMON), sysctl (needs an explicit
-// key list).
+// key list), systemd and logind (the docker-default AppArmor profile denies
+// the container D-Bus) and slabinfo (/proc/slabinfo is root-only, the
+// exporter is not root): on a stand those three only logged an error every
+// scrape.
 var nodeCollectors = []string{
 	"buddyinfo", "cgroups", "cpu_vulnerabilities", "drm", "ethtool", "interrupts", "ksmd",
-	"lnstat", "logind", "meminfo_numa", "mountstats", "network_route", "nvmesubsystem",
-	"pcidevice", "processes", "qdisc", "slabinfo", "softirqs", "swap", "systemd", "tcpstat",
+	"lnstat", "meminfo_numa", "mountstats", "network_route", "nvmesubsystem",
+	"pcidevice", "processes", "qdisc", "softirqs", "swap", "tcpstat",
 	"xfrm", "zoneinfo",
 }
 
-// nodeExporterCmd reads the host through its root mounted at /host;
-// systemd and logind talk to the host's D-Bus socket under it.
+// nodeExporterCmd reads the host through its root mounted at /host.
 func nodeExporterCmd() []string {
 	cmd := []string{
 		"--path.rootfs=/host", "--path.procfs=/host/proc", "--path.sysfs=/host/sys",
@@ -34,9 +36,6 @@ func nodeExporterCmd() []string {
 	}
 	return cmd
 }
-
-// nodeExporterEnv points the D-Bus client at the host's system bus.
-var nodeExporterEnv = map[string]string{"DBUS_SYSTEM_BUS_ADDRESS": "unix:path=/host/run/dbus/system_bus_socket"}
 
 // postgresCollectors are postgres_exporter v0.18 collectors off by default,
 // turned on. Off stay xlog_location (PostgreSQL < 10 only),

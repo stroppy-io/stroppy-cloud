@@ -546,7 +546,6 @@ func (c *compilation) exporters() {
 			Name: name, Role: m.Role, Machine: m.Name, Image: imageNodeExporter,
 			Kind:    spec.ContainerKindExporter,
 			Cmd:     nodeExporterCmd(),
-			Env:     nodeExporterEnv,
 			Mounts:  []spec.Mount{{Source: "/", Target: "/host", RO: true}},
 			Ports:   []spec.Port{{Container: nodeExporterPort, Host: nodeExporterPort}},
 			Scrape:  "/metrics",
