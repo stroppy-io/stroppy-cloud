@@ -50,6 +50,14 @@ sysctl применяются только для YDB/Picodata, диск мон�
    `hostOf(machine)` (CPU, RAM, диск и его лимиты) и `peakVUs()`.
 4. У MySQL/MariaDB `buffer_pool: auto|fixed` работает внутри auto;
    `buffer_pool: stock` значит `tuning: stock`.
+5. Класс нагрузки: если каждый сегмент — `tpch/tx` или `tpcds`
+   (`analyticWorkload` в `compile/tune.go`), нагрузка аналитическая, иначе
+   OLTP; смесь остаётся OLTP. Аналитика меняет профиль только у
+   PostgreSQL и OrioleDB (параллельные планы, JIT, `work_mem` по профилю DW
+   PGTune, §2.1): OLTP-профиль выключает их явно. У MySQL и MariaDB
+   внутризапросной параллельности нет, а их буферы запроса остаются
+   дефолтами движка, поэтому профиль один. Семейство Greenplum настроено под
+   аналитику всегда (`docs/tuning/mpp.md`).
 
 ### 1.2 Лимиты дисков в каталоге
 
@@ -138,7 +146,9 @@ VU на 16 соединениях runner'а L давали потолок 16 / �
 | `random_page_cost` | 1.1 | 4 |
 | `effective_io_concurrency` / `maintenance_io_concurrency` | 200 на SSD (PG18: 64 — предел `io_max_concurrency`) | 1 |
 | `jit` | off | on |
-| `max_parallel_workers_per_gather` | 0 для OLTP | 2 |
+| `max_parallel_workers_per_gather` | 0 для OLTP; аналитика — `min(ceil(vCPU/2), max(4, floor(vCPU/4)))` (32 vCPU → 8) | 2 |
+| `jit` / `max_parallel_maintenance_workers` (аналитика) | on / `min(4, ceil(vCPU/2))` | on / 2 |
+| `work_mem` (аналитика) | `(RAM − shared_buffers) / ((max_connections + vCPU) · 3) / 2` (XL → 124 МБ) | 4 МБ |
 | `max_worker_processes` / `max_parallel_workers` | max(8, vCPU) | 8 |
 | autovacuum | naptime 10s, scale_factor 0.05, analyze 0.02, workers 5, cost_limit 2000 | дефолты |
 | `max_connections` | max(100, ceil((пул+20)/50)·50) → 150; процедуры (`*/procs`) идут через тот же пул (stroppy 6.4, stroppy-io/stroppy#261) | 100 (< 128 VU) |

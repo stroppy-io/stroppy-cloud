@@ -76,6 +76,29 @@ func (c *compilation) peakVUs() int {
 	return peak
 }
 
+// analyticScript is a decision-support script: few long queries over the
+// whole data set, not many short transactions.
+func analyticScript(script string) bool {
+	return script == "tpch/tx" || script == "tpcds"
+}
+
+// analyticWorkload reports a workload whose every segment is analytic: the
+// engine is tuned for it instead of OLTP. A mix keeps the OLTP profile, which
+// does not hurt the analytic queries as much as the analytic one hurts
+// short transactions.
+func (c *compilation) analyticWorkload() bool {
+	if len(c.in.Workload.Segments) == 0 {
+		return false
+	}
+	for _, raw := range c.in.Workload.Segments {
+		var s spec.Segment
+		if json.Unmarshal(raw, &s) != nil || !analyticScript(s.Workload.Script) {
+			return false
+		}
+	}
+	return true
+}
+
 // tuner applies auto values to one role/schema overlay: a key the
 // database set explicitly is kept, every other one is set and recorded,
 // so the run's snapshot shows what the database really got.

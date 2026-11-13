@@ -24,7 +24,7 @@ const sqlDialectParam = "sql-dialect"
 // server, so the numbers would not be comparable.
 func engineDialect(kind catalog.DatabaseKind, script string) (dialect string, required bool) {
 	switch {
-	case dbkind.IsMPP(kind) && (script == "tpch/tx" || script == "tpcds"):
+	case dbkind.IsMPP(kind) && analyticScript(script):
 		return "gp", true
 	case kind == catalog.MariaDB && script == "tpcds":
 		return "mariadb", false

@@ -49,6 +49,14 @@ const (
 	// pgAuxProcs covers the auxiliary processes in OrioleDB's undo floor
 	// (checkpointer, walwriter, bgwriter, startup, archiver, ...).
 	pgAuxProcs = 10
+	// PGTune's data-warehouse profile: workers per gather leave room for
+	// four parallel queries at once, maintenance workers stop at four,
+	// work_mem counts three operations per connection and worker, and
+	// never goes below PGTune's 4MB floor.
+	pgDWMinConcurrentGathers = 4
+	pgMaxMaintenanceWorkers  = 4
+	pgDWOperationsPerQuery   = 3
+	pgWorkMemFloorMB         = 4
 )
 
 // pgCounters are the cluster-wide values of the PostgreSQL family: one set
@@ -151,9 +159,24 @@ func (c *compilation) tunePostgres(role, machine, schemaID string, oriole bool, 
 		t.set("effective_io_concurrency", depth)
 		t.set("maintenance_io_concurrency", depth)
 	}
-	// OLTP: JIT and parallel plans only add latency to short indexed queries.
-	t.set("jit", "off")
-	t.set("max_parallel_workers_per_gather", 0)
+	if c.analyticWorkload() {
+		// Analytics (TPC-H, TPC-DS): PGTune's data-warehouse profile. A
+		// query may take half the cores, as long as four still run at once;
+		// index builds after the load take up to four; JIT stays on (the
+		// engine's default) for the long CPU-bound scans and aggregates;
+		// work_mem is the memory left after shared_buffers spread over the
+		// connections and parallel workers, three operations each, halved.
+		// doc: https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSelectors.js
+		cpu := max(1, h.CPU)
+		t.set("jit", "on")
+		t.set("max_parallel_workers_per_gather", min((cpu+1)/2, max(pgDWMinConcurrentGathers, cpu/pgDWMinConcurrentGathers)))
+		t.set("max_parallel_maintenance_workers", min(pgMaxMaintenanceWorkers, (cpu+1)/2))
+		t.set("work_mem", max(pgWorkMemFloorMB, (ram-final("shared_buffers"))/((cluster.MaxConnections+cpu)*pgDWOperationsPerQuery)/2))
+	} else {
+		// OLTP: JIT and parallel plans only add latency to short indexed queries.
+		t.set("jit", "off")
+		t.set("max_parallel_workers_per_gather", 0)
+	}
 
 	// Cluster-wide counters; a standby takes at least the primary's value
 	// when the primary's is set by hand.

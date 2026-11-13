@@ -159,6 +159,40 @@ func TestPostgresAutoTuningBySize(t *testing.T) {
 
 func itoa(n int) string { return strconv.Itoa(n) }
 
+// An analytic workload (every segment TPC-H or TPC-DS) gets PGTune's
+// data-warehouse profile instead of the OLTP one: parallel plans, JIT and a
+// work_mem sized for few large queries. A mixed workload stays OLTP.
+func TestPostgresAnalyticTuning(t *testing.T) {
+	t.Parallel()
+	tpch := `{"name":"power","workload":{"script":"tpch/tx","scale_factor":10},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	tpcds := `{"name":"power","workload":{"script":"tpcds","scale_factor":10},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	for _, tc := range []struct {
+		name, segment, size, version string
+		lines                        []string
+	}{
+		// XL = 32 vCPU / 128 GB: gather min(16, max(4, 8)) = 8; work_mem
+		// (131072 − 32768) / ((100 + 32) × 3) / 2 = 124.
+		{"tpch on XL", tpch, "XL", "17", []string{
+			"jit = on\n", "max_parallel_workers_per_gather = 8\n", "max_parallel_maintenance_workers = 4\n",
+			"max_parallel_workers = 32\n", "work_mem = 124MB\n",
+		}},
+		// M = 8 vCPU / 32 GB: gather min(4, max(4, 2)) = 4; maintenance
+		// min(4, 4) = 4; work_mem (32768 − 8192) / ((100 + 8) × 3) / 2 = 37.
+		{"tpcds on M", tpcds, "M", "18", []string{
+			"jit = on\n", "max_parallel_workers_per_gather = 4\n", "max_parallel_maintenance_workers = 4\n", "work_mem = 37MB\n",
+		}},
+		{"tpcc stays OLTP", "", "XL", "17", []string{
+			"jit = off\n", "max_parallel_workers_per_gather = 0\n", "work_mem = 16MB\n",
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			out, _ := compileTuned(t, tuneCase{kind: catalog.Postgres, version: tc.version, size: tc.size, segment: tc.segment})
+			mustContain(t, "postgresql.conf", fileOf(out, "db-1-postgres", "/etc/stroppy/postgresql.conf"), tc.lines...)
+		})
+	}
+}
+
 // The server takes the client's pool, not every virtual user: 400 VUs on a
 // 32-vCPU primary share 8 × 32 = 256 connections.
 func TestPostgresAutoTuningConnectionsFollowThePool(t *testing.T) {
