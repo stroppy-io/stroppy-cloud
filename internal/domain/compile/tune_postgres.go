@@ -168,7 +168,15 @@ func (c *compilation) tunePostgres(role, machine, schemaID string, oriole bool, 
 		// connections and parallel workers, three operations each, halved.
 		// doc: https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSelectors.js
 		cpu := max(1, h.CPU)
-		t.set("jit", "on")
+		// OrioleDB keeps JIT off: on beta19-pg17 TPC-H SF10 q20 ended its
+		// backend with "out of memory ... while in LLVM" (an LLVM bad_alloc
+		// with 77 GB of the machine free), and the lost session failed every
+		// query after it.
+		jit := "on"
+		if oriole {
+			jit = "off"
+		}
+		t.set("jit", jit)
 		t.set("max_parallel_workers_per_gather", min((cpu+1)/2, max(pgDWMinConcurrentGathers, cpu/pgDWMinConcurrentGathers)))
 		t.set("max_parallel_maintenance_workers", min(pgMaxMaintenanceWorkers, (cpu+1)/2))
 		t.set("work_mem", max(pgWorkMemFloorMB, (ram-final("shared_buffers"))/((cluster.MaxConnections+cpu)*pgDWOperationsPerQuery)/2))

@@ -39,7 +39,10 @@ func compileOriole(t *testing.T, tc tuneCase) (compile.Output, map[string]map[st
 	if err != nil {
 		t.Fatal(err)
 	}
-	segment := `{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":128,"duration":"10m"}}`
+	segment := tc.segment
+	if segment == "" {
+		segment = `{"name":"main","workload":{"script":"tpcc/tx","scale_factor":100},"run":{"vus":128,"duration":"10m"}}`
+	}
 	wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: catalog.StroppyRelease, Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(segment)}})
 	if err != nil {
 		t.Fatal(err)
@@ -191,6 +194,18 @@ func TestPostgresAnalyticTuning(t *testing.T) {
 			mustContain(t, "postgresql.conf", fileOf(out, "db-1-postgres", "/etc/stroppy/postgresql.conf"), tc.lines...)
 		})
 	}
+}
+
+// OrioleDB takes the parallel plans of the analytic profile but not JIT: on
+// beta19-pg17 TPC-H SF10 q20 ended its backend with "out of memory ... while
+// in LLVM" (an LLVM bad_alloc, 77 GB of the machine free), losing the
+// session for every query after it.
+func TestOrioleDBAnalyticTuningKeepsJITOff(t *testing.T) {
+	t.Parallel()
+	tpch := `{"name":"power","workload":{"script":"tpch/tx","scale_factor":10},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	out, _ := compileOriole(t, tuneCase{version: "beta19-pg17", size: "XL", segment: tpch})
+	mustContain(t, "postgresql.conf", fileOf(out, "db-1-orioledb", "/etc/stroppy/postgresql.conf"),
+		"jit = off\n", "max_parallel_workers_per_gather = 8\n", "max_parallel_maintenance_workers = 4\n")
 }
 
 // The server takes the client's pool, not every virtual user: 400 VUs on a

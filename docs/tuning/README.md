@@ -147,7 +147,7 @@ VU на 16 соединениях runner'а L давали потолок 16 / �
 | `effective_io_concurrency` / `maintenance_io_concurrency` | 200 на SSD (PG18: 64 — предел `io_max_concurrency`) | 1 |
 | `jit` | off | on |
 | `max_parallel_workers_per_gather` | 0 для OLTP; аналитика — `min(ceil(vCPU/2), max(4, floor(vCPU/4)))` (32 vCPU → 8) | 2 |
-| `jit` / `max_parallel_maintenance_workers` (аналитика) | on / `min(4, ceil(vCPU/2))` | on / 2 |
+| `jit` / `max_parallel_maintenance_workers` (аналитика) | on (OrioleDB — off: на beta19-pg17 TPC-H SF10 q20 обрывал бэкенд `out of memory … while in LLVM`) / `min(4, ceil(vCPU/2))` | on / 2 |
 | `work_mem` (аналитика) | `(RAM − shared_buffers) / ((max_connections + vCPU) · 3) / 2` (XL → 124 МБ) | 4 МБ |
 | `max_worker_processes` / `max_parallel_workers` | max(8, vCPU) | 8 |
 | autovacuum | naptime 10s, scale_factor 0.05, analyze 0.02, workers 5, cost_limit 2000 | дефолты |
