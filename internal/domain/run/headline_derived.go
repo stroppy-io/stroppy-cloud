@@ -16,6 +16,8 @@ segments of a result, never from logs.
 
   - tpmc: TPC-C New-Order transactions per minute from Stroppy's compliance
     report (the canonical TPC-C metric); the last segment that has one.
+  - qphds: TPC-DS QphDS@SF of a complete --benchmark sequence, as Stroppy
+    reports it (tpcds_qphds of the segment); the last segment that has one.
   - load_duration_seconds: wall time of the steps that build the database
     (schema, load, indexes, keys, procedures, statistics) over all segments.
   - query_geomean_ms, query_total_seconds: the single-stream pass of a query
@@ -29,6 +31,7 @@ segments of a result, never from logs.
 // Headline keys derived from the segments.
 const (
 	HeadlineTPMC         = "tpmc"
+	HeadlineQphDS        = "qphds"
 	HeadlineLoadSeconds  = "load_duration_seconds"
 	HeadlineQueryGeomean = "query_geomean_ms"
 	HeadlineQueryTotal   = "query_total_seconds"
@@ -133,6 +136,9 @@ func deriveHeadline(h map[string]float64, segs []pipelinespec.SegmentResult) {
 		}
 		if v, ok := tpmcOf(seg.Compliance); ok {
 			h[HeadlineTPMC] = v
+		}
+		if v, ok := seg.Metrics["tpcds_qphds"]; ok && v.Value > 0 {
+			h[HeadlineQphDS] = v.Value
 		}
 		if geomean, total, ok := singleStream(seg, workers); ok {
 			h[HeadlineQueryGeomean], h[HeadlineQueryTotal] = geomean, total

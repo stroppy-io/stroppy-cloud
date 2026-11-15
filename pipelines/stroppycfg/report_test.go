@@ -58,6 +58,37 @@ func TestUnknownWorkloadReportRemainsSupported(t *testing.T) {
 	require.Equal(t, `{"n":18446744073709551615}`, string(doc.WorkloadReports[0].Data))
 }
 
+// Stroppy 6.4.1 TPC-DS --benchmark reports QphDS@SF in its tpcds.benchmark
+// workload report, only for a complete successful sequence; the segment
+// carries it as tpcds_qphds, never a score Stroppy withheld.
+func TestTPCDSBenchmarkScore(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name, payload string
+		want          float64
+		present       bool
+	}{
+		{"complete", `{"kind":"tpcds.benchmark","schema":1,"status":"ok","data":{"sq":4,"qphds_at_sf":12345,"sequence_valid":true}}`, 12345, true},
+		{"withheld", `{"kind":"tpcds.benchmark","schema":1,"status":"ok","data":{"sq":4,"sequence_valid":false,"reason":"Incomplete"}}`, 0, false},
+		{"failed contribution", `{"kind":"tpcds.benchmark","schema":1,"status":"error","data":{"qphds_at_sf":1}}`, 0, false},
+		{"other schema", `{"kind":"tpcds.benchmark","schema":2,"status":"ok","data":{"qphds_at_sf":1}}`, 0, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			raw, err := os.ReadFile("testdata/run-report.json")
+			require.NoError(t, err)
+			raw = []byte(strings.Replace(string(raw), `"workload_reports": []`, `"workload_reports": [`+tc.payload+`]`, 1))
+			_, summary, err := ParseReport(raw)
+			require.NoError(t, err)
+			got, ok := summary.Metrics["tpcds_qphds"]
+			require.Equal(t, tc.present, ok)
+			if tc.present {
+				require.Equal(t, spec.MetricValue{Value: tc.want, Unit: "QphDS"}, got)
+			}
+		})
+	}
+}
+
 // Stroppy 6.2 writes envelope schema 4: the fields read here are unchanged.
 func TestRunReportSchema4(t *testing.T) {
 	raw, err := os.ReadFile("testdata/run-report-v4.json")

@@ -11,8 +11,8 @@ import (
 // StroppyRelease is the one Stroppy release the platform runs; a workload of
 // an earlier one is moved to it by migration.
 const (
-	StroppyRelease = "6.4.0"
-	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.4.0.72"
+	StroppyRelease = "6.4.1"
+	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.4.1.73"
 )
 
 // The schemas own parameter descriptions and defaults. Catalog only adds build
@@ -31,7 +31,7 @@ func stroppy() StroppyCatalog {
 		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all, RatingMetric: "tps"},
 		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs, RatingMetric: "tps"},
 		{ID: "tpch/tx", Title: "TPC-H", Protocols: all, RatingMetric: "query_geomean_ms"},
-		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, RatingMetric: "query_geomean_ms", Description: "Picodata: load only. YDB: baked queries only. MySQL: baked queries only (generated streams lack queries 51 and 97)."},
+		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, RatingMetric: "qphds", Description: "Picodata: load only. YDB: baked queries only. MySQL: baked queries only (generated streams lack queries 51 and 97)."},
 		{ID: "simple", Title: "Simple key-value", Protocols: all, RatingMetric: "qps"},
 		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
 		{ID: "baseline", Title: "Baseline workload", Protocols: all, Description: "A baseline workload segment; the machine self-check remains separately configurable."},

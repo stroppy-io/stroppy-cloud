@@ -165,6 +165,10 @@ export interface WorkloadSegment1WorkloadTpcds {
   query_seed?: number | string | null;
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
   validate_force?: boolean;
+  /** Benchmark sequence. Load, one power stream, two throughput tests of `streams` streams and two data maintenance tests; reports QphDS@SF for a complete successful run (benchmark). PostgreSQL, Greenplum family, MySQL and MariaDB. */
+  benchmark?: boolean;
+  /** Refresh set. First maintenance set (refreshSet); only to continue existing data with the schema steps off. Unset starts at 1. */
+  refresh_set?: number | string | null;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself. */
   sql_dialect?: "pg" | "gp" | "mariadb" | null;
   /** YDB store mode. YDB table store mode (ydbStoreMode); ignored by other drivers. */

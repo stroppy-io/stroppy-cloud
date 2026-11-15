@@ -5518,6 +5518,8 @@ func (s MetricKey) Validate() error {
 		return nil
 	case "tpmc":
 		return nil
+	case "qphds":
+		return nil
 	case "query_geomean_ms":
 		return nil
 	case "query_total_seconds":

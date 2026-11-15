@@ -2345,6 +2345,25 @@
                     "title": "Validate outside SF=1"
                   },
                   {
+                    "bool": {
+                      "default": false
+                    },
+                    "description": "Load, one power stream, two throughput tests of `streams` streams and two data maintenance tests; reports QphDS@SF for a complete successful run (benchmark). PostgreSQL, Greenplum family, MySQL and MariaDB.",
+                    "group": "Queries",
+                    "name": "benchmark",
+                    "title": "Benchmark sequence"
+                  },
+                  {
+                    "description": "First maintenance set (refreshSet); only to continue existing data with the schema steps off. Unset starts at 1.",
+                    "group": "Queries",
+                    "int64": {
+                      "gte": "1"
+                    },
+                    "name": "refresh_set",
+                    "nullable": true,
+                    "title": "Refresh set"
+                  },
+                  {
                     "choice": {
                       "options": [
                         {
@@ -2898,9 +2917,14 @@
           "message": "stroppy rejects sql_dialect together with sql_file"
         },
         {
-          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"refresh_set\" in s.workload) || s.workload.refresh_set == null || (\"refresh_functions\" in s.workload \u0026\u0026 s.workload.refresh_functions == true))",
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"refresh_set\" in s.workload) || s.workload.refresh_set == null || (\"refresh_functions\" in s.workload \u0026\u0026 s.workload.refresh_functions == true) || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true))",
           "id": "refresh-set-needs-functions",
-          "message": "refresh_set needs refresh_functions"
+          "message": "refresh_set needs refresh_functions (TPC-H) or benchmark (TPC-DS)"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"benchmark\" in s.workload) || s.workload.benchmark != true || ((!(\"streams\" in s.workload) || s.workload.streams == null || (s.workload.streams \u003e= 4 \u0026\u0026 s.workload.streams % 2 == 0)) \u0026\u0026 (!(\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"pg_unlogged\" in s.workload) || s.workload.pg_unlogged != true) \u0026\u0026 (!(\"schema_file\" in s.workload) || s.workload.schema_file == null) \u0026\u0026 (!(\"sql_file\" in s.workload) || s.workload.sql_file == null)))",
+          "id": "tpcds-benchmark-shape",
+          "message": "benchmark needs an even number of streams of at least 4 and no query_stream, pg_unlogged, schema_file or sql_file"
         }
       ],
       "strict": true

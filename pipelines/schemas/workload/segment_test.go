@@ -56,6 +56,11 @@ func TestSegment(t *testing.T) {
 		"workload": map[string]any{"script": "tpcds", "scale_factor": 1.0, "streams": int64(2), "query_stream": int64(1), "schema_file": "tpcds/schema.pico"},
 		"run":      map[string]any{"executor": "shared-iterations", "iterations": int64(1)},
 	}
+	tpcdsBenchmark := map[string]any{
+		"name":     "tpcds-benchmark",
+		"workload": map[string]any{"script": "tpcds", "scale_factor": 1.0, "benchmark": true, "streams": int64(4), "query_seed": int64(42), "refresh_set": int64(3)},
+		"run":      map[string]any{"executor": "shared-iterations", "iterations": int64(1)},
+	}
 	sql := map[string]any{
 		"name":     "sql",
 		"workload": map[string]any{"script": "execute_sql", "sql_body": "select 1"},
@@ -79,7 +84,7 @@ func TestSegment(t *testing.T) {
 	}
 
 	schematest.Run(t, Segment(), schematest.Cases{
-		Valid: []map[string]any{minimalSegment("load"), full, tpch, tpchRefresh, tpcds, sql, simple},
+		Valid: []map[string]any{minimalSegment("load"), full, tpch, tpchRefresh, tpcds, tpcdsBenchmark, sql, simple},
 		Invalid: []schematest.Invalid{
 			{Value: func() map[string]any { v := minimalSegment("Load"); return v }(), Code: "PATTERN_MISMATCH", Path: "name"},
 			{Value: withWorkload(map[string]any{"script": "ycsb"}), Code: "UNKNOWN_VARIANT", Path: "workload"},
@@ -95,6 +100,15 @@ func TestSegment(t *testing.T) {
 			{Value: withWorkload(map[string]any{"script": "tpcb/tx", "sql_dialect": "crdb"}), Code: "UNKNOWN_FIELD", Path: "workload.sql_dialect"},
 			// stroppy: "refresh-set requires refresh-functions".
 			{Value: withWorkload(map[string]any{"script": "tpch/tx", "refresh_set": int64(2)}), Code: "RULE_VIOLATED", Path: ""},
+			// TPC-DS benchmark mode (stroppy 6.4.1): streams even and at least 4;
+			// no explicit query stream, unlogged load or custom SQL; a refresh set
+			// only with it.
+			{Value: withWorkload(map[string]any{"script": "tpcds", "benchmark": true, "streams": int64(3)}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcds", "benchmark": true, "streams": int64(2)}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcds", "benchmark": true, "query_stream": int64(0)}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcds", "benchmark": true, "pg_unlogged": true}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcds", "benchmark": true, "sql_file": "tpcds/pico"}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: withWorkload(map[string]any{"script": "tpcds", "refresh_set": int64(5)}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withRun(map[string]any{"executor": "constant-vus"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "shared-iterations", "duration": "10s"}), Code: "RULE_VIOLATED", Path: "run"},
 			{Value: withRun(map[string]any{"executor": "ramping-vus", "duration": "10s"}), Code: "CHOICE_NOT_ALLOWED", Path: "run.executor"},

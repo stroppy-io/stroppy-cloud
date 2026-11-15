@@ -5440,6 +5440,7 @@ components:
       - iteration_duration_p99
       - load_duration_seconds
       - tpmc
+      - qphds
       - query_geomean_ms
       - query_total_seconds
       - node_cpu_usage

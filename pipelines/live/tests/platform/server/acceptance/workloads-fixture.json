@@ -233,6 +233,22 @@
     }
   },
   {
+    "name": "tpcds-benchmark",
+    "workload": {
+      "script": "tpcds",
+      "scale_factor": 0.01,
+      "benchmark": true,
+      "streams": 4,
+      "query_seed": 123,
+      "refresh_set": 1
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 1
+    }
+  },
+  {
     "name": "sql-file",
     "workload": {
       "script": "execute_sql",

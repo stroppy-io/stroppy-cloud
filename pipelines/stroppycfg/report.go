@@ -151,8 +151,22 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 	}
 	summary.Found, summary.Errors = true, doc.Errors
 	for _, payload := range doc.WorkloadReports {
-		if payload.Kind == "tpcc.compliance" && payload.Schema == 1 && payload.Status == "ok" {
+		if payload.Schema != 1 || payload.Status != "ok" {
+			continue
+		}
+		switch payload.Kind {
+		case "tpcc.compliance":
 			summary.Compliance = payload.Data
+		case "tpcds.benchmark":
+			// QphDS@SF of a complete successful --benchmark sequence; Stroppy
+			// leaves qphds_at_sf out when it withholds the score.
+			// doc: stroppy 6.4.1 workloads/tpcds/benchmark.go benchmarkState.
+			var bench struct {
+				Score *float64 `json:"qphds_at_sf"`
+			}
+			if json.Unmarshal(payload.Data, &bench) == nil && bench.Score != nil {
+				summary.Metrics["tpcds_qphds"] = spec.MetricValue{Value: *bench.Score, Unit: "QphDS"}
+			}
 		}
 	}
 	return doc, summary, nil

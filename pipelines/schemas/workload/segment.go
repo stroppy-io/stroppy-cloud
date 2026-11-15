@@ -262,6 +262,12 @@ func tpcdsFields() []schemapb.FieldDef {
 			Desc("Query generator seed of generated streams (querySeed). Unset keeps Stroppy's.").Nullable(),
 		schemapb.Bool("validate_force").Title("Validate outside SF=1").Group("Queries").
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
+		// doc: stroppy 6.4.1 `run tpcds --help`, workloads/tpcds/README.md
+		// "Benchmark coverage" (#287).
+		schemapb.Bool("benchmark").Title("Benchmark sequence").Group("Queries").
+			Desc("Load, one power stream, two throughput tests of `streams` streams and two data maintenance tests; reports QphDS@SF for a complete successful run (benchmark). PostgreSQL, Greenplum family, MySQL and MariaDB.").Default(false),
+		schemapb.Int64("refresh_set").Title("Refresh set").Group("Queries").
+			Desc("First maintenance set (refreshSet); only to continue existing data with the schema steps off. Unset starts at 1.").Gte(1).Nullable(),
 		analyticDialect("pg", "gp", "mariadb"),
 		ydbStoreMode(),
 		schemapb.Str("schema_file").Title("Schema file").Group("SQL").
@@ -469,12 +475,26 @@ func Segment() *schemapb.Schema {
 					`!("sql_file" in this.workload) || this.workload.sql_file == null`,
 				"stroppy rejects sql_dialect together with sql_file",
 			).ID("sql-source-exclusive"),
-			// doc: stroppy 6.4.0 tpch/tx: "refresh-set requires refresh-functions".
+			// doc: stroppy 6.4.0 tpch/tx: "refresh-set requires refresh-functions";
+			// 6.4.1 tpcds: the refresh set belongs to the benchmark sequence.
 			segmentRule(
 				`!("workload" in this) || !("refresh_set" in this.workload) || this.workload.refresh_set == null || `+
-					`("refresh_functions" in this.workload && this.workload.refresh_functions == true)`,
-				"refresh_set needs refresh_functions",
+					`("refresh_functions" in this.workload && this.workload.refresh_functions == true) || `+
+					`("benchmark" in this.workload && this.workload.benchmark == true)`,
+				"refresh_set needs refresh_functions (TPC-H) or benchmark (TPC-DS)",
 			).ID("refresh-set-needs-functions"),
+			// doc: stroppy 6.4.1 workloads/tpcds/README.md "Benchmark coverage":
+			// streams even and at least 4; custom schema/query files, an explicit
+			// query stream and unlogged loading are rejected before setup.
+			segmentRule(
+				`!("workload" in this) || !("benchmark" in this.workload) || this.workload.benchmark != true || (`+
+					`(!("streams" in this.workload) || this.workload.streams == null || (this.workload.streams >= 4 && this.workload.streams % 2 == 0)) && `+
+					`(!("query_stream" in this.workload) || this.workload.query_stream == null) && `+
+					`(!("pg_unlogged" in this.workload) || this.workload.pg_unlogged != true) && `+
+					`(!("schema_file" in this.workload) || this.workload.schema_file == null) && `+
+					`(!("sql_file" in this.workload) || this.workload.sql_file == null))`,
+				"benchmark needs an even number of streams of at least 4 and no query_stream, pg_unlogged, schema_file or sql_file",
+			).ID("tpcds-benchmark-shape"),
 		).
 		MustBuild()
 }

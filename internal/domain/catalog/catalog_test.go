@@ -144,7 +144,7 @@ func TestScriptRatingMetric(t *testing.T) {
 	}
 	want := map[string]string{
 		"tpcc/tx": "tpmc", "tpcc/procs": "tpmc", "tpcb/tx": "tps", "tpcb/procs": "tps",
-		"tpch/tx": "query_geomean_ms", "tpcds": "query_geomean_ms", "simple": "qps", "banking": "tps",
+		"tpch/tx": "query_geomean_ms", "tpcds": "qphds", "simple": "qps", "banking": "tps",
 		"execute_sql": "", "baseline": "", "banking/inject": "",
 	}
 	for script, metric := range want {

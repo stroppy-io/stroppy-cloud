@@ -88,6 +88,16 @@ func TestDerivedHeadline(t *testing.T) {
 			want: map[string]float64{HeadlineTPMC: 3885, HeadlineLoadSeconds: 0.133996147 + 2.031048383 + 0.190474061 + 0.221310855 + 1.513762483},
 		},
 		{
+			name: "QphDS@SF of a TPC-DS benchmark sequence",
+			segs: []pipelinespec.SegmentResult{{Name: "benchmark", Status: pipelinespec.SegmentCompleted, Metrics: map[string]pipelinespec.MetricValue{"tpcds_qphds": {Value: 12345, Unit: "QphDS"}}}},
+			want: map[string]float64{HeadlineQphDS: 12345},
+		},
+		{
+			name:   "no score from Stroppy, no QphDS",
+			segs:   []pipelinespec.SegmentResult{{Name: "benchmark", Status: pipelinespec.SegmentFailed, Metrics: map[string]pipelinespec.MetricValue{"iterations_total": {Value: 1}}}},
+			absent: []string{HeadlineQphDS},
+		},
+		{
 			name:   "no compliance, no tpmC",
 			segs:   []pipelinespec.SegmentResult{{Name: "main", Status: pipelinespec.SegmentCompleted, Compliance: json.RawMessage(`{"tpm_c":0}`)}},
 			absent: []string{HeadlineTPMC, HeadlineLoadSeconds},

@@ -55,6 +55,10 @@
       "title": "tpmC",
       "description": "TPC-C New-Order transactions per minute, from Stroppy's compliance report."
     },
+    "qphds": {
+      "title": "QphDS@SF",
+      "description": "TPC-DS queries per hour at the scale factor, from Stroppy's benchmark sequence: load, power, two throughput and two data maintenance tests. An execution metric, not a certified result."
+    },
     "query_geomean_ms": {
       "title": "Query time, geometric mean",
       "description": "Geometric mean of the query times of one full single-stream pass with no failed queries; a query under 0.1 s counts as 0.1 s."

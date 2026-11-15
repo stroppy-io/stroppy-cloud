@@ -271,7 +271,7 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
 чекаут `~/devel/github/stroppy-io/stroppy` (`stroppy probe -o json`,
 `stroppy run <workload> --help`, `stroppy help config-file|drivers|steps`).
 
-- Образ: `ghcr.io/stroppy-io/stroppy:v6.4.0.72` (тег = релиз + номер сборки),
+- Образ: `ghcr.io/stroppy-io/stroppy:v6.4.1.73` (тег = релиз + номер сборки),
   entrypoint `stroppy`, WORKDIR `/workspace`; контейнер на host-сети,
   директория сегмента примонтирована как `/workspace`.
 - Команда: `run -f /workspace/stroppy-config.json --log-mode production
@@ -313,7 +313,10 @@ validation runs before provisioning. CLI failure summaries retain the leading
 The pipeline copies native `tps`, `iterations_per_second`, `queries_per_second`
 and `measurement_seconds`, adding units without computing throughput. Workloads
 without logical transactions do not report TPS. Full metrics and workload-specific
-reports remain available alongside the compact headline.
+reports remain available alongside the compact headline. A TPC-DS `--benchmark`
+run (stroppy 6.4.1) whose `tpcds.benchmark` workload report carries
+`qphds_at_sf` adds it as the segment metric `tpcds_qphds` (unit QphDS); Stroppy
+omits the score for an incomplete or failed sequence, and so does the segment.
 
 Native Stroppy fixes are temporarily tested on YC using development images built
 from the working tree (now preserved in Stroppy PR #166), with inputs pinned to immutable image digests.

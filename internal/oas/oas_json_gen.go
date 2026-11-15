@@ -19498,6 +19498,8 @@ func (s *MetricKey) Decode(d *jx.Decoder) error {
 		*s = MetricKeyLoadDurationSeconds
 	case MetricKeyTpmc:
 		*s = MetricKeyTpmc
+	case MetricKeyQphds:
+		*s = MetricKeyQphds
 	case MetricKeyQueryGeomeanMs:
 		*s = MetricKeyQueryGeomeanMs
 	case MetricKeyQueryTotalSeconds:

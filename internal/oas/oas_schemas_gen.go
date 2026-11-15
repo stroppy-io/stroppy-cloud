@@ -10949,6 +10949,7 @@ const (
 	MetricKeyIterationDurationP99                      MetricKey = "iteration_duration_p99"
 	MetricKeyLoadDurationSeconds                       MetricKey = "load_duration_seconds"
 	MetricKeyTpmc                                      MetricKey = "tpmc"
+	MetricKeyQphds                                     MetricKey = "qphds"
 	MetricKeyQueryGeomeanMs                            MetricKey = "query_geomean_ms"
 	MetricKeyQueryTotalSeconds                         MetricKey = "query_total_seconds"
 	MetricKeyNodeCPUUsage                              MetricKey = "node_cpu_usage"
@@ -10990,6 +10991,7 @@ func (MetricKey) AllValues() []MetricKey {
 		MetricKeyIterationDurationP99,
 		MetricKeyLoadDurationSeconds,
 		MetricKeyTpmc,
+		MetricKeyQphds,
 		MetricKeyQueryGeomeanMs,
 		MetricKeyQueryTotalSeconds,
 		MetricKeyNodeCPUUsage,
@@ -11047,6 +11049,8 @@ func (s MetricKey) MarshalText() ([]byte, error) {
 	case MetricKeyLoadDurationSeconds:
 		return []byte(s), nil
 	case MetricKeyTpmc:
+		return []byte(s), nil
+	case MetricKeyQphds:
 		return []byte(s), nil
 	case MetricKeyQueryGeomeanMs:
 		return []byte(s), nil
@@ -11143,6 +11147,9 @@ func (s *MetricKey) UnmarshalText(data []byte) error {
 		return nil
 	case MetricKeyTpmc:
 		*s = MetricKeyTpmc
+		return nil
+	case MetricKeyQphds:
+		*s = MetricKeyQphds
 		return nil
 	case MetricKeyQueryGeomeanMs:
 		*s = MetricKeyQueryGeomeanMs

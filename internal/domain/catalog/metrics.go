@@ -59,6 +59,7 @@ func metrics() []Metric {
 		// Numbers of the result derived from its segments (run.ResultHeadline).
 		{Key: "load_duration_seconds", Title: "Data load duration", Description: "Wall time of the steps that build the database: schema, load, indexes, keys, procedures, statistics.", Unit: "s", Group: "Bootstrap", Scope: "result", RatingEligible: true},
 		{Key: "tpmc", Title: "tpmC", Description: "TPC-C New-Order transactions per minute, from Stroppy's compliance report.", Unit: "tpmC", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true},
+		{Key: "qphds", Title: "QphDS@SF", Description: "TPC-DS queries per hour at the scale factor, from Stroppy's benchmark sequence (load, power, two throughput and two maintenance tests); an execution metric, not a certified result.", Unit: "QphDS", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true},
 		{Key: "query_geomean_ms", Title: "Query time, geometric mean", Description: "Geometric mean of the query times of a complete single-stream pass, none failed; a query under 0.1 s counts as 0.1 s.", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true},
 		{Key: "query_total_seconds", Title: "Query time, total", Description: "Sum of the query times of a complete single-stream pass, none failed.", Unit: "s", Group: "Headline", Scope: "result", RatingEligible: true},
 
