@@ -2,6 +2,8 @@ package activities
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -38,6 +40,38 @@ func TestDatabaseProbeRejectsFailedIterationAndPermissions(t *testing.T) {
 		if got.Ready || got.QueryAttempts != 1 || got.Error == "" {
 			t.Fatalf("got %+v", got)
 		}
+	}
+}
+
+// A new serverless database answers Unavailable for longer than one attempt;
+// stroppy keeps retrying inside it until the attempt's own deadline cuts it.
+// That attempt is "not up yet", not a verdict: the next one runs, while an
+// error of another kind still stops the wait.
+func TestDatabaseProbeRetriesAnAttemptThatRanOutOfTime(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name     string
+		first    error
+		ready    bool
+		attempts int
+	}{
+		{"attempt deadline", fmt.Errorf("%w: read stroppy logs: context deadline exceeded", errAttemptTimedOut), true, 2},
+		{"other failure", errors.New("container logs: no such container"), false, 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			calls := 0
+			got := waitDatabaseQueries(t.Context(), 0, func(context.Context, int) (RunSegmentResult, error) {
+				calls++
+				if calls == 1 {
+					return RunSegmentResult{}, tc.first
+				}
+				return readyProbe(), nil
+			})
+			if got.Ready != tc.ready || got.QueryAttempts != tc.attempts {
+				t.Fatalf("got %+v", got)
+			}
+		})
 	}
 }
 

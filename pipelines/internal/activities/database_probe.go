@@ -2,6 +2,7 @@ package activities
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -47,6 +48,9 @@ func probeManagedDatabase(ctx context.Context, req WaitDatabaseRequest) (WaitDat
 		attemptCtx, cancel := context.WithTimeout(ctx, 20*time.Second)
 		defer cancel()
 		res, err := RunSegment(attemptCtx, databaseProbeRequest(req))
+		if err != nil && errors.Is(attemptCtx.Err(), context.DeadlineExceeded) && ctx.Err() == nil {
+			err = fmt.Errorf("%w: %w", errAttemptTimedOut, err)
+		}
 		if _, writeErr := fmt.Fprintf(log, "=== readiness attempt %d ===\n", attempt); writeErr != nil {
 			return res, writeErr
 		}
@@ -66,6 +70,10 @@ func probeManagedDatabase(ctx context.Context, req WaitDatabaseRequest) (WaitDat
 	result.LogPath = logPath
 	return result, nil
 }
+
+// errAttemptTimedOut marks a readiness attempt cut by its own deadline while
+// the whole wait still had time: stroppy's own connect retries outlasted it.
+var errAttemptTimedOut = errors.New("readiness attempt ran out of time")
 
 // Only failures expected while a newly created database becomes discoverable
 // retry. Invalid credentials, SQL/configuration errors and unknown failures stop.
@@ -93,7 +101,13 @@ func waitDatabaseQueries(ctx context.Context, delay time.Duration, probe func(co
 		if res.ConfigPath != "" {
 			result.ConfigPath = res.ConfigPath
 		}
-		if err != nil {
+		switch {
+		case errors.Is(err, errAttemptTimedOut):
+			// stroppy was still waiting for the database when the attempt
+			// ended: the database is not up yet, the next attempt runs.
+			result.Error = err.Error()
+			continue
+		case err != nil:
 			result.Error = err.Error()
 			return result
 		}
