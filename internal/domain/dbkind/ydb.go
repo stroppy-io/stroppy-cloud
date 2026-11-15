@@ -71,6 +71,22 @@ func ydbManaged() Kind {
 			p.Client = topology.Endpoint{Role: "", Protocol: "ydb_grpcs", Port: 2135}
 			p.Mode = topology.StrOf(params, "type", topology.ModeDedicated)
 		},
+		// Serverless times out compiling most of what the scripts send, even
+		// on stroppy 6.4.0 (stroppy-io/stroppy#231): TPC-C's first index,
+		// every TPC-H query, the TPC-DS schema drop, the simple workload's
+		// queries. Dedicated runs them; TPC-B runs on both.
+		unsupportedFor: func(params map[string]any) map[string]unsupportedScript {
+			if topology.StrOf(params, "type", "") != "serverless" {
+				return nil
+			}
+			ddl := unsupportedScript{why: "TPC-C cannot build its indexes on serverless YDB: the server times out compiling them"}
+			return map[string]unsupportedScript{
+				"tpcc/tx": ddl, "tpcc/procs": ddl,
+				"tpch/tx": {why: "TPC-H cannot run its queries on serverless YDB: the server times out compiling every one"},
+				"tpcds":   {why: "TPC-DS cannot drop its schema on serverless YDB: the server times out compiling the statement"},
+				"simple":  {why: "the simple workload cannot run on serverless YDB: its queries never answer within the run"},
+			}
+		},
 	}
 }
 
