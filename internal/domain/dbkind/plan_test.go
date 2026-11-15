@@ -123,11 +123,15 @@ func TestUnsupportedScript(t *testing.T) {
 	if why := dbkind.UnsupportedScript(catalog.Picodata, "25.3", nil, "tpch/tx"); why == "" {
 		t.Fatal("Picodata 25.3 TPC-H is not refused")
 	}
-	if why := dbkind.UnsupportedScript(catalog.YDBManaged, "managed", map[string]any{"type": "serverless"}, "tpcc/tx"); why == "" {
-		t.Fatal("serverless YDB TPC-C is not refused")
-	}
-	if why := dbkind.UnsupportedScript(catalog.YDBManaged, "managed", map[string]any{"type": "dedicated"}, "tpcc/tx"); why != "" {
-		t.Fatalf("dedicated YDB TPC-C refused: %s", why)
+	// stroppy 6.4.0 (stroppy-io/stroppy#274) changed the YDB schema and
+	// loading that serverless timed out compiling (#231): both types run
+	// every script.
+	for _, typ := range []string{"serverless", "dedicated"} {
+		for _, script := range []string{"tpcc/tx", "tpcc/procs", "tpcds", "simple"} {
+			if why := dbkind.UnsupportedScript(catalog.YDBManaged, "managed", map[string]any{"type": typ}, script); why != "" {
+				t.Fatalf("%s YDB refuses %s: %s", typ, script, why)
+			}
+		}
 	}
 	if why := dbkind.UnsupportedScript(catalog.PgNoop, "0.1.2", nil, "simple"); why == "" {
 		t.Fatal("pg-noop simple is not refused")
