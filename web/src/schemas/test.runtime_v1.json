@@ -2888,14 +2888,14 @@
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "description": "Number of query streams (streams).",
+                    "description": "Generated query streams (streams). Unset runs the baked query set. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack.",
                     "group": "Queries",
                     "int64": {
-                      "default": "1",
                       "gte": "1",
                       "lte": "64"
                     },
                     "name": "streams",
+                    "nullable": true,
                     "title": "Query streams"
                   },
                   {
@@ -2909,12 +2909,11 @@
                     "title": "Query stream"
                   },
                   {
-                    "description": "Query generator seed (querySeed).",
+                    "description": "Query generator seed of generated streams (querySeed). Unset keeps Stroppy's.",
                     "group": "Queries",
-                    "int64": {
-                      "default": "19620718"
-                    },
+                    "int64": {},
                     "name": "query_seed",
+                    "nullable": true,
                     "title": "Query seed"
                   },
                   {
@@ -3044,14 +3043,14 @@
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "description": "Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream.",
+                    "description": "Generated query streams (streams), each once on its own session; 1 = one power stream. Unset runs the qualification queries in order. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack.",
                     "group": "Queries",
                     "int64": {
-                      "default": "1",
                       "gte": "1",
                       "lte": "64"
                     },
                     "name": "streams",
+                    "nullable": true,
                     "title": "Query streams"
                   },
                   {
@@ -3065,14 +3064,14 @@
                     "title": "Query stream"
                   },
                   {
-                    "description": "Base query seed (querySeed); stream s uses seed+s.",
+                    "description": "Base query seed of generated streams (querySeed); stream s uses seed+s. Unset keeps Stroppy's.",
                     "group": "Queries",
                     "int64": {
-                      "default": "19620718",
                       "gte": "1",
                       "lte": "2147483646"
                     },
                     "name": "query_seed",
+                    "nullable": true,
                     "title": "Query seed"
                   },
                   {

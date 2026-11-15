@@ -18,6 +18,38 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
+// An explicit streams, query_stream or query_seed puts stroppy's TPC-H and
+// TPC-DS into generated streams, which YDB and Picodata refuse ("generated
+// streams require retained sessions"): a segment that names none of them
+// must reach stroppy without them, and one that names them keeps them.
+func TestAnalyticSegmentNamesGeneratedStreamsOnlyWhenAsked(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name, segment string
+		generated     bool
+	}{
+		{"tpch, baked queries", `{"name":"power","workload":{"script":"tpch/tx","scale_factor":1},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`, false},
+		{"tpcds, baked queries", `{"name":"power","workload":{"script":"tpcds","scale_factor":1},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`, false},
+		{"tpch, generated", `{"name":"power","workload":{"script":"tpch/tx","scale_factor":1,"streams":1,"query_seed":19620718},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			out, _ := compileTuned(t, tuneCase{kind: catalog.Postgres, version: "17", segment: tc.segment})
+			var seg struct {
+				Workload map[string]any `json:"workload"`
+			}
+			if err := json.Unmarshal(out.Spec.Workload.Segments[0], &seg); err != nil {
+				t.Fatal(err)
+			}
+			_, streams := seg.Workload["streams"]
+			_, seed := seg.Workload["query_seed"]
+			if streams != tc.generated || seed != tc.generated {
+				t.Errorf("streams %v, query_seed %v in %v, want both %v", streams, seed, seg.Workload, tc.generated)
+			}
+		})
+	}
+}
+
 // TestCompileCatalogTopologies compiles every catalog topology template of
 // every deployable kind through the real schemas and bakes the result
 // through spec.run@1: the RunSpec shape and every rendered config file are

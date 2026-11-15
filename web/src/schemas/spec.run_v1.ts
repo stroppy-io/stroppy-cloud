@@ -321,12 +321,12 @@ export interface SpecRun1SegmentWorkloadTpcds {
   load_workers?: number | string;
   /** Unlogged tables while loading. Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only. */
   pg_unlogged?: boolean;
-  /** Query streams. Number of query streams (streams). */
-  streams?: number | string;
+  /** Query streams. Generated query streams (streams). Unset runs the baked query set. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack. */
+  streams?: number | string | null;
   /** Query stream. Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0. */
   query_stream?: number | string | null;
-  /** Query seed. Query generator seed (querySeed). */
-  query_seed?: number | string;
+  /** Query seed. Query generator seed of generated streams (querySeed). Unset keeps Stroppy's. */
+  query_seed?: number | string | null;
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
   validate_force?: boolean;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects it by driver. The platform sets gp for Greenplum-family databases and mariadb for MariaDB itself. */
@@ -348,12 +348,12 @@ export interface SpecRun1SegmentWorkloadTpchTx {
   load_workers?: number | string;
   /** Unlogged tables while loading. Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only. */
   pg_unlogged?: boolean;
-  /** Query streams. Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream. */
-  streams?: number | string;
+  /** Query streams. Generated query streams (streams), each once on its own session; 1 = one power stream. Unset runs the qualification queries in order. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack. */
+  streams?: number | string | null;
   /** Query stream. One generated stream (queryStream); 0 is the Appendix A power order. Unset keeps Stroppy's 0. */
   query_stream?: number | string | null;
-  /** Query seed. Base query seed (querySeed); stream s uses seed+s. */
-  query_seed?: number | string;
+  /** Query seed. Base query seed of generated streams (querySeed); stream s uses seed+s. Unset keeps Stroppy's. */
+  query_seed?: number | string | null;
   /** Refresh functions. Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score. */
   refresh_functions?: boolean;
   /** Refresh set. First DBGEN refresh-set number (refreshSet); continue with the prior report's next set. Only with refresh functions; unset keeps Stroppy's 1. */

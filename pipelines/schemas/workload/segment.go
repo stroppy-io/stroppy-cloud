@@ -209,11 +209,11 @@ func tpchFields() []schemapb.FieldDef {
 		// query-seed (#263), refresh-functions, refresh-set (#276),
 		// pico-motion-row-max, pico-vdbe-opcode-max (#270), sql-dialect (#259).
 		schemapb.Int64("streams").Title("Query streams").Group("Queries").
-			Desc("Query streams, each executed once on its own session in the order the specification prescribes for it (streams); 1 = a single power stream.").Gte(1).Lte(64).Default(1),
+			Desc("Generated query streams (streams), each once on its own session; 1 = one power stream. Unset runs the qualification queries in order. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack.").Gte(1).Lte(64).Nullable(),
 		schemapb.Int64("query_stream").Title("Query stream").Group("Queries").
 			Desc("One generated stream (queryStream); 0 is the Appendix A power order. Unset keeps Stroppy's 0.").Gte(0).Nullable(),
 		schemapb.Int64("query_seed").Title("Query seed").Group("Queries").
-			Desc("Base query seed (querySeed); stream s uses seed+s.").Gte(1).Lte(2147483646).Default(19620718),
+			Desc("Base query seed of generated streams (querySeed); stream s uses seed+s. Unset keeps Stroppy's.").Gte(1).Lte(2147483646).Nullable(),
 		schemapb.Bool("refresh_functions").Title("Refresh functions").Group("Queries").
 			Desc("Run RF1/RF2 with the power or throughput streams (refreshFunctions); the report is diagnostic, not a canonical score.").Default(false),
 		schemapb.Int64("refresh_set").Title("Refresh set").Group("Queries").
@@ -255,11 +255,11 @@ func tpcdsFields() []schemapb.FieldDef {
 		loadWorkers(0).Desc("Workers used to load each table (loadWorkers); 0 = automatic."),
 		pgUnlogged(),
 		schemapb.Int64("streams").Title("Query streams").Group("Queries").
-			Desc("Number of query streams (streams).").Gte(1).Lte(64).Default(1),
+			Desc("Generated query streams (streams). Unset runs the baked query set. Setting this, query_stream or query_seed selects generated streams, which YDB and Picodata lack.").Gte(1).Lte(64).Nullable(),
 		schemapb.Int64("query_stream").Title("Query stream").Group("Queries").
 			Desc("Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.").Gte(0).Nullable(),
 		schemapb.Int64("query_seed").Title("Query seed").Group("Queries").
-			Desc("Query generator seed (querySeed).").Default(19620718),
+			Desc("Query generator seed of generated streams (querySeed). Unset keeps Stroppy's.").Nullable(),
 		schemapb.Bool("validate_force").Title("Validate outside SF=1").Group("Queries").
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
 		analyticDialect("pg", "gp", "mariadb"),
