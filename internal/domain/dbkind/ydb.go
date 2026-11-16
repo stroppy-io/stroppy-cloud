@@ -79,7 +79,10 @@ func ydbManaged() Kind {
 			if topology.StrOf(params, "type", "") != "serverless" {
 				return nil
 			}
+			ddl := unsupportedScript{why: "TPC-C cannot build its indexes on serverless YDB: the server times out compiling them"}
 			return map[string]unsupportedScript{
+				"tpcc/tx": ddl, "tpcc/procs": ddl,
+				"tpch/tx": {why: "TPC-H cannot run its queries on serverless YDB: the server times out compiling every one"},
 				"tpcds":   {why: "TPC-DS cannot drop its schema on serverless YDB: the server times out compiling the statement"},
 				"simple":  {why: "the simple workload cannot run on serverless YDB: its queries never answer within the run"},
 			}
