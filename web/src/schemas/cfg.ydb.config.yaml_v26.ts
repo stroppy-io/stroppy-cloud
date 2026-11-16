@@ -91,6 +91,8 @@ export interface CfgYdbConfigYaml26 {
   spilling_root?: string;
   /** Spilling max size. table_service_config.spilling_service_config.local_file_config.max_total_size, in bytes. [bytes] */
   spilling_max_total_size?: number | string;
+  /** Query memory limit. table_service_config.query_limits.phase_limits.compute_node_memory_limit_bytes — memory one query's transaction may take on a node. Unset keeps YDB's 1 GiB cap. [bytes] */
+  query_compute_node_memory_limit_bytes?: number | string | null;
   /** Log level. log_config.default_level — 0 EMERG, 1 ALERT, 2 CRIT, 3 ERROR, 4 WARN, 5 NOTICE, 6 INFO, 7 DEBUG, 8 TRACE. */
   log_default_level?: number | string;
   /** Log to syslog. log_config.sys_log — write to syslog instead of stderr. The agent collects stderr, so this stays off. */

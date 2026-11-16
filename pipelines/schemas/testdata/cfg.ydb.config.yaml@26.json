@@ -544,6 +544,18 @@
       "unit": "bytes"
     },
     {
+      "description": "table_service_config.query_limits.phase_limits.compute_node_memory_limit_bytes — memory one query's transaction may take on a node. Unset keeps YDB's 1 GiB cap.",
+      "group": "Table service",
+      "int64": {
+        "gte": "1073741824",
+        "lte": "4398046511104"
+      },
+      "name": "query_compute_node_memory_limit_bytes",
+      "nullable": true,
+      "title": "Query memory limit",
+      "unit": "bytes"
+    },
+    {
       "description": "log_config.default_level — 0 EMERG, 1 ALERT, 2 CRIT, 3 ERROR, 4 WARN, 5 NOTICE, 6 INFO, 7 DEBUG, 8 TRACE.",
       "group": "Logging",
       "int64": {
@@ -816,6 +828,6 @@
   ],
   "strict": true,
   "templates": {
-    "conf": "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.resource_broker_block}}{{{values.resource_broker_block}}}\n{{/values.resource_broker_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+    "conf": "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\n{{#values.query_compute_node_memory_limit_bytes}}  query_limits:\n    phase_limits:\n      compute_node_memory_limit_bytes: {{{values.query_compute_node_memory_limit_bytes}}}\n{{/values.query_compute_node_memory_limit_bytes}}log_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.resource_broker_block}}{{{values.resource_broker_block}}}\n{{/values.resource_broker_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

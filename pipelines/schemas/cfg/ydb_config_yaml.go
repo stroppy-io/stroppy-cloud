@@ -215,6 +215,13 @@ func ydbConfig(major uint64) *schemapb.Schema {
 		schemapb.Int64("spilling_max_total_size").Title("Spilling max size").Group("Table service").
 			Desc("table_service_config.spilling_service_config.local_file_config.max_total_size, in bytes.").
 			Unit("bytes").Gte(67108864).Lte(4398046511104).Default(21474836480),
+		// doc: ydb ydb/core/protos/table_service_config.proto TQueryPhaseLimits
+		// ComputeNodeMemoryLimitBytes; kqp_session_actor.cpp BeginTx caps the
+		// transaction allocator at it, else at KQPSessionControls
+		// MkqlMaxMemoryLimit (1 GiB).
+		schemapb.Int64("query_compute_node_memory_limit_bytes").Title("Query memory limit").Group("Table service").
+			Desc("table_service_config.query_limits.phase_limits.compute_node_memory_limit_bytes — memory one query's transaction may take on a node. Unset keeps YDB's 1 GiB cap.").
+			Unit("bytes").Gte(1073741824).Lte(4398046511104).Nullable(),
 
 		// --- log_config ---------------------------------------------------------
 		// doc: log_config.default_level is a NUMBER: 0 EMERG .. 8 TRACE,
@@ -412,7 +419,10 @@ table_service_config:
       enable: true
       root: {{{values.spilling_root}}}
       max_total_size: {{{values.spilling_max_total_size}}}
-log_config:
+{{#values.query_compute_node_memory_limit_bytes}}  query_limits:
+    phase_limits:
+      compute_node_memory_limit_bytes: {{{values.query_compute_node_memory_limit_bytes}}}
+{{/values.query_compute_node_memory_limit_bytes}}log_config:
   default_level: {{{values.log_default_level}}}
   sys_log: {{{values.log_syslog}}}
   format: {{{values.log_format}}}

@@ -29,6 +29,13 @@ type ydbNodeConf struct {
 		CacheMin  int   `yaml:"shared_cache_min_percent"`
 		CacheMax  int   `yaml:"shared_cache_max_percent"`
 	} `yaml:"memory_controller_config"`
+	Table struct {
+		QueryLimits struct {
+			PhaseLimits struct {
+				ComputeNodeMemory int64 `yaml:"compute_node_memory_limit_bytes"`
+			} `yaml:"phase_limits"`
+		} `yaml:"query_limits"`
+	} `yaml:"table_service_config"`
 	Broker *struct {
 		Queues []struct {
 			Name  string `yaml:"name"`
@@ -124,6 +131,35 @@ func TestYDBAutoResourceBroker(t *testing.T) {
 	}
 	if ydbNode(t, out, "db-1").Broker != nil {
 		t.Error("storage nodes build no indexes")
+	}
+}
+
+// An analytic workload lifts the per-query memory cap of a database node
+// from YDB's 1 GiB (TPC-DS SF10 q69 failed "Memory limit exception at
+// ExecuteState, current limit is 1073020928 bytes") to a quarter of the
+// node's memory; TPC-C keeps the upstream cap.
+func TestYDBAnalyticQueryMemory(t *testing.T) {
+	t.Parallel()
+	tpcds := `{"name":"power","workload":{"script":"tpcds","scale_factor":10,"ydb_store_mode":"column"},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	for _, tc := range []struct {
+		name, segment string
+		want          int64
+	}{
+		{"analytics on M (32 GB, 30 GB hard limit)", tpcds, (int64(30) << 30) / 4},
+		{"TPC-C keeps the upstream cap", "", 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			c := ydbCase(nil)
+			c.segment = tc.segment
+			out, _ := compileTuned(t, c)
+			if got := ydbNode(t, out, "db-compute-1").Table.QueryLimits.PhaseLimits.ComputeNodeMemory; got != tc.want {
+				t.Errorf("compute_node_memory_limit_bytes = %d, want %d", got, tc.want)
+			}
+			if got := ydbNode(t, out, "db-1").Table.QueryLimits.PhaseLimits.ComputeNodeMemory; got != 0 {
+				t.Errorf("storage node got a query cap %d", got)
+			}
+		})
 	}
 }
 

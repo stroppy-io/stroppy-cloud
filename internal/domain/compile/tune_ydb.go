@@ -120,7 +120,17 @@ func (c *compilation) tuneYDB(role, schemaID, machine string, overlay map[string
 	if h.CPU > 0 {
 		t.set("resource_broker_build_index_cpu", max(1, h.CPU/4))
 	}
+	// Analytic queries (TPC-DS SF10 q69) outgrow YDB's 1 GiB per-query
+	// transaction cap; a quarter of the node's memory leaves the cache and
+	// the other activities their shares.
+	if limit := ydbHardLimitBytes(h.MemoryMB); limit > 0 && c.analyticWorkload() {
+		t.set("query_compute_node_memory_limit_bytes", limit/ydbAnalyticQueryShare)
+	}
 }
+
+// ydbAnalyticQueryShare divides a database node's memory for one analytic
+// query's cap.
+const ydbAnalyticQueryShare = 4
 
 // ydbPdiskSize is the size of one pdisk file in GB: with auto sizing the
 // data disk less 10 GB, 80% of it shared by the node's pdisks, never under
