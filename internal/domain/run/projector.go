@@ -183,7 +183,12 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		return // the queue starts it
 	}
 	if r.Status == StatusPending || (r.Status == StatusCancelling && r.StartedAt == nil) {
-		if err := Submit(sctx, p.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+		err := Submit(sctx, p.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r))
+		switch {
+		case errors.Is(err, ErrStartConflict):
+			// The execution under the run's id is the run: follow it.
+			p.log.Error("projector: submission conflict", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		case err != nil:
 			if errors.Is(err, ErrStartRejected) {
 				_ = p.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // retried on the next tick
 			}

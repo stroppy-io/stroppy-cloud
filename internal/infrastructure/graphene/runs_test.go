@@ -33,8 +33,8 @@ func TestRunRecoveryErrorMeaning(t *testing.T) {
 				t.Fatalf("status lost its meaning: %v", err)
 			}
 			err = c.StartRun(context.Background(), "r", "stroppy-run", map[string]any{}, nil)
-			rejected := code == connect.CodeInvalidArgument || code == connect.CodeAlreadyExists
-			if errors.Is(err, run.ErrStartRejected) != rejected || connect.CodeOf(err) != code {
+			rejected, conflict := code == connect.CodeInvalidArgument, code == connect.CodeAlreadyExists
+			if errors.Is(err, run.ErrStartRejected) != rejected || errors.Is(err, run.ErrStartConflict) != conflict || connect.CodeOf(err) != code {
 				t.Fatalf("submission outcome misclassified: %v", err)
 			}
 		})

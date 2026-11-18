@@ -25,6 +25,10 @@ import (
 var (
 	ErrRemoteNotFound = errors.New("remote run does not exist")
 	ErrStartRejected  = errors.New("run submission rejected")
+	// ErrStartConflict is a start whose run id already names an execution
+	// Graphene does not take for this request. The id is the run's own, so
+	// that execution is the run: it is followed, never failed.
+	ErrStartConflict = errors.New("run id already names an execution")
 )
 
 // Status of a run (the server's vocabulary, §16.6).

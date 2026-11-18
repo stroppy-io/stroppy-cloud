@@ -31,8 +31,10 @@ func (c *Client) StartRun(ctx context.Context, runID, pipeline string, params an
 		RunId: runID, Pipeline: pipeline, Params: raw, Labels: labels,
 	}))
 	if err != nil {
-		if connect.CodeOf(err) == connect.CodeInvalidArgument || connect.CodeOf(err) == connect.CodeAlreadyExists {
+		if code := connect.CodeOf(err); code == connect.CodeInvalidArgument {
 			err = errors.Join(run.ErrStartRejected, err)
+		} else if code == connect.CodeAlreadyExists {
+			err = errors.Join(run.ErrStartConflict, err)
 		}
 		return fmt.Errorf("graphene: start %s/%s: %w", pipeline, runID, err)
 	}

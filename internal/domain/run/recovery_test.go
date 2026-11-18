@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"strings"
 	"testing"
 	"time"
 
@@ -58,15 +59,21 @@ type recoveryGraphene struct {
 	startErr, closeErr, cancelErr, statusErr error
 	starts, cancels                          int
 	ids                                      []string
+	params                                   []string
 	events                                   []RawEvent
 	status                                   string
 	raw                                      json.RawMessage
 	held                                     []Holding
 }
 
-func (g *recoveryGraphene) StartRun(_ context.Context, id, _ string, _ any, _ map[string]string) error {
+func (g *recoveryGraphene) StartRun(_ context.Context, id, _ string, params any, _ map[string]string) error {
 	g.starts++
 	g.ids = append(g.ids, id)
+	raw, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+	g.params = append(g.params, string(raw))
 	return g.startErr
 }
 func (g *recoveryGraphene) Events(_ context.Context, _ string, after int64, _ bool, fn func(RawEvent) error) error {
@@ -210,5 +217,37 @@ func TestRecoveryLongQueuedRunStartsOnAdmission(t *testing.T) {
 	p.follow(context.Background(), Live{ID: repo.r.ID})
 	if g.starts != 1 {
 		t.Fatal("a run admitted now after days in the queue is a fresh submission")
+	}
+}
+
+// Graphene may compare a repeated start by the bytes of its params, and the
+// queue (a spec marshaled in Go) and the projector (the stored jsonb) hold
+// the same spec in different bytes: both must send one form.
+func TestSubmitSendsCanonicalParams(t *testing.T) {
+	t.Parallel()
+	g := &recoveryGraphene{}
+	for _, spec := range []string{`{"b":18446744073709551615,"a":{"y":100,"x":"<x>"}}`, `{ "a": {"x": "\u003cx>", "y": 100}, "b": 18446744073709551615 }`} {
+		if err := Submit(context.Background(), g, time.Time{}, "r", "stroppy-run", json.RawMessage(spec), nil); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if g.params[0] != g.params[1] {
+		t.Fatalf("one spec sent in two forms:\n%s\n%s", g.params[0], g.params[1])
+	}
+	if !strings.Contains(g.params[0], "18446744073709551615") {
+		t.Fatalf("a uint64 lost its digits: %s", g.params[0])
+	}
+}
+
+// A start Graphene answers with "already exists" names a run that is there:
+// the projector keeps following it instead of failing a run that executes
+// (stroppy-cloud lost a completed TPC-DS run this way).
+func TestRecoverySubmissionConflictFollowsTheRun(t *testing.T) {
+	t.Parallel()
+	repo, g, p := recoveryFixture()
+	g.startErr = ErrStartConflict
+	p.follow(context.Background(), Live{ID: repo.r.ID})
+	if repo.r.Status != StatusCompleted || string(repo.r.Result) != string(g.raw) {
+		t.Fatalf("conflicting start lost the run: status=%s reason=%q", repo.r.Status, repo.r.StatusReason)
 	}
 }

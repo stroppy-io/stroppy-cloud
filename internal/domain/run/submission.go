@@ -1,7 +1,9 @@
 package run
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -19,7 +21,34 @@ func Submit(ctx context.Context, g Graphene, createdAt time.Time, id, pipeline s
 		}
 		return nil
 	}
-	return g.StartRun(ctx, id, pipeline, params, labels)
+	canonical, err := canonicalParams(params)
+	if err != nil {
+		return err
+	}
+	return g.StartRun(ctx, id, pipeline, canonical, labels)
+}
+
+// canonicalParams is one byte form of the params, whoever holds them: the
+// queue's spec is marshaled in Go, the projector's is the stored jsonb, and
+// Graphene may tell a repeated start from another request by the bytes.
+// Re-marshaling the decoded value sorts keys and settles whitespace and
+// string escapes; numbers keep their digits (a uint64 seed does not fit a
+// float64).
+func canonicalParams(params any) (json.RawMessage, error) {
+	raw, err := json.Marshal(params)
+	if err != nil {
+		return nil, fmt.Errorf("submission params: %w", err)
+	}
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.UseNumber()
+	var v any
+	if err := dec.Decode(&v); err != nil {
+		return nil, fmt.Errorf("submission params: %w", err)
+	}
+	if raw, err = json.Marshal(v); err != nil {
+		return nil, fmt.Errorf("submission params: %w", err)
+	}
+	return raw, nil
 }
 
 // submittedAt is when the run was first handed to Graphene: its admission

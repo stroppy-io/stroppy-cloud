@@ -443,7 +443,8 @@ func (s *Service) AdmitTenant(ctx context.Context, tenantID uuid.UUID) {
 // Start hands a stored run to Graphene and records the outcome.
 func (s *Service) Start(ctx context.Context, r Run) (Run, error) {
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &r.TenantID, Action: "run.launch", Target: audit.Target{Kind: "run", ID: r.ID.String(), Name: r.Name}, Details: map[string]any{"test": r.TestID, "trigger": r.Trigger}}) //nolint:errcheck // audit never blocks
-	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil && !errors.Is(err, ErrStartConflict) {
+		// A conflict names the run's own execution: the projector follows it.
 		if errors.Is(err, ErrStartRejected) {
 			_ = s.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // reported below
 			return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene rejected the run", err).Because("run_submit_unavailable")
