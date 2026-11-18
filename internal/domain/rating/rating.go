@@ -38,16 +38,18 @@ type Entry struct {
 	Rank int
 	// Value is the best of the configuration's runs in the period (Run is
 	// that run), Median their median, Runs how many there are.
-	Value      float64
-	Median     float64
-	Runs       int
-	LastRunAt  time.Time
-	Run        run.Run
-	Scenario   string
-	Hardware   string
-	Metric     string
-	TenantName string
-	ShareToken string
+	Value     float64
+	Median    float64
+	Runs      int
+	LastRunAt time.Time
+	Run       run.Run
+	Scenario  string
+	// ScaleFactor is the workload's scale; 0 when it has none.
+	ScaleFactor float64
+	Hardware    string
+	Metric      string
+	TenantName  string
+	ShareToken  string
 }
 
 // Page is a rating page.
@@ -159,7 +161,7 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		return Page{}, err
 	}
 	for i, r := range rows {
-		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Median: r.Median, Runs: r.Runs, LastRunAt: r.LastRunAt, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, Metric: r.Metric, TenantName: r.TenantName}
+		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Median: r.Median, Runs: r.Runs, LastRunAt: r.LastRunAt, Run: r.Run, Scenario: r.Scenario, ScaleFactor: r.ScaleFactor, Hardware: r.Hardware, Metric: r.Metric, TenantName: r.TenantName}
 		if tenantID == "" {
 			e.TenantName = r.TenantPublicName
 			if s.shares != nil {

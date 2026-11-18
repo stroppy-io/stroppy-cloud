@@ -677,8 +677,11 @@ type RatingRow struct {
 	TenantName       string
 	TenantPublicName string
 	Scenario         string
-	Hardware         string
-	Metric           string
+	// ScaleFactor is the one scale the workload's segments agree on; 0 when
+	// none sets one or they differ.
+	ScaleFactor float64
+	Hardware    string
+	Metric      string
 	// Value is the best of the configuration's runs in the window, and Run
 	// is that run; Median and Runs say how typical it is.
 	Value  float64

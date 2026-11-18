@@ -6797,6 +6797,24 @@ func (s *RatingEntry) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.ScaleFactor.Get(); ok {
+			if err := func() error {
+				if err := (validate.Float{}).Validate(float64(value)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "scale_factor",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if err := s.Hardware.Validate(); err != nil {
 			return err
 		}

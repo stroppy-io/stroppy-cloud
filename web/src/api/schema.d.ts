@@ -4358,6 +4358,8 @@ export interface components {
             node_count?: number;
             sizes?: components["schemas"]["RoleSizes"];
             workload_name?: string;
+            /** @description The workload's scale factor: the one value every segment that sets one agrees on. Absent when no segment sets it or they differ. */
+            scale_factor?: number;
             /** @description Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios); several joined by `+`. */
             scenario: string;
             hardware: components["schemas"]["HardwareClass"];

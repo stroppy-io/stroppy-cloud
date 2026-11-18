@@ -214,6 +214,8 @@ SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant
 -- @scenario_metrics and @scenario_higher say which, and a scenario not in
 -- them is not on the page. Places count within a scenario, so the page is
 -- ordered by scenario first.
+-- scale_factor is the one scale every segment that sets one agrees on; NULL
+-- when none sets it or they differ.
 WITH z AS (
 SELECT x.*, s.metric, s.higher, (x.summary->'headline'->>s.metric)::float8 AS value,
        concat_ws('|', x.tenant_id::text, x.summary->>'db_kind', x.summary->>'db_version', (x.summary->'topology')::text,
@@ -224,6 +226,10 @@ FROM (
          coalesce((SELECT string_agg(DISTINCT sg->'workload'->>'script', '+' ORDER BY sg->'workload'->>'script')
                    FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
                    WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
+         (SELECT CASE WHEN count(DISTINCT (sg->'workload'->>'scale_factor')::float8) = 1
+                      THEN min((sg->'workload'->>'scale_factor')::float8) END
+          FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
+          WHERE jsonb_typeof(sg->'workload'->'scale_factor') = 'number') AS scale_factor,
          coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g:' || h.platform || ':' || h.disk, '+'
                                      ORDER BY h.cpu DESC, h.mem DESC, h.n DESC, h.platform, h.disk)
                    FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem,
@@ -250,7 +256,7 @@ SELECT config, percentile_cont(0.5) WITHIN GROUP (ORDER BY value) AS median, cou
 FROM z GROUP BY config
 )
 SELECT y.id, y.tenant_id, y.name, y.author_id, y.summary, y.finished_at, y.tps,
-       y.tenant_name, y.tenant_public_name, y.scenario, y.hardware, y.metric::text AS metric,
+       y.tenant_name, y.tenant_public_name, y.scenario, y.scale_factor::float8 AS scale_factor, y.hardware, y.metric::text AS metric,
        y.value::float8 AS value, y.median::float8 AS median, y.runs::int8 AS runs,
        y.last_run::timestamptz AS last_run_at
 FROM (

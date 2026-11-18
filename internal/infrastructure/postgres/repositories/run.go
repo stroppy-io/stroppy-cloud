@@ -224,6 +224,9 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 		if row.Value != nil {
 			item.Value = *row.Value
 		}
+		if row.ScaleFactor != nil {
+			item.ScaleFactor = *row.ScaleFactor
+		}
 		if row.Metric != nil {
 			item.Metric = *row.Metric
 		}

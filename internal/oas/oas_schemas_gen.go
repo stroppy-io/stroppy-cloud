@@ -22190,6 +22190,9 @@ type RatingEntry struct {
 	NodeCount    OptInt           `json:"node_count"`
 	Sizes        OptRoleSizes     `json:"sizes"`
 	WorkloadName OptString        `json:"workload_name"`
+	// The workload's scale factor: the one value every segment that sets one agrees on. Absent when no
+	// segment sets it or they differ.
+	ScaleFactor OptFloat64 `json:"scale_factor"`
 	// Workload scenario: the script (`tpcc/tx` and `tpcc/procs` are different scenarios); several joined
 	// by `+`.
 	Scenario       string          `json:"scenario"`
@@ -22268,6 +22271,11 @@ func (s *RatingEntry) GetSizes() OptRoleSizes {
 // GetWorkloadName returns the value of WorkloadName.
 func (s *RatingEntry) GetWorkloadName() OptString {
 	return s.WorkloadName
+}
+
+// GetScaleFactor returns the value of ScaleFactor.
+func (s *RatingEntry) GetScaleFactor() OptFloat64 {
+	return s.ScaleFactor
 }
 
 // GetScenario returns the value of Scenario.
@@ -22378,6 +22386,11 @@ func (s *RatingEntry) SetSizes(val OptRoleSizes) {
 // SetWorkloadName sets the value of WorkloadName.
 func (s *RatingEntry) SetWorkloadName(val OptString) {
 	s.WorkloadName = val
+}
+
+// SetScaleFactor sets the value of ScaleFactor.
+func (s *RatingEntry) SetScaleFactor(val OptFloat64) {
+	s.ScaleFactor = val
 }
 
 // SetScenario sets the value of Scenario.

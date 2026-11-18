@@ -29107,6 +29107,12 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.ScaleFactor.Set {
+			e.FieldStart("scale_factor")
+			s.ScaleFactor.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("scenario")
 		e.Str(s.Scenario)
 	}
@@ -29160,7 +29166,7 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRatingEntry = [22]string{
+var jsonFieldsNameOfRatingEntry = [23]string{
 	0:  "rank",
 	1:  "value",
 	2:  "median",
@@ -29173,16 +29179,17 @@ var jsonFieldsNameOfRatingEntry = [22]string{
 	9:  "node_count",
 	10: "sizes",
 	11: "workload_name",
-	12: "scenario",
-	13: "hardware",
-	14: "stroppy_version",
-	15: "provider_kind",
-	16: "run_at",
-	17: "last_run_at",
-	18: "run_id",
-	19: "author",
-	20: "tenant_name",
-	21: "share_token",
+	12: "scale_factor",
+	13: "scenario",
+	14: "hardware",
+	15: "stroppy_version",
+	16: "provider_kind",
+	17: "run_at",
+	18: "last_run_at",
+	19: "run_id",
+	20: "author",
+	21: "tenant_name",
+	22: "share_token",
 }
 
 // Decode decodes RatingEntry from json.
@@ -29324,8 +29331,18 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"workload_name\"")
 			}
+		case "scale_factor":
+			if err := func() error {
+				s.ScaleFactor.Reset()
+				if err := s.ScaleFactor.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"scale_factor\"")
+			}
 		case "scenario":
-			requiredBitSet[1] |= 1 << 4
+			requiredBitSet[1] |= 1 << 5
 			if err := func() error {
 				v, err := d.Str()
 				s.Scenario = string(v)
@@ -29337,7 +29354,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"scenario\"")
 			}
 		case "hardware":
-			requiredBitSet[1] |= 1 << 5
+			requiredBitSet[1] |= 1 << 6
 			if err := func() error {
 				if err := s.Hardware.Decode(d); err != nil {
 					return err
@@ -29367,7 +29384,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"provider_kind\"")
 			}
 		case "run_at":
-			requiredBitSet[2] |= 1 << 0
+			requiredBitSet[2] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.RunAt = v
@@ -29379,7 +29396,7 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"run_at\"")
 			}
 		case "last_run_at":
-			requiredBitSet[2] |= 1 << 1
+			requiredBitSet[2] |= 1 << 2
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.LastRunAt = v
@@ -29441,8 +29458,8 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [3]uint8{
 		0b01111111,
-		0b00110000,
-		0b00000011,
+		0b01100000,
+		0b00000110,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

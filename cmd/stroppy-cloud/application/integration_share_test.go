@@ -209,8 +209,9 @@ func TestE2EShareCompareRating(t *testing.T) {
 				RunAt     string  `json:"run_at"`
 				LastRunAt string  `json:"last_run_at"`
 				RunID     string  `json:"run_id"`
-				Scenario  string  `json:"scenario"`
-				Hardware  struct {
+				Scenario    string  `json:"scenario"`
+				ScaleFactor float64 `json:"scale_factor"`
+				Hardware    struct {
 					Key string `json:"key"`
 				} `json:"hardware"`
 				TenantName string `json:"tenant_name"`
@@ -219,7 +220,8 @@ func TestE2EShareCompareRating(t *testing.T) {
 		}
 		// Both runs are one configuration: one row, its latest run.
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
-		if len(page.Data) != 1 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || len(page.Scenarios) != 1 || len(page.Hardware) != 1 {
+		// The fixture's one segment sets scale_factor 1.
+		if len(page.Data) != 1 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || page.Data[0].ScaleFactor != 1 || len(page.Scenarios) != 1 || len(page.Hardware) != 1 {
 			t.Fatalf("tenant rating %+v", page)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=latency_p95_ms", nil, tok), http.StatusOK, &page)

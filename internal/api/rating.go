@@ -77,6 +77,9 @@ func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage
 		if s.WorkloadName != "" {
 			item.WorkloadName = oas.NewOptString(s.WorkloadName)
 		}
+		if e.ScaleFactor > 0 {
+			item.ScaleFactor = oas.NewOptFloat64(e.ScaleFactor)
+		}
 		if s.StroppyVersion != "" {
 			item.StroppyVersion = oas.NewOptString(s.StroppyVersion)
 		}
