@@ -416,6 +416,34 @@ func TestMPPStatementMemShrinksWithConcurrency(t *testing.T) {
 	}
 }
 
+// A TPC-DS benchmark runs on one VU but its throughput phases open one
+// session per stream (stroppy workloads/tpcds/benchmark.go), four when
+// streams is not set (stroppy-io/stroppy-cloud#7).
+func TestMPPStatementMemCountsBenchmarkStreams(t *testing.T) {
+	t.Parallel()
+	seg := func(workload string) string {
+		return `{"name":"benchmark","workload":{"script":"tpcds","scale_factor":10` + workload + `},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	}
+	for _, tc := range []struct {
+		name, segment, want string
+	}{
+		{"explicit four streams", seg(`,"benchmark":true,"streams":4`), "1382MB"}, // 0.75 × 7372 / 4
+		{"default streams", seg(`,"benchmark":true`), "1382MB"},
+		{"six streams", seg(`,"benchmark":true,"streams":6`), "921MB"}, // 0.75 × 7372 / 6
+		{"query set without benchmark", seg(``), "5529MB"},              // one VU, one session
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			c := mppCase(catalog.Greengage, "7.5.1", nil)
+			c.segment = tc.segment
+			out, _ := compileTuned(t, c)
+			if g := gucsOf(t, out, "db"); g["statement_mem"] != tc.want {
+				t.Errorf("statement_mem %s, want %s", g["statement_mem"], tc.want)
+			}
+		})
+	}
+}
+
 func TestMPPSummary(t *testing.T) {
 	out, _ := compileTuned(t, mppCase(catalog.Greengage, "7.5.1", nil))
 	if out.Tuning.Mode != run.TuningAuto || out.Tuning.Durability != run.DurabilityFsync {

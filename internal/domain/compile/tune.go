@@ -60,20 +60,36 @@ func (c *compilation) hostOf(machine string) host {
 // defaultVUs stands in for a workload whose segments name no VU count.
 const defaultVUs = 128
 
-// peakVUs is the most virtual users one segment of the workload runs at
-// once: what the database's connection limits must take.
+// peakVUs is the most database sessions one segment of the workload runs
+// at once: what the database's connection limits and per-query memory must
+// take.
 func (c *compilation) peakVUs() int {
 	peak := 0
 	for _, raw := range c.in.Workload.Segments {
 		var s spec.Segment
 		if json.Unmarshal(raw, &s) == nil {
-			peak = max(peak, int(s.Run.VUs))
+			peak = max(peak, int(s.Run.VUs), benchmarkStreams(s.Workload))
 		}
 	}
 	if peak == 0 {
 		return defaultVUs
 	}
 	return peak
+}
+
+// tpcdsBenchmarkStreams is how many query streams a TPC-DS benchmark runs
+// when the segment does not set streams (stroppy workloads/tpcds
+// benchmarkStreamDefault).
+const tpcdsBenchmarkStreams = 4
+
+// benchmarkStreams is the sessions a TPC-DS benchmark opens beside its one
+// VU: each throughput phase runs one worker per query stream. 0 for any
+// other segment, whose sessions are its VUs.
+func benchmarkStreams(w spec.WorkloadParams) int {
+	if w.Script != "tpcds" || w.Params["benchmark"] != true {
+		return 0
+	}
+	return intParam(w.Params, "streams", tpcdsBenchmarkStreams)
 }
 
 // analyticScript is a decision-support script: few long queries over the
