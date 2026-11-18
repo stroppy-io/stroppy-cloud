@@ -270,10 +270,12 @@ export const runMutations = {
     unwrap(
       api.POST('/api/v1/t/{slug}/runs/{id}/metrics:raw', { params: { path: { slug, id } }, body })
     ),
-  artifactUrl: (slug: string, id: string, artifactId: string) =>
+  // The artifact's bytes, for a browser download.
+  artifactBlob: (slug: string, id: string, artifactId: string) =>
     unwrap(
       api.GET('/api/v1/t/{slug}/runs/{id}/artifacts/{artifactId}', {
         params: { path: { slug, id, artifactId } },
+        parseAs: 'blob',
       })
     ),
   export: (slug: string, id: string, format: 'json' | 'md' | 'pdf' | 'csv') =>

@@ -10,6 +10,7 @@ import { isTerminal } from '@helpers/run-status'
 import { useCopy } from '@hooks/useCopy'
 import { useRun } from '@hooks/useRun'
 import { useTenant } from '@hooks/useTenant'
+import { downloadBlob } from '@lib/download'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,11 +27,8 @@ export function RunArtifactsTab({ id }: { id: string }) {
     refetchInterval: terminal ? false : 30_000,
   })
   const download = useMutation({
-    mutationFn: (a: Artifact) => runMutations.artifactUrl(slug, id, a.id),
-    onSuccess: (res) => {
-      const url = (res as { url?: string }).url
-      if (url) window.open(url, '_blank', 'noopener')
-    },
+    mutationFn: (a: Artifact) => runMutations.artifactBlob(slug, id, a.id),
+    onSuccess: (blob, a) => downloadBlob(a.name, blob),
     onError: (e) => toast.error(e),
   })
   const kindLabel = (a: Artifact) => t(`runs.artifacts.kinds.${a.kind}`, { defaultValue: a.kind })

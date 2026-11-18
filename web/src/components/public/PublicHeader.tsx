@@ -15,6 +15,7 @@ import {
   useStyles2,
 } from '@grafana/ui'
 import { formatDateTime } from '@helpers/time'
+import { downloadText } from '@lib/download'
 import { type Lang, setLang } from '@lib/i18n'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -68,18 +69,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 const EXT: Record<ExportFormat, string> = { md: 'md', json: 'json', csv: 'csv', pdf: 'md' }
 
-function download(name: string, text: string, mime: string) {
-  const blob = new Blob([text], { type: mime })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = name
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
-
 export function PublicHeader({ token, snapshot }: { token: string; snapshot?: ShareSnapshot }) {
   const { t, i18n } = useTranslation()
   const styles = useStyles2(getStyles)
@@ -91,7 +80,7 @@ export function PublicHeader({ token, snapshot }: { token: string; snapshot?: Sh
         .replace(/[^\w\d-]+/g, '-')
         .replace(/^-+|-+$/g, '')
         .toLowerCase()
-      download(`${base || 'report'}.${EXT[format]}`, text, mime)
+      downloadText(`${base || 'report'}.${EXT[format]}`, text, mime)
       toast.success(t('public.export.done'), {
         description: format === 'pdf' ? t('public.export.pdfNote') : undefined,
       })

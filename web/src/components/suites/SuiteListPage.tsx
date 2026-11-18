@@ -28,6 +28,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, ConfirmModal, Icon, Stack, Tooltip, useStyles2 } from '@grafana/ui'
 import { useTenant } from '@hooks/useTenant'
+import { downloadText } from '@lib/download'
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -124,13 +125,10 @@ function compositionView(s: Suite, t: TFunction) {
 
 // Downloads an export document as a .json file.
 export function downloadJson(name: string, doc: unknown): void {
-  const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${name.replace(/[^a-z0-9-_]+/gi, '-').toLowerCase()}.suite.json`
-  a.click()
-  URL.revokeObjectURL(url)
+  downloadText(
+    `${name.replace(/[^a-z0-9-_]+/gi, '-').toLowerCase()}.suite.json`,
+    JSON.stringify(doc, null, 2)
+  )
 }
 
 export function SuiteListPage({
