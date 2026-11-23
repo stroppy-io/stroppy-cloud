@@ -72,6 +72,11 @@ func Plan(kind catalog.DatabaseKind, params map[string]any) (topology.Plan, erro
 	}
 	p := topology.Plan{Kind: kind, Requirements: map[string]topology.Requirement{}}
 	k.plan(&p, params)
+	if p.DataShare == nil {
+		// A single-writer engine keeps a full copy on the primary and on
+		// every replica.
+		p.DataShare = map[string]float64{topology.RoleDB: 1, topology.RoleDBReplica: 1}
+	}
 	if k.login != nil {
 		p.Client.Login = k.login(params)
 	}

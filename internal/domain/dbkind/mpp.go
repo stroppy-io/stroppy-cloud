@@ -174,6 +174,9 @@ func planMPP(p *topology.Plan, kind catalog.DatabaseKind, params map[string]any)
 	perHost := topology.IntOf(params, "segments_per_host", 0)
 	p.Add(topology.RoleCoordinator, engine, 1)
 	p.Add(topology.RoleDB, engine, hosts)
+	// No mirrors: the segment hosts split the data, the coordinator keeps
+	// only the catalog.
+	p.DataShare = map[string]float64{topology.RoleDB: 1 / float64(max(1, hosts))}
 	// The coordinator reaches every segment host over ssh (gpinitsystem and the
 	// management utilities) and every primary over libpq; segments talk to each
 	// other and to the coordinator over the UDP interconnect on ports the

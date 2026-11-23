@@ -172,10 +172,12 @@ func (c *compilation) machines() error {
 		if !ok {
 			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role)).Because("size_unavailable", "role", node.Role, "provider", string(c.in.Provider.Kind), "size", rs.Size)
 		}
-		disk := cell.DefaultDiskGB
-		if rs.DiskGB == 0 && c.in.Workload.Protocol != catalog.ProtoNoop && (node.Role == "db" || strings.HasPrefix(node.Role, "db-")) {
-			disk = max(disk, spec.EstimateDataset(c.in.Workload.Segments).RecommendedGB)
+		estimate := spec.DatasetEstimate{}
+		if c.in.Workload.Protocol != catalog.ProtoNoop {
+			estimate = spec.EstimateDataset(c.in.Workload.Segments)
 		}
+		dataGB := library.DataDiskGB(c.in.Plan, node.Role, estimate)
+		disk := max(cell.DefaultDiskGB, dataGB)
 		if rs.DiskGB > 0 {
 			disk = rs.DiskGB
 		}
@@ -206,11 +208,7 @@ func (c *compilation) machines() error {
 			if node.Role != topology.RoleRunner && node.Role != topology.RoleProxy {
 				m.Disks = []spec.Disk{{Name: "data", GB: disk, Type: diskType, Mount: "/data"}}
 			}
-			estimate := spec.DatasetEstimate{}
-			if c.in.Workload.Protocol != catalog.ProtoNoop {
-				estimate = spec.EstimateDataset(c.in.Workload.Segments)
-			}
-			m, err = library.ResolveHardware(m, rs, estimate)
+			m, err = library.ResolveHardware(m, rs, dataGB)
 			if err != nil {
 				return fmt.Errorf("sizes.%s.machine: %w", node.Role, err)
 			}

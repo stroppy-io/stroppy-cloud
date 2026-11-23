@@ -289,7 +289,7 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 				runtime = dbSpec.Runtime
 			}
 			for index := 1; index <= n.Count; index++ {
-				m, err := previewHardware(role, index, rs, cell, estimate, runtime, spec.Execution)
+				m, err := previewHardware(role, index, rs, cell, DataDiskGB(res.DatabaseDerived.Plan, role, estimate), runtime, spec.Execution)
 				if err != nil {
 					issue("sizes."+role, "invalid_hardware", "ERROR", err.Error(), nil)
 					continue

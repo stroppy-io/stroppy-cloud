@@ -247,3 +247,20 @@ func TestCompilePostgresConfigVersions(t *testing.T) {
 		}
 	}
 }
+
+// A data disk is sized for the share of the dataset its machine stores:
+// TPC-DS SF1000 wants 3002 GB in all, a 1+4 MPP segment host a quarter of
+// it, the coordinator (no table data) its size's default.
+func TestDataDiskFollowsTheShareOfData(t *testing.T) {
+	t.Parallel()
+	c := mppCase(catalog.Greenplum, "7.1.0", nil)
+	c.segment = `{"name":"benchmark","workload":{"script":"tpcds","scale_factor":1000},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	out, _ := compileTuned(t, c)
+	// 3002 / 4 = 751, rounded up to the 93 GiB step of a nonreplicated disk.
+	if got := dataDisk(out, "db-1"); got != 837 {
+		t.Errorf("segment host disk %d GB, want 837", got)
+	}
+	if got := dataDisk(out, "coordinator-1"); got >= 100 {
+		t.Errorf("coordinator disk %d GB: it stores no table data", got)
+	}
+}

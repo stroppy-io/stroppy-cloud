@@ -3,6 +3,7 @@ package dbkind_test
 import (
 	"context"
 	"encoding/json"
+	"math"
 	"slices"
 	"testing"
 
@@ -149,5 +150,40 @@ func TestUnsupportedScript(t *testing.T) {
 		if why := dbkind.UnsupportedScript(catalog.DatabaseKind(c[0]), c[1], nil, c[2]); why != "" {
 			t.Fatalf("%v refused: %s", c, why)
 		}
+	}
+}
+
+// DataShare is the part of the workload's dataset one machine of a role
+// stores: a full copy on every node of a replicated single-writer engine,
+// the copies over the data nodes of a distributed one, none on roles that
+// hold no table data.
+func TestPlanDataShare(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name   string
+		kind   catalog.DatabaseKind
+		params map[string]any
+		want   map[string]float64
+	}{
+		{"postgres with replicas", catalog.Postgres, map[string]any{"version": "17", "replicas": 2}, map[string]float64{topology.RoleDB: 1, topology.RoleDBReplica: 1}},
+		{"greenplum 1+4", catalog.Greenplum, map[string]any{"version": "7.1.0", "segment_hosts": 4}, map[string]float64{topology.RoleDB: 0.25}},
+		{"cockroach three nodes", catalog.Cockroach, map[string]any{"version": "25.4", "nodes": 3}, map[string]float64{topology.RoleDB: 1}},
+		{"cockroach five nodes", catalog.Cockroach, map[string]any{"version": "25.4", "nodes": 5}, map[string]float64{topology.RoleDB: 0.6}},
+		{"ydb no redundancy", catalog.YDB, map[string]any{"version": "26.2", "fault_tolerance": "none", "storage_nodes": 3, "database_nodes": 3}, map[string]float64{topology.RoleDB: 1.0 / 3}},
+		{"ydb block-4-2", catalog.YDB, map[string]any{"version": "26.2", "fault_tolerance": "block-4-2", "storage_nodes": 8, "database_nodes": 3}, map[string]float64{topology.RoleDB: 1.5 / 8}},
+		{"ydb mirror-3-dc", catalog.YDB, map[string]any{"version": "26.2", "fault_tolerance": "mirror-3-dc", "storage_nodes": 9, "database_nodes": 3}, map[string]float64{topology.RoleDB: 3.0 / 9}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p, err := dbkind.Plan(tc.kind, bake(t, tc.kind, tc.params))
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, n := range p.Nodes {
+				if got, want := p.DataShare[n.Role], tc.want[n.Role]; math.Abs(got-want) > 1e-9 {
+					t.Errorf("%s: share %v, want %v", n.Role, got, want)
+				}
+			}
+		})
 	}
 }

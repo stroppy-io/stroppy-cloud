@@ -109,6 +109,10 @@ type Plan struct {
 	Requirements map[string]Requirement
 	// Client is where stroppy connects: role, protocol and port.
 	Client Endpoint
+	// DataShare is, per role, the part of the workload's dataset one
+	// machine of that role stores (1 = a full copy); a role absent stores
+	// no table data. Disks are sized from it.
+	DataShare map[string]float64
 }
 
 // Endpoint is the client entry of the database.

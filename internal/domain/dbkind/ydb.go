@@ -90,12 +90,30 @@ func ydbManaged() Kind {
 	}
 }
 
+// ydbErasureCopies is how many bytes the storage keeps per byte of data
+// under an erasure.
+//
+// doc: ydb.tech/docs/en/concepts/topology — redundancy of the modes
+func ydbErasureCopies(erasure string) float64 {
+	switch erasure {
+	case "block-4-2":
+		return 1.5
+	case "mirror-3-dc":
+		return 3
+	default:
+		return 1
+	}
+}
+
 func planYDB(p *topology.Plan, params map[string]any) {
 	storage := topology.IntOf(params, "storage_nodes", 1)
 	compute := topology.IntOf(params, "database_nodes", 1)
 	pdisks := topology.IntOf(params, "pdisks_per_node", 1)
 	p.Add(topology.RoleDB, "ydb", storage)
 	p.Add(topology.RoleDBCompute, "ydb", compute)
+	// The storage nodes keep the data at the erasure's overhead; database
+	// nodes keep none.
+	p.DataShare = map[string]float64{topology.RoleDB: ydbErasureCopies(topology.StrOf(params, "fault_tolerance", "none")) / float64(max(1, storage))}
 	p.Flows = append(p.Flows, topology.Flow{From: topology.RoleDBCompute, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001}, topology.Flow{From: topology.RoleDB, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001})
 	p.Client = topology.Endpoint{Role: topology.RoleDBCompute, Protocol: "ydb_grpc", Port: 2136}
 	// The compiler's own floor: every pdisk file plus filesystem headroom.

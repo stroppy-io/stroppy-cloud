@@ -31,7 +31,10 @@ identity — self-hosted Ory Kratos (`deployments/kratos/`). Рабочий до
 Всё, что продукт знает о kind'е, кроме развёртывания, — один файл в
 `internal/domain/dbkind/<kind>.go`: запись каталога (роли, версии,
 протоколы, шаблоны), план машин из параметров, логин клиента, протоколы
-workload. URL подключения строит `dbkind.URL` из плана. Развёртывание —
+workload, долю набора данных на машину каждой роли (`Plan.DataShare`: по
+умолчанию полная копия на `db` и `db-replica`; распределённые kind'ы делят
+по узлам с учётом копий). Диск данных = рекомендация по объёму × эта доля
+(`library.DataDiskGB`), роль без доли получает диск своего размера. URL подключения строит `dbkind.URL` из плана. Развёртывание —
 рецепт в `internal/domain/compile/recipe_<kind>.go`, регистрация в
 `compile.recipes`. Параметры — схема `pipelines/schemas/dbparams/<kind>.go`.
 

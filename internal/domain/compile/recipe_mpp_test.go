@@ -430,7 +430,7 @@ func TestMPPStatementMemCountsBenchmarkStreams(t *testing.T) {
 		{"explicit four streams", seg(`,"benchmark":true,"streams":4`), "1382MB"}, // 0.75 × 7372 / 4
 		{"default streams", seg(`,"benchmark":true`), "1382MB"},
 		{"six streams", seg(`,"benchmark":true,"streams":6`), "921MB"}, // 0.75 × 7372 / 6
-		{"query set without benchmark", seg(``), "5529MB"},              // one VU, one session
+		{"query set without benchmark", seg(``), "5529MB"},             // one VU, one session
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()

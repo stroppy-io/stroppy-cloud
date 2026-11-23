@@ -36,9 +36,17 @@ func cockroach() Kind {
 	}
 }
 
+// cockroachReplicas is the default replication factor of a range.
+//
+// doc: cockroachlabs.com/docs/stable/configure-replication-zones — num_replicas
+const cockroachReplicas = 3
+
 func planCockroach(p *topology.Plan, params map[string]any) {
 	nodes := topology.IntOf(params, "nodes", 3)
 	p.Add(topology.RoleDB, "cockroach", nodes)
+	// Every range is kept cockroachReplicas times (fewer on a smaller
+	// cluster), spread over the nodes.
+	p.DataShare = map[string]float64{topology.RoleDB: float64(min(cockroachReplicas, nodes)) / float64(max(1, nodes))}
 	if nodes > 1 {
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleDB, To: topology.RoleDB, Protocol: "cockroach-rpc", Port: 26257})
 	}
