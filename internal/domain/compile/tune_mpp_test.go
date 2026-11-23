@@ -9,17 +9,23 @@ func TestMPPMemoryOf(t *testing.T) {
 		ramMB, instances, queries int
 		want                      mppMemory
 	}{
-		// SynxDB's host: 128 GB, 8 primaries — their 15000 MB is the same 90%.
-		{"128 GB × 8, one query", 131072, 8, 1, mppMemory{VmemMB: 14745, StatementMB: 11058, MaxStatementMB: 13270, WorkMB: 1024, CacheMB: 8192}},
-		{"128 GB × 16, one query", 131072, 16, 1, mppMemory{VmemMB: 7372, StatementMB: 5529, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
-		{"128 GB × 16, five queries", 131072, 16, 5, mppMemory{VmemMB: 7372, StatementMB: 1105, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
-		{"16 GB × 2, one query", 16384, 2, 1, mppMemory{VmemMB: 7372, StatementMB: 5529, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
-		{"8 GB coordinator", 8192, 1, 1, mppMemory{VmemMB: 7372, StatementMB: 5529, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
+		// gp_vmem_protect_limit is 90% of what the host leaves after its own
+		// processes (3 GB above 32 GB of RAM, else 2 GB): under strict
+		// overcommit the kernel refuses every allocation on the host once
+		// they all reach the commit limit, so the engine must stop first.
+		{"128 GB × 8, one query", 131072, 8, 1, mppMemory{VmemMB: 14400, StatementMB: 10800, MaxStatementMB: 12960, WorkMB: 1024, CacheMB: 8192}},
+		{"128 GB × 16, one query", 131072, 16, 1, mppMemory{VmemMB: 7200, StatementMB: 5400, MaxStatementMB: 6480, WorkMB: 819, CacheMB: 4096}},
+		{"128 GB × 16, five queries", 131072, 16, 5, mppMemory{VmemMB: 7200, StatementMB: 1080, MaxStatementMB: 6480, WorkMB: 819, CacheMB: 4096}},
+		{"16 GB × 2, one query", 16384, 2, 1, mppMemory{VmemMB: 6451, StatementMB: 4838, MaxStatementMB: 5805, WorkMB: 819, CacheMB: 4096}},
+		// An 8 GB coordinator died at 7372 MB: agent, docker and exporters
+		// took the rest of the commit limit during a TPC-DS SF500 load.
+		{"8 GB coordinator", 8192, 1, 1, mppMemory{VmemMB: 5529, StatementMB: 4146, MaxStatementMB: 4976, WorkMB: 819, CacheMB: 4096}},
 		// Many queries cannot push statement_mem under the engine's own 125 MB.
-		{"floor of statement_mem", 16384, 2, 128, mppMemory{VmemMB: 7372, StatementMB: 125, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
+		{"floor of statement_mem", 16384, 2, 128, mppMemory{VmemMB: 6451, StatementMB: 125, MaxStatementMB: 5805, WorkMB: 819, CacheMB: 4096}},
 		// work_mem has the engine's 32 MB as its floor and 1 GB as its ceiling.
-		{"work_mem floor", 4096, 16, 1, mppMemory{VmemMB: 230, StatementMB: 172, MaxStatementMB: 207, WorkMB: 32, CacheMB: 128}},
-		{"zero queries count as one", 16384, 2, 0, mppMemory{VmemMB: 7372, StatementMB: 5529, MaxStatementMB: 6634, WorkMB: 819, CacheMB: 4096}},
+		// statement_mem keeps the engine's 125 MB floor only below max_statement_mem.
+		{"work_mem floor", 4096, 16, 1, mppMemory{VmemMB: 115, StatementMB: 102, MaxStatementMB: 103, WorkMB: 32, CacheMB: 128}},
+		{"zero queries count as one", 16384, 2, 0, mppMemory{VmemMB: 6451, StatementMB: 4838, MaxStatementMB: 5805, WorkMB: 819, CacheMB: 4096}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()

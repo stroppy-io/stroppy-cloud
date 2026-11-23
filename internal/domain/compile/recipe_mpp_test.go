@@ -330,8 +330,8 @@ func TestMPPAutoGUCs(t *testing.T) {
 	out, eff := compileTuned(t, mppCase(catalog.Greengage, "7.5.1", nil))
 	segments, coordinator := gucsOf(t, out, "db"), gucsOf(t, out, "coordinator")
 	for k, want := range map[string]string{
-		// 0.9 × 131072 MB / 16 segments.
-		"gp_vmem_protect_limit": "7372", "max_statement_mem": "6634MB", "statement_mem": "5529MB",
+		// 0.9 × (131072 − 3072) MB / 16 segments.
+		"gp_vmem_protect_limit": "7200", "max_statement_mem": "6480MB", "statement_mem": "5400MB",
 		"work_mem": "819MB", "effective_cache_size": "4096MB", "runaway_detector_activation_percent": "100",
 		"gp_resource_manager": "queue", "gp_autostats_mode": "none", "autovacuum": "off", "gp_max_packet_size": "1420",
 		"gp_interconnect_queue_depth": "16", "gp_interconnect_snd_queue_depth": "16", "max_connections": "750",
@@ -345,8 +345,8 @@ func TestMPPAutoGUCs(t *testing.T) {
 	if cfg := fileIn(containerNamed(t, out, "coordinator-1-greengage"), "/etc/stroppy/gpinitsystem_config"); strings.Contains(cfg, "CHECK_POINT_SEGMENTS") {
 		t.Errorf("CHECK_POINT_SEGMENTS on a PostgreSQL 12 base:\n%s", cfg)
 	}
-	// The coordinator is one instance on 8 GB.
-	for k, want := range map[string]string{"gp_vmem_protect_limit": "7372", "max_connections": "250", "statement_mem": "5529MB", "work_mem": "819MB"} {
+	// The coordinator is one instance on 8 GB, 2 GB of it the host's own.
+	for k, want := range map[string]string{"gp_vmem_protect_limit": "5529", "max_connections": "250", "statement_mem": "4146MB", "work_mem": "819MB"} {
 		if coordinator[k] != want {
 			t.Errorf("coordinator %s = %q, want %q", k, coordinator[k], want)
 		}
@@ -387,8 +387,9 @@ func TestMPPAutoKernel(t *testing.T) {
 	for machine, want := range map[string][]string{
 		// 128 GB: ratio 100 × (1 − 0.026 × 0.9), dirty ratios near 1.5 and 4 GiB, 3% free.
 		"db-1": {"vm.overcommit_memory = 2", "vm.overcommit_ratio = 97", "vm.dirty_background_ratio = 1", "vm.dirty_ratio = 3", "vm.min_free_kbytes = 4026531"},
-		// 8 GB: the vendor ratios of a host under 64 GB.
-		"coordinator-1": {"vm.overcommit_memory = 2", "vm.overcommit_ratio = 97", "vm.dirty_background_ratio = 3", "vm.dirty_ratio = 10", "vm.min_free_kbytes = 251658"},
+		// 8 GB: the vendor ratios of a host under 64 GB; the smaller
+		// gp_vmem_protect_limit leaves ratio 98.
+		"coordinator-1": {"vm.overcommit_memory = 2", "vm.overcommit_ratio = 98", "vm.dirty_background_ratio = 3", "vm.dirty_ratio = 10", "vm.min_free_kbytes = 251658"},
 	} {
 		for _, w := range want {
 			if !strings.Contains(byMachine[machine], w) {
@@ -410,8 +411,8 @@ func TestMPPStatementMemShrinksWithConcurrency(t *testing.T) {
 	c.vus = 4
 	out, _ := compileTuned(t, c)
 	g := gucsOf(t, out, "db")
-	// 0.75 × 7372 / 4.
-	if g["statement_mem"] != "1382MB" || g["max_statement_mem"] != "6634MB" {
+	// 0.75 × 7200 / 4.
+	if g["statement_mem"] != "1350MB" || g["max_statement_mem"] != "6480MB" {
 		t.Errorf("statement_mem %s, max_statement_mem %s", g["statement_mem"], g["max_statement_mem"])
 	}
 }
@@ -427,10 +428,10 @@ func TestMPPStatementMemCountsBenchmarkStreams(t *testing.T) {
 	for _, tc := range []struct {
 		name, segment, want string
 	}{
-		{"explicit four streams", seg(`,"benchmark":true,"streams":4`), "1382MB"}, // 0.75 × 7372 / 4
-		{"default streams", seg(`,"benchmark":true`), "1382MB"},
-		{"six streams", seg(`,"benchmark":true,"streams":6`), "921MB"}, // 0.75 × 7372 / 6
-		{"query set without benchmark", seg(``), "5529MB"},             // one VU, one session
+		{"explicit four streams", seg(`,"benchmark":true,"streams":4`), "1350MB"}, // 0.75 × 7200 / 4
+		{"default streams", seg(`,"benchmark":true`), "1350MB"},
+		{"six streams", seg(`,"benchmark":true,"streams":6`), "900MB"}, // 0.75 × 7200 / 6
+		{"query set without benchmark", seg(``), "5400MB"},             // one VU, one session
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -449,7 +450,7 @@ func TestMPPSummary(t *testing.T) {
 	if out.Tuning.Mode != run.TuningAuto || out.Tuning.Durability != run.DurabilityFsync {
 		t.Fatalf("tuning = %+v", out.Tuning)
 	}
-	if out.Tuning.Auto["db"]["cfg.mpp.gucs@1"]["gp_vmem_protect_limit"] != 7372 || out.Tuning.Auto["coordinator"]["cfg.mpp.gucs@1"]["optimizer"] != "on" {
+	if out.Tuning.Auto["db"]["cfg.mpp.gucs@1"]["gp_vmem_protect_limit"] != 7200 || out.Tuning.Auto["coordinator"]["cfg.mpp.gucs@1"]["optimizer"] != "on" {
 		t.Errorf("auto values %v", out.Tuning.Auto)
 	}
 	stock, _ := compileTuned(t, mppCase(catalog.Greengage, "7.5.1", map[string]any{"tuning": "stock"}))

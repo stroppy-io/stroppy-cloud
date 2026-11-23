@@ -57,6 +57,16 @@ func (c *compilation) hostOf(machine string) host {
 	return host{}
 }
 
+// hostReserveMB is the memory a database machine keeps for what is not the
+// database: the OS, Docker, the Graphene agent and the exporters (2 GB up
+// to 32 GB of RAM, 3 GB above).
+func hostReserveMB(memoryMB int) int {
+	if memoryMB > 32*1024 {
+		return 3072
+	}
+	return 2048
+}
+
 // defaultVUs stands in for a workload whose segments name no VU count.
 const defaultVUs = 128
 

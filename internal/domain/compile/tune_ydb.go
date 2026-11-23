@@ -60,16 +60,11 @@ func ydbCPUCount(role string, cpu int) int {
 }
 
 // ydbHardLimitBytes is memory_controller_config.hard_limit_bytes: the
-// machine's RAM less what the OS, Docker, the agent and node_exporter
-// take (2 GB up to 32 GB of RAM, 3 GB above). The container runs without
-// a cgroup limit, so YDB would otherwise count the whole machine as its
-// own. 0 when the machine is too small to spare the reserve.
+// machine's RAM less the host's own reserve (hostReserveMB). The container
+// runs without a cgroup limit, so YDB would otherwise count the whole
+// machine as its own. 0 when the machine is too small to spare the reserve.
 func ydbHardLimitBytes(memoryMB int) int64 {
-	reserveMB := 2048
-	if memoryMB > 32*1024 {
-		reserveMB = 3072
-	}
-	limitMB := memoryMB - reserveMB
+	limitMB := memoryMB - hostReserveMB(memoryMB)
 	if limitMB < 1024 {
 		return 0
 	}

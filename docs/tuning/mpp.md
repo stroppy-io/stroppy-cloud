@@ -82,7 +82,7 @@ Greenplum, Greengage, WarehousePG, OpenGPDB и Apache Cloudberry — пять д
 
 | Параметр | auto | Источник |
 |---|---|---|
-| `gp_vmem_protect_limit` | `0.9 · RAM / P` МБ (128 ГБ, P=16: 7372; SynxDB: 15000 × 8 = 91% хоста) | [отчёт SYNX]; движок по умолчанию 8192 МБ на любой хост [код], поэтому на большой машине без правки он ограничивает |
+| `gp_vmem_protect_limit` | `0.9 · (RAM − резерв) / P` МБ, резерв хоста 2 ГБ до 32 ГБ RAM и 3 ГБ выше (128 ГБ, P=16: 7200; SynxDB: 15000 × 8 = 91% хоста). Движок считает только свою память, а при строгом overcommit ядро отказывает всем процессам хоста, как только их суммарный commit дойдёт до лимита: координатор 8 ГБ с лимитом 7372 МБ умер на загрузке TPC-DS SF500 (агент, docker и экспортёры заняли остаток) [проверено] | [отчёт SYNX]; движок по умолчанию 8192 МБ на любой хост [код], поэтому на большой машине без правки он ограничивает |
 | `max_statement_mem` | `0.9 · gp_vmem_protect_limit` | [отчёт SYNX] 14000 из 15000 = 93%; [наше] 90%; пишется **перед** `statement_mem` (`statement_mem` обязан быть строго меньше, дефолт 2000 МБ) [код] |
 | `statement_mem` | `max(125 МБ, 0.75 · gp_vmem_protect_limit / Q)` | [отчёт SYNX] 12000 из 15000 = 80%; официальная формула D6/D7: `0.9 · limit / Q`; [наше] 75%, деление на `Q` — чтобы параллельные запросы не обещали одну память дважды |
 | `work_mem` | `clamp(0.1 · RAM / P, 32 МБ, 1 ГБ)` | [KIT avamingli] `min(1 ГБ, RAM · 10% / сегментов)`; D7: не связана с `statement_mem`; влияние на исполнитель в исходниках не проверено |
@@ -104,9 +104,10 @@ Greenplum, Greengage, WarehousePG, OpenGPDB и Apache Cloudberry — пять д
 | `log_*` | дефолты | `log_min_messages = warning`, без `log_statement` — уже тихо |
 | `gp_workfile_compression`, `gp_resqueue_memory_policy` | дефолты | [KIT] расходятся; `eager_free` и так в `postgresql.conf.sample` всех форков |
 
-Пример: сегмент-хост 32 vCPU / 128 ГБ, P = 16, Q = 1 — `gp_vmem_protect_limit` 7372, `max_statement_mem`
-6634 МБ, `statement_mem` 5529 МБ, `work_mem` 819 МБ, `effective_cache_size` 4096 МБ, `max_connections` 750
-(координатор 250). Координатор 2 vCPU / 8 ГБ: те же значения памяти, один экземпляр.
+Пример: сегмент-хост 32 vCPU / 128 ГБ, P = 16, Q = 1 — `gp_vmem_protect_limit` 7200, `max_statement_mem`
+6480 МБ, `statement_mem` 5400 МБ, `work_mem` 819 МБ, `effective_cache_size` 4096 МБ, `max_connections` 750
+(координатор 250). Координатор 2 vCPU / 8 ГБ, один экземпляр: `gp_vmem_protect_limit` 5529,
+`max_statement_mem` 4976 МБ, `statement_mem` 4146 МБ, `vm.overcommit_ratio` 98.
 
 ## 3. Ядро хоста
 

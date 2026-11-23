@@ -85,9 +85,14 @@ type mppMemory struct {
 
 // mppMemoryOf sizes the instances of a machine with ramMB of RAM: the
 // segments of a segment host, or the single coordinator. concurrency is the
-// queries that run at once.
+// queries that run at once. gp_vmem_protect_limit shares what the host
+// leaves after its own reserve: the engine counts only its own memory, and
+// under strict overcommit the kernel refuses every allocation on the host
+// once all processes reach the commit limit (an 8 GB coordinator at the
+// full-RAM share died loading TPC-DS SF500).
 func mppMemoryOf(ramMB, instances, concurrency int) mppMemory {
-	vmem := int(mppVmemShare * float64(ramMB) / float64(instances))
+	usableMB := max(0, ramMB-hostReserveMB(ramMB))
+	vmem := int(mppVmemShare * float64(usableMB) / float64(instances))
 	maxStatement := int(mppMaxStatementShare * float64(vmem))
 	statement := min(maxStatement-1, max(mppDefaultStatementMB, int(mppStatementShare*float64(vmem)/float64(max(1, concurrency)))))
 	return mppMemory{
