@@ -1,11 +1,11 @@
 {
   "repository": "https://github.com/stroppy-io/stroppy",
-  "source_commit": "e69fb5ceb56d35afc613cb680ca700cc04016fb0",
+  "source_commit": "453639f671ae3e4da45eac0fdd791a99eb68c607",
   "source_dirty": false,
-  "binary_sha256": "14a6131671f9fdca9f75467102de8f0864a4276b7e81c46e5b68b728ffc2ae4d",
+  "binary_sha256": "f78c781fa3f9ba76d63d4a61023e5570db15528fe14d49ae23a0f59f04c5aa8f",
   "binary_vcs": [
-    "build\tvcs.revision=e69fb5ceb56d35afc613cb680ca700cc04016fb0",
-    "build\tvcs.time=2026-11-17T12:25:22Z",
+    "build\tvcs.revision=453639f671ae3e4da45eac0fdd791a99eb68c607",
+    "build\tvcs.time=2026-11-24T15:03:11Z",
     "build\tvcs.modified=false"
   ],
   "fixture_sha256": {

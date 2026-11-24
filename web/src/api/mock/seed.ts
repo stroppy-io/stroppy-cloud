@@ -423,8 +423,8 @@ export function stroppyCatalog(): StroppyCatalog {
     source: 'static',
     versions: [
       {
-        version: '6.4.2',
-        image: 'ghcr.io/stroppy-io/stroppy:v6.4.2.74',
+        version: '6.4.3',
+        image: 'ghcr.io/stroppy-io/stroppy:v6.4.3.75',
         default: true,
         baseline: true,
         protocols: ['pg', 'mysql', 'ydb_grpc', 'ydb_grpcs', 'picodata', 'cockroach', 'noop'],
@@ -729,7 +729,7 @@ function workloads(): Workload[] {
     extra: Partial<Schemas['Entity']> = {}
   ): Workload => ({
     ...entity(id, name, author, age, extra),
-    stroppy_version: '6.4.2',
+    stroppy_version: '6.4.3',
     protocol,
     segments,
     options: {

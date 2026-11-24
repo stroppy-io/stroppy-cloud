@@ -386,7 +386,7 @@ function DocSample({ mode }: { mode: Mode }) {
             ))}
           </g>
         </svg>
-        <small>stroppy 6.4.2 · 2026-11-17</small>
+        <small>stroppy 6.4.3 · 2026-11-24</small>
       </div>
 
       <nav>
