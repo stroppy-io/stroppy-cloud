@@ -115,20 +115,35 @@ type Ingress struct {
 
 // Machine is one VM of the run.
 type Machine struct {
-	Name         string            `json:"name"`
-	Role         string            `json:"role"`
-	CPU          int               `json:"cpu"`
-	MemoryGB     int               `json:"memory_gb"`
-	BootDisk     *BootDisk         `json:"boot_disk,omitempty"`
-	CoreFraction int               `json:"core_fraction,omitempty"`
-	Preemptible  *bool             `json:"preemptible,omitempty"`
-	PublicIP     *bool             `json:"public_ip,omitempty"`
-	Disks        []Disk            `json:"disks,omitempty"`
-	Image        string            `json:"image"`
-	Location     string            `json:"location"`
-	InstanceType string            `json:"instance_type"`
-	Labels       map[string]string `json:"labels,omitempty"`
+	Name         string    `json:"name"`
+	Role         string    `json:"role"`
+	CPU          int       `json:"cpu"`
+	MemoryGB     int       `json:"memory_gb"`
+	BootDisk     *BootDisk `json:"boot_disk,omitempty"`
+	CoreFraction int       `json:"core_fraction,omitempty"`
+	// NetworkAcceleration overrides the network the provider gives the VM;
+	// empty lets the provider decide (YC: accelerated at a full core).
+	NetworkAcceleration NetworkAcceleration `json:"network_acceleration,omitempty"`
+	Preemptible         *bool               `json:"preemptible,omitempty"`
+	PublicIP            *bool               `json:"public_ip,omitempty"`
+	Disks               []Disk              `json:"disks,omitempty"`
+	Image               string              `json:"image"`
+	Location            string              `json:"location"`
+	InstanceType        string              `json:"instance_type"`
+	Labels              map[string]string   `json:"labels,omitempty"`
 }
+
+// NetworkAcceleration is how a VM's packets are processed.
+type NetworkAcceleration string
+
+// Network accelerations (YC networkAccelerationType).
+const (
+	// NetworkSoftwareAccelerated processes packets on host cores (YC allows
+	// it only at a full core).
+	NetworkSoftwareAccelerated NetworkAcceleration = "software_accelerated"
+	// NetworkStandard processes packets in the guest's virtio path.
+	NetworkStandard NetworkAcceleration = "standard"
+)
 
 // BootDisk configures the disposable OS disk. Omission uses 40 GiB SSD.
 type BootDisk struct {

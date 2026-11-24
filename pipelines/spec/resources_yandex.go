@@ -15,6 +15,9 @@ func checkYandexMachine(m Machine, p string, add func(string, string, string, st
 	if fraction == 0 {
 		fraction = 100
 	}
+	if fraction < 100 && m.NetworkAcceleration == NetworkSoftwareAccelerated {
+		add(p+".network_acceleration", "yc_network_acceleration", "ERROR", "YC accelerates the network of full-core machines only; use core_fraction 100 or the standard network")
+	}
 	var cores []int
 	maxRatio, maxRAM := 0.0, 0
 	known := true

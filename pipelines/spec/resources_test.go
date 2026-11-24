@@ -79,6 +79,11 @@ func TestResourcesRejectImpossibleLayouts(t *testing.T) {
 			r.Containers[0].Files = []File{{Path: "/etc/my.cnf", Content: "innodb_buffer_pool_size = 16384M\n"}}
 		}, "memory_overcommit"},
 		{"platform combination", func(r *Run) { r.Machines[0].CPU = 3 }, "yc_machine_shape"},
+		// YC accelerates the network of full-core machines only.
+		{"accelerated network below a full core", func(r *Run) {
+			r.Machines[0].CoreFraction, r.Machines[0].CPU, r.Machines[0].MemoryGB = 50, 2, 4
+			r.Machines[0].NetworkAcceleration = NetworkSoftwareAccelerated
+		}, "yc_network_acceleration"},
 		{"unknown host target", func(r *Run) {
 			r.HostPrep = []HostPrep{{Role: "db", Machine: "runner-1", Kind: HostPrepScript, Content: "true"}}
 		}, "selector"},

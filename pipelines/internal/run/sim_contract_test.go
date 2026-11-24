@@ -134,6 +134,27 @@ func TestSimulatedFullCoreMachineGetsAcceleratedNetwork(t *testing.T) {
 	s.w.AssertNoLeaks(t)
 }
 
+// A full-core machine may opt out of the accelerated network, so a run can
+// tell whether the host-side packet processing changes what it measures.
+func TestSimulatedFullCoreMachineMayKeepStandardNetwork(t *testing.T) {
+	s := newSim(t)
+	wf := pipelinetestWorkflow(s)
+	r := noopRun()
+	r.Machines[0].NetworkAcceleration = spec.NetworkStandard
+	s.converge(t, r, map[string]string{"runner-1": "10.130.0.20"})
+	s.w.OnAgentActivity(s.agent(r, "runner-1"), activities.NameRunSegment, mock.Anything, mock.Anything).Return(activities.RunSegmentResult{Result: spec.SegmentResult{Name: "smoke", Status: spec.SegmentCompleted}}, nil).Once()
+	s.w.Env.ExecuteWorkflow(wf, r)
+	require.NoError(t, s.w.Env.GetWorkflowError())
+	vm, ok := s.w.Resource(ref.OwnerRef(ycInstanceKind + "/" + provision.NewNames(r.Tenant, r.RunID).Machine("runner-1")))
+	require.True(t, ok)
+	var raw any
+	require.NoError(t, json.Unmarshal(vm.Spec, &raw))
+	params := findObject(raw, "forProvider")
+	require.Equal(t, float64(100), params["resources"].([]any)[0].(map[string]any)["coreFraction"])
+	require.Equal(t, "standard", params["networkAccelerationType"])
+	s.w.AssertNoLeaks(t)
+}
+
 func findObject(value any, key string) map[string]any {
 	switch v := value.(type) {
 	case map[string]any:

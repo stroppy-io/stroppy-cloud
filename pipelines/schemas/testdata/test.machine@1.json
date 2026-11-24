@@ -76,6 +76,28 @@
       "unit": "%"
     },
     {
+      "choice": {
+        "options": [
+          {
+            "label": "Software accelerated",
+            "value": {
+              "stringValue": "software_accelerated"
+            }
+          },
+          {
+            "label": "Standard",
+            "value": {
+              "stringValue": "standard"
+            }
+          }
+        ]
+      },
+      "description": "YC networkAccelerationType; omission means software_accelerated at a full core and standard below it. YC refuses software_accelerated below a full core. Unsupported on AWS.",
+      "group": "Network",
+      "name": "network_acceleration",
+      "title": "Network acceleration"
+    },
+    {
       "bool": {},
       "description": "Override the provider profile's preemptible/spot setting; explicit false is preserved.",
       "group": "Compute",

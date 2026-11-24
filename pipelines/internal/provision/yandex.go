@@ -205,9 +205,12 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 		// The accelerated network processes packets on host cores, not the
 		// guest's: the runner-database round trip stops competing with the
 		// workload. YC allows it only for a full core.
-		networkAcceleration := "standard"
+		networkAcceleration := string(spec.NetworkStandard)
 		if coreFraction == 100 {
-			networkAcceleration = "software_accelerated"
+			networkAcceleration = string(spec.NetworkSoftwareAccelerated)
+		}
+		if m.NetworkAcceleration != "" {
+			networkAcceleration = string(m.NetworkAcceleration)
 		}
 		vmPublic, preemptible := public, st.Preemptible
 		if m.PublicIP != nil {

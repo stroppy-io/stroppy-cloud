@@ -39,6 +39,8 @@ export interface TestSizes1Machine {
   boot_disk?: TestSizes1MachineBootDisk | null;
   /** Guaranteed CPU. YC guaranteed CPU percentage; omission means 100. Unsupported on AWS. [%] */
   core_fraction?: number | string;
+  /** Network acceleration. YC networkAccelerationType; omission means software_accelerated at a full core and standard below it. YC refuses software_accelerated below a full core. Unsupported on AWS. */
+  network_acceleration?: "software_accelerated" | "standard";
   /** Preemptible. Override the provider profile's preemptible/spot setting; explicit false is preserved. */
   preemptible?: boolean;
   /** Public IP. Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls. */

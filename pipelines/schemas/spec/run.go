@@ -116,6 +116,9 @@ func Run() *schemapb.Schema {
 						schemapb.Str("type").Title("Type").Group("Storage").Desc("Cloud disk type.").Pattern(`^[a-z0-9][a-z0-9-]{0,31}$`).Required(),
 					).Title("Boot disk").Group("Storage").Desc("Omit for a 40 GiB SSD OS disk.").Strict(),
 					schemapb.Int64("core_fraction").Title("Guaranteed CPU").Group("Compute").Desc("YC guaranteed CPU percentage; omission means 100. Unsupported on AWS.").Unit("%").Gte(5).Lte(100),
+					schemapb.Choice("network_acceleration").Title("Network acceleration").Group("Network").
+						Desc("YC networkAccelerationType; omission means software_accelerated at a full core and standard below it. YC refuses software_accelerated below a full core. Unsupported on AWS.").
+						Opt(schemapb.StrV("software_accelerated"), "Software accelerated").Opt(schemapb.StrV("standard"), "Standard"),
 					schemapb.Bool("preemptible").Title("Preemptible").Group("Compute").Desc("Override the provider profile's preemptible/spot setting; explicit false is preserved."),
 					schemapb.Bool("public_ip").Title("Public IP").Group("Network").Desc("Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls."),
 					schemapb.List("disks",
