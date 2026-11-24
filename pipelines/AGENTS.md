@@ -67,7 +67,12 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   на хосте (`machine.Shell`, только чтение, 10 с и 64 KiB на команду):
   `ip -br addr`, `ip route`, `ip neigh`, `ss -ltnp`, `ss -tn state syn-sent`,
   `iptables-save`/`nft list ruleset` (если есть), sysctl портов/rp_filter/
-  forward, хвост `dmesg`, `/etc/sysctl.d/90-stroppy-*.conf`. Файл
+  forward, хвост `dmesg`, `/etc/sysctl.d/90-stroppy-*.conf`, журналы ядра и
+  системы с уровня warning с момента загрузки (soft lockup, RCU stall, OOM,
+  watchdog сервисов), `/proc/cmdline` и `kernel.printk` (консоль, куда ядро
+  пишет), процессы с nice/приоритетом/CPU, PSI и `meminfo`, как завершились
+  контейнеры (exit code, OOMKilled) и ошибки из логов СУБД в каталогах `/data`
+  (activity 5 мин на все команды). Файл
   `netdiag/<probe|reach>-<machine>.txt` → артефакт
   `<run8>-netdiag-<probe|reach>-<machine>` на 30 дней.
 - Политика: неудачный путь до порта контейнера kind `database`/`proxy`/

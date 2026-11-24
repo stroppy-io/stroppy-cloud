@@ -36,8 +36,9 @@ const (
 	netProbeDial    = 3 * time.Second
 	netProbeWindow  = 10 * time.Second
 	netProbeTimeout = time.Minute
-	// netSnapshotTimeout covers ten commands of ten seconds each.
-	netSnapshotTimeout = 3 * time.Minute
+	// netSnapshotTimeout covers every snapshot command at its ten-second
+	// bound (22 commands) with room to publish.
+	netSnapshotTimeout = 5 * time.Minute
 	// netPairsInMilestone bounds the milestone; failed pairs go first.
 	netPairsInMilestone = 2000
 	// netReasonPairs is how many failed paths the run's error names.

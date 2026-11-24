@@ -207,6 +207,22 @@ var snapshotCommands = []string{
 	"tail -n 40 /var/log/dpkg.log",
 	"journalctl --no-pager -n 40 -u unattended-upgrades -u apt-daily.service -u apt-daily-upgrade.service",
 	"journalctl --no-pager -n 60 -u systemd-networkd",
+	// What stalled or killed a process: kernel and system warnings since
+	// boot (soft lockups, RCU stalls, OOM kills, service watchdogs), newest
+	// last, and the console they are printed to.
+	"journalctl -k -b --no-pager -o short-iso -p warning | tail -n 400",
+	"journalctl -b --no-pager -o short-iso -p warning | tail -n 300",
+	"cat /proc/cmdline; sysctl kernel.printk",
+	// Who held the CPUs and memory, and at which niceness.
+	"ps -eo pid,ppid,ni,pri,psr,pcpu,pmem,rss,stat,etime,comm --sort=-pcpu | head -n 80",
+	"cat /proc/pressure/cpu /proc/pressure/memory /proc/pressure/io",
+	"cat /proc/meminfo",
+	// How the containers ended.
+	"docker ps -a --format '{{.Names}}\t{{.Status}}'",
+	"docker ps -aq | xargs -r docker inspect -f '{{.Name}} exit={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}} restarts={{.RestartCount}} finished={{.State.FinishedAt}} error={{.State.Error}}'",
+	// The errors the databases logged in their data directories (PostgreSQL
+	// family and the Greenplum family write log/*.csv or log/*.log there).
+	"find /data -maxdepth 7 -path '*/log/*' \\( -name '*.csv' -o -name '*.log' \\) -mmin -720 2>/dev/null | head -n 40 | while read -r f; do echo \"== $f\"; grep -E 'PANIC|FATAL|terminated by signal|was terminated|out of memory|Out of memory|could not fork' \"$f\" | tail -n 15; done",
 }
 
 // NetSnapshotRequest names the snapshot and what it is about.

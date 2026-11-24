@@ -95,7 +95,15 @@ func TestNetSnapshotWritesBoundedReport(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := string(raw)
-	for _, want := range []string{"# network snapshot of db-1", "db-2:5432 from db-1: timeout", "$ ip route", "$ ss -ltnp", "$ cat /etc/sysctl.d/90-stroppy-*.conf"} {
+	// A failed run is explained by the host, not only its network: kernel and
+	// system warnings since boot (soft lockups, OOM kills, watchdogs), the
+	// processes with their niceness, memory pressure, how the containers
+	// ended and the errors the database logged in its data directory.
+	for _, want := range []string{
+		"# network snapshot of db-1", "db-2:5432 from db-1: timeout", "$ ip route", "$ ss -ltnp", "$ cat /etc/sysctl.d/90-stroppy-*.conf",
+		"$ journalctl -k -b", "$ journalctl -b", "$ ps -eo pid,ppid,ni,pri,psr,pcpu", "$ cat /proc/pressure/cpu", "$ cat /proc/meminfo",
+		"$ docker ps -a", "OOMKilled", "find /data",
+	} {
 		if !strings.Contains(text, want) {
 			t.Errorf("snapshot lacks %q", want)
 		}
