@@ -133,8 +133,14 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		}
 		return runWorkload(ctx, run, runners[0].Agent, addrs, nc)
 	})
-	if wlErr != nil && ctx.Err() == nil {
+	switch {
+	case wlErr != nil && ctx.Err() == nil:
 		nc.failure(ctx, wlErr.Error())
+		wl.NetArtifacts = nc.artifacts()
+	case wlErr == nil:
+		// A run that went well leaves the state of its hosts too: a stall or
+		// a disk that filled without failing it is evidence for the next.
+		nc.final(ctx)
 		wl.NetArtifacts = nc.artifacts()
 	}
 	result, err := collect(ctx, run, wl, wlErr)

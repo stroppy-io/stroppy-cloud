@@ -166,7 +166,9 @@ func TestPlanDataShare(t *testing.T) {
 		want   map[string]float64
 	}{
 		{"postgres with replicas", catalog.Postgres, map[string]any{"version": "17", "replicas": 2}, map[string]float64{topology.RoleDB: 1, topology.RoleDBReplica: 1}},
-		{"greenplum 1+4", catalog.Greenplum, map[string]any{"version": "7.1.0", "segment_hosts": 4}, map[string]float64{topology.RoleDB: 0.25}},
+		// The coordinator keeps no table data but fills its disk during data
+		// maintenance (a 20 GB one ran out at TPC-DS SF1000).
+		{"greenplum 1+4", catalog.Greenplum, map[string]any{"version": "7.1.0", "segment_hosts": 4}, map[string]float64{topology.RoleDB: 0.25, topology.RoleCoordinator: 0.02}},
 		{"cockroach three nodes", catalog.Cockroach, map[string]any{"version": "25.4", "nodes": 3}, map[string]float64{topology.RoleDB: 1}},
 		{"cockroach five nodes", catalog.Cockroach, map[string]any{"version": "25.4", "nodes": 5}, map[string]float64{topology.RoleDB: 0.6}},
 		{"ydb no redundancy", catalog.YDB, map[string]any{"version": "26.2", "fault_tolerance": "none", "storage_nodes": 3, "database_nodes": 3}, map[string]float64{topology.RoleDB: 1.0 / 3}},

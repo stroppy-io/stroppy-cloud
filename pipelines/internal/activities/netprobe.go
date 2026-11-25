@@ -217,6 +217,10 @@ var snapshotCommands = []string{
 	"ps -eo pid,ppid,ni,pri,psr,pcpu,pmem,rss,stat,etime,comm --sort=-pcpu | head -n 80",
 	"cat /proc/pressure/cpu /proc/pressure/memory /proc/pressure/io",
 	"cat /proc/meminfo",
+	// What fills the disks: the filesystems, then the biggest directories
+	// of the data disk (a coordinator disk filled during data maintenance).
+	"df -h",
+	"du -xh --max-depth=4 /data 2>/dev/null | sort -h | tail -n 30",
 	// How the containers ended.
 	"docker ps -a --format '{{.Names}}\t{{.Status}}'",
 	"docker ps -aq | xargs -r docker inspect -f '{{.Name}} exit={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}} restarts={{.RestartCount}} finished={{.State.FinishedAt}} error={{.State.Error}}'",

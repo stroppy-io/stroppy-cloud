@@ -37,7 +37,7 @@ const (
 	netProbeWindow  = 10 * time.Second
 	netProbeTimeout = time.Minute
 	// netSnapshotTimeout covers every snapshot command at its ten-second
-	// bound (22 commands) with room to publish.
+	// bound (24 commands) with room to publish.
 	netSnapshotTimeout = 5 * time.Minute
 	// netPairsInMilestone bounds the milestone; failed pairs go first.
 	netPairsInMilestone = 2000
@@ -336,6 +336,18 @@ func (nc *netCheck) failure(ctx pipeline.Context, reason string) {
 		}
 	}
 	nc.capture(ctx, "failure", involved)
+}
+
+// final captures every machine of a run whose workload completed: the
+// kernel warnings and disk use at its end.
+func (nc *netCheck) final(ctx pipeline.Context) {
+	involved := map[string][]string{}
+	for _, m := range nc.order {
+		if _, ok := nc.agents[m]; ok {
+			involved[m] = []string{"run completed"}
+		}
+	}
+	nc.capture(ctx, "final", involved)
 }
 
 // capture snapshots the machines named in involved, in machine order, and

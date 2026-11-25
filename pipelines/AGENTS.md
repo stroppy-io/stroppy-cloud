@@ -71,8 +71,9 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   системы с уровня warning с момента загрузки (soft lockup, RCU stall, OOM,
   watchdog сервисов), `/proc/cmdline` и `kernel.printk` (консоль, куда ядро
   пишет), процессы с nice/приоритетом/CPU, PSI и `meminfo`, как завершились
-  контейнеры (exit code, OOMKilled) и ошибки из логов СУБД в каталогах `/data`
-  (activity 5 мин на все команды). Файл
+  контейнеры (exit code, OOMKilled), `df -h` и крупнейшие каталоги `/data`
+  (`du`), ошибки из логов СУБД в каталогах `/data` (activity 5 мин на все
+  команды). Файл
   `netdiag/<probe|reach>-<machine>.txt` → артефакт
   `<run8>-netdiag-<probe|reach>-<machine>` на 30 дней.
 - Политика: неудачный путь до порта контейнера kind `database`/`proxy`/
@@ -88,6 +89,9 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   teardown: хвост `dmesg` и сеть называют то, чего нет в ошибке прогона
   (OOM, ошибка диска, обрыв связи). Артефакт
   `<run8>-netdiag-failure-<machine>` на 30 дней, в `result.artifacts`.
+  Прогон с завершившимся workload снимает каждую машину так же в конце
+  (`<run8>-netdiag-final-<machine>`): остановки ядра и заполнение дисков,
+  которые не уронили прогон, видны по успешным прогонам тоже.
 - Milestone `network.checked`: `stage` (deploy|workload), `total`, `failed`,
   `critical`, `pairs[]` (неудачные первыми, не больше 2000), `snapshots[]`
   (`machine`, `artifact`). Артефакты снимков входят в `result.artifacts`,

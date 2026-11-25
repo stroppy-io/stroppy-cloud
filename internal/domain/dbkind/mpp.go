@@ -168,15 +168,21 @@ func mppKind(e mppEngine) Kind {
 	}
 }
 
+// mppCoordinatorShare is the coordinator's share of the workload's storage
+// budget (3 × data + 2 GB): 61 GB at TPC-DS SF1000.
+const mppCoordinatorShare = 0.02
+
 func planMPP(p *topology.Plan, kind catalog.DatabaseKind, params map[string]any) {
 	engine := string(kind)
 	hosts := topology.IntOf(params, "segment_hosts", 4)
 	perHost := topology.IntOf(params, "segments_per_host", 0)
 	p.Add(topology.RoleCoordinator, engine, 1)
 	p.Add(topology.RoleDB, engine, hosts)
-	// No mirrors: the segment hosts split the data, the coordinator keeps
-	// only the catalog.
-	p.DataShare = map[string]float64{topology.RoleDB: 1 / float64(max(1, hosts))}
+	// No mirrors: the segment hosts split the data. The coordinator keeps
+	// no table data, yet its disk grows through data maintenance (about
+	// 15 GB at TPC-DS SF500; a 20 GB disk ran out at SF1000), so it gets
+	// mppCoordinatorShare of the budget.
+	p.DataShare = map[string]float64{topology.RoleDB: 1 / float64(max(1, hosts)), topology.RoleCoordinator: mppCoordinatorShare}
 	// The coordinator reaches every segment host over ssh (gpinitsystem and the
 	// management utilities) and every primary over libpq; segments talk to each
 	// other and to the coordinator over the UDP interconnect on ports the

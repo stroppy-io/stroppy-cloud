@@ -102,7 +102,7 @@ func TestNetSnapshotWritesBoundedReport(t *testing.T) {
 	for _, want := range []string{
 		"# network snapshot of db-1", "db-2:5432 from db-1: timeout", "$ ip route", "$ ss -ltnp", "$ cat /etc/sysctl.d/90-stroppy-*.conf",
 		"$ journalctl -k -b", "$ journalctl -b", "$ ps -eo pid,ppid,ni,pri,psr,pcpu", "$ cat /proc/pressure/cpu", "$ cat /proc/meminfo",
-		"$ docker ps -a", "OOMKilled", "find /data",
+		"$ docker ps -a", "OOMKilled", "find /data", "$ df -h", "du -xh --max-depth=4 /data",
 	} {
 		if !strings.Contains(text, want) {
 			t.Errorf("snapshot lacks %q", want)

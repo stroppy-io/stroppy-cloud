@@ -260,7 +260,8 @@ func TestDataDiskFollowsTheShareOfData(t *testing.T) {
 	if got := dataDisk(out, "db-1"); got != 837 {
 		t.Errorf("segment host disk %d GB, want 837", got)
 	}
-	if got := dataDisk(out, "coordinator-1"); got >= 100 {
-		t.Errorf("coordinator disk %d GB: it stores no table data", got)
+	// The coordinator: 2% of the budget for what data maintenance leaves.
+	if got := dataDisk(out, "coordinator-1"); got != 61 {
+		t.Errorf("coordinator disk %d GB, want 61 (3002 × 0.02)", got)
 	}
 }

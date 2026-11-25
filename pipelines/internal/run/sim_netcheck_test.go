@@ -3,6 +3,7 @@ package run
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -42,7 +43,7 @@ func netSim(t *testing.T) (*sim, spec.Run, func(spec.Run)) {
 	s.w.OnAgentActivity(db, activities.NameWaitHealthy, mock.Anything, mock.Anything).Return(activities.WaitHealthyResult{Attempts: 1}, nil).Maybe()
 	s.w.OnAgentActivity(runner, activities.NameRunSegment, mock.Anything, mock.Anything).Return(completed("load", 100), nil).Maybe()
 	s.w.File(runner, "/ws/stroppy/load/stroppy.log", []byte("log\n"))
-	for _, f := range []string{"probe", "reach"} {
+	for _, f := range []string{"probe", "reach", "final"} {
 		s.w.File(runner, "/ws/netdiag/"+f+"-runner-1.txt", []byte("$ ip route\n"))
 		s.w.File(db, "/ws/netdiag/"+f+"-db-1.txt", []byte("$ ss -ltnp\n"))
 	}
@@ -79,11 +80,18 @@ func TestSimulatedNetCheckAllReachable(t *testing.T) {
 	require.EqualValues(t, 2, s.network[0]["total"])
 	require.EqualValues(t, 0, s.network[0]["failed"])
 	require.Empty(t, s.network[0]["snapshots"])
+	// A run that went well still leaves the host's state at its end (kernel
+	// warnings, disk use): the evidence of a stall or a filling disk that
+	// did not fail the run, and nothing of the failed-path kinds.
 	var result spec.Result
 	require.NoError(t, s.w.Env.GetWorkflowResult(&result))
+	var netdiag []string
 	for _, a := range result.Artifacts {
-		require.NotContains(t, a, "netdiag")
+		if strings.Contains(a, "netdiag") {
+			netdiag = append(netdiag, a)
+		}
 	}
+	require.ElementsMatch(t, []string{"artifact/8f1c3f2a-netdiag-final-db-1", "artifact/8f1c3f2a-netdiag-final-runner-1"}, netdiag)
 	s.w.AssertNoLeaks(t)
 }
 
