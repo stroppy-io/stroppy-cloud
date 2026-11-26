@@ -123,9 +123,14 @@ func picodataRecipe(c *compilation) error {
 		Role: role, Kind: spec.HostPrepScript,
 		Content: "install -d -m 0750 -o 1000 -g 1000 " + strings.Join(dirs, " ") + "\n",
 	})
-	peers := make([]any, 0, len(instances))
+	// The peers an instance joins through: the first instance of every
+	// machine. Joining needs one live peer, and the config takes at most 64
+	// (a machine full of instances per vCPU outnumbers that).
+	peers := make([]any, 0, len(nodes))
 	for _, in := range instances {
-		peers = append(peers, fmt.Sprintf("%s:%d", ip(in.machine), in.iproto()))
+		if in.slot == 0 {
+			peers = append(peers, fmt.Sprintf("%s:%d", ip(in.machine), in.iproto()))
+		}
 	}
 	tierValues := make([]any, 0, len(tiers))
 	for _, t := range tiers {

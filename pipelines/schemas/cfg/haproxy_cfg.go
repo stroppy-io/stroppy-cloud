@@ -157,7 +157,11 @@ func Haproxy2() *schemapb.Schema {
 								Desc("server maxconn: per-backend connection ceiling; 0 leaves it unlimited.").
 								Gte(0).Lte(1000000).Default(0),
 						).Strict(),
-					).Title("Servers").Group("Listeners").MinItems(1).MaxItems(64).Required(),
+					// A Picodata cluster with an instance per vCPU puts every
+					// instance behind the listener (128 on four 32-vCPU machines);
+					// HAProxy itself sets no small bound on a backend's servers.
+					// doc: https://docs.haproxy.org/2.9/configuration.html#4-server
+					).Title("Servers").Group("Listeners").MinItems(1).MaxItems(1024).Required(),
 				).Strict(),
 			).Title("Listeners").Group("Cluster").
 				Desc("One frontend/backend pair per access path (rw, ro, ...). Filled by the server from topology.").

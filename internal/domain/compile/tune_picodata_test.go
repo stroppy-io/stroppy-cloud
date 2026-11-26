@@ -360,8 +360,12 @@ func TestPicodataInstancesPerMachine(t *testing.T) {
 				if !strings.Contains(conf, "  failure_domain: {host: "+c.Machine+"}\n") {
 					t.Fatalf("%s: no failure domain:\n%s", c.Name, conf)
 				}
-				if strings.Count(conf, "${ip:db-") < tc.instances {
-					t.Fatalf("%s: peers miss instances:\n%s", c.Name, conf)
+				// The peers are the first instance of every machine: enough
+				// to join, and within the config's 64.
+				// Beside the peers the config names the instance's own two
+				// advertise addresses (iproto, pgproto).
+				if peers := strings.Count(conf, "${ip:db-") - 2; peers != tc.machines {
+					t.Fatalf("%s: %d peer addresses, want one per machine (%d):\n%s", c.Name, peers, tc.machines, conf)
 				}
 				if c.Mounts[0].Source == "/data/picodata" || names[c.Mounts[0].Source+c.Machine] {
 					t.Fatalf("%s: shared instance directory %s", c.Name, c.Mounts[0].Source)
@@ -443,5 +447,22 @@ func TestPicodataRefusesDataBeyondMemtx(t *testing.T) {
 				t.Fatalf("reason %q %v (%v), want picodata_data_exceeds_memtx", reason, params, err)
 			}
 		})
+	}
+}
+
+// An instance per vCPU on four XL machines is 128 instances, twice the 64
+// peers the config takes: the peers are the first instance of each machine
+// (TPC-C 1000 WH on Picodata, 4 nodes, RF 2, was refused by the schema).
+func TestPicodataPeersStayWithinTheConfig(t *testing.T) {
+	t.Parallel()
+	c := picoCase("26.2", map[string]any{"instances_per_machine": 0, "haproxy": 1, "pgproto": true, "tiers": picoTiers(4, 2, nil)})
+	c.size = "XL"
+	out, _ := compileTuned(t, c)
+	cs := picoContainers(out)
+	if len(cs) != 128 {
+		t.Fatalf("%d instances, want 128", len(cs))
+	}
+	if peers := strings.Count(fileOf(out, cs[0].Name, picoConf), "${ip:db-") - 2; peers != 4 {
+		t.Fatalf("%d peers, want one per machine (4)", peers)
 	}
 }

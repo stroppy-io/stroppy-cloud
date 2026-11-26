@@ -494,7 +494,7 @@
                           }
                         }
                       ],
-                      "maxItems": "64",
+                      "maxItems": "1024",
                       "minItems": "1"
                     },
                     "name": "servers",
