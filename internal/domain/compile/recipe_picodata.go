@@ -2,8 +2,12 @@ package compile
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 	"strings"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -132,6 +136,7 @@ func picodataRecipe(c *compilation) error {
 		memtx = fmt.Sprintf("%dM", mb)
 	}
 	auto := c.tuning() == tuningAuto
+	arenaMB := make([]int, len(tiers))
 	containers := make([]string, 0, len(instances))
 	for _, in := range instances {
 		overlay := map[string]any{
@@ -152,6 +157,11 @@ func picodataRecipe(c *compilation) error {
 		case auto:
 			c.tunePicoMemtx(in.machine, schemaID, perMachine, overlay)
 		}
+		arena := overlay["memtx_memory"]
+		if arena == nil {
+			arena = c.effective(role, schemaID)["memtx_memory"]
+		}
+		arenaMB[in.tier] += picoSizeMB(arena)
 		conf, err := c.render(role, schemaID, "conf", overlay)
 		if err != nil {
 			return err
@@ -175,6 +185,9 @@ func picodataRecipe(c *compilation) error {
 			Healthcheck: healthcheck("CMD-SHELL", `printf '%s\n' '\lua' 'return pico.instance_info().current_state.variant' | picodata admin `+picoDataDir+`/admin.sock | grep -qx -- '- Online'`),
 			Restart:     "always",
 		})
+	}
+	if err := c.picoFitsMemtx(tiers, arenaMB); err != nil {
+		return err
 	}
 	proxied := len(c.machinesOf(topology.RoleProxy)) > 0
 	// Dynamic SQL settings are applied once after every instance is Online:
@@ -314,4 +327,39 @@ func (c *compilation) tunePicoMemtx(machine, schemaID string, perMachine int, ov
 	}
 	t := c.tune(topology.RoleDB, schemaID, overlay)
 	t.set("memtx_memory", fmt.Sprintf("%dM", picoAutoMemtxMB(h.MemoryMB, perMachine, system)))
+}
+
+// picoTupleOverhead is how much more memory real tuples take than the
+// dataset estimate (Picodata sizing: 5–20%).
+//
+// doc: https://docs.picodata.io/picodata/stable/admin/sizing/
+const picoTupleOverhead = 1.2
+
+// picoFitsMemtx refuses a workload whose data the data tier's memtx arenas
+// cannot hold: memtx keeps every tuple in RAM, and the load fails with
+// "Failed to allocate … for memtx_tuple" once the arenas are full. The
+// tables live in the tier named default (else the first); its replicasets
+// (instances / replication_factor) split the data, each replica a copy.
+func (c *compilation) picoFitsMemtx(tiers []picoTier, arenaMB []int) error {
+	if c.in.Workload.Protocol == catalog.ProtoNoop {
+		return nil
+	}
+	data := spec.EstimateDataset(c.in.Workload.Segments).DataGB
+	if data == 0 {
+		return nil
+	}
+	t := 0
+	for i, tier := range tiers {
+		if tier.name == "default" {
+			t = i
+		}
+	}
+	rf := max(1, intParam(tiers[t].value, "replication_factor", 1))
+	capacityGB := float64(arenaMB[t]) / float64(rf) / 1024
+	needGB := data * picoTupleOverhead
+	if needGB <= capacityGB {
+		return nil
+	}
+	refusal := errs.Newf(errs.CodeInvalid, "picodata: the workload's %.0f GB of data (with tuple overhead) do not fit the %.0f GB of memtx of tier %s", needGB, capacityGB, tiers[t].name)
+	return refusal.Because("picodata_data_exceeds_memtx", "data_gb", strconv.FormatFloat(math.Round(needGB), 'f', -1, 64), "memtx_gb", strconv.FormatFloat(math.Floor(capacityGB), 'f', -1, 64), "tier", tiers[t].name)
 }

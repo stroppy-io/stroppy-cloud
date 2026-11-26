@@ -445,7 +445,7 @@ func Segment() *schemapb.Schema {
 			schemapb.UInt64("seed").Title("Random seed").Group("Scenario").
 				Desc("Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.").Gte(0).Nullable(),
 			schemapb.Duration("timeout").Title("Segment timeout").Group("Scenario").
-				Desc("Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.").Gt(0).Lte(7*24*time.Hour).Nullable(),
+				Desc("Execution deadline after the warmup wait, including container preparation and data load; unset uses 1.5 × duration + warmup + 30 min + 3 min per GB the segment loads, or 24h for iterations.").Gt(0).Lte(7*24*time.Hour).Nullable(),
 			schemapb.Duration("warmup").Title("Warm-up").Group("Scenario").
 				Desc("Idle wait before the segment starts, letting caches and replicas settle.").
 				Gte(0).Lte(time.Hour).Default(0),

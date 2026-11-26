@@ -29,6 +29,29 @@ type DatasetEstimate struct {
 	Unknown       []string `json:"unknown,omitempty"`
 }
 
+// SegmentDataGB is the data a segment's built-in population makes (TPC-C
+// warehouses, TPC-B 100k accounts/branch, TPC-H/DS GB scale); false for a
+// script without one.
+func SegmentDataGB(s Segment) (float64, bool) {
+	sf := paramNumber(s.Workload.Params, "scale_factor", 1)
+	switch strings.Split(s.Workload.Script, "/")[0] {
+	case "tpcc":
+		return sf * 0.1, true
+	case "tpcb":
+		return sf * 0.015, true
+	case "tpch":
+		return sf, true
+	case "tpcds":
+		return math.Max(sf, 0.25), true // fixed dimensions survive fractional scale
+	case "baseline":
+		return paramNumber(s.Workload.Params, "rows", 250000) * 256 / (1 << 30), true
+	case "banking":
+		// One narrow row per account (id, balance, token).
+		return paramNumber(s.Workload.Params, "accounts", 100) * 64 / (1 << 30), true
+	}
+	return 0, false
+}
+
 // EstimateDataset follows built-in Stroppy populations (TPC-C warehouses,
 // TPC-B 100k accounts/branch, TPC-H/DS GB scale). Values are deliberately planning
 // budgets; custom SQL and indexes can change the physical footprint substantially.
@@ -42,23 +65,8 @@ func EstimateDataset(raw []json.RawMessage) DatasetEstimate {
 			continue
 		}
 		family := strings.Split(s.Workload.Script, "/")[0]
-		sf := paramNumber(s.Workload.Params, "scale_factor", 1)
-		var gb float64
-		switch family {
-		case "tpcc":
-			gb = sf * 0.1
-		case "tpcb":
-			gb = sf * 0.015
-		case "tpch":
-			gb = sf
-		case "tpcds":
-			gb = math.Max(sf, 0.25) // fixed dimensions survive fractional scale
-		case "baseline":
-			gb = paramNumber(s.Workload.Params, "rows", 250000) * 256 / (1 << 30)
-		case "banking":
-			// One narrow row per account (id, balance, token).
-			gb = paramNumber(s.Workload.Params, "accounts", 100) * 64 / (1 << 30)
-		default:
+		gb, known := SegmentDataGB(s)
+		if !known {
 			e.Unknown = append(e.Unknown, s.Name)
 			continue
 		}

@@ -543,7 +543,7 @@ export interface TestRuntime1Segment {
   thresholds?: TestRuntime1SegmentThresholds;
   /** Random seed. Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible. */
   seed?: number | string | null;
-  /** Segment timeout. Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations. */
+  /** Segment timeout. Execution deadline after the warmup wait, including container preparation and data load; unset uses 1.5 × duration + warmup + 30 min + 3 min per GB the segment loads, or 24h for iterations. */
   timeout?: string | null;
   /** Warm-up. Idle wait before the segment starts, letting caches and replicas settle. */
   warmup?: string;

@@ -131,14 +131,42 @@ func TestArgs(t *testing.T) {
 }
 
 func TestBound(t *testing.T) {
-	seg := segment()
-	seg.Warmup = spec.Duration(10 * time.Minute)
-	if got := Bound(seg, 30*time.Minute, 24*time.Hour); got != 90*time.Second+45*time.Second+10*time.Minute+30*time.Minute {
-		t.Errorf("bound = %s", got)
-	}
-	seg.Run = spec.RunParams{Executor: spec.ExecutorSharedIterations, Iterations: 10}
-	if got := Bound(seg, 30*time.Minute, 24*time.Hour); got != 24*time.Hour+10*time.Minute {
-		t.Errorf("iterations bound = %s", got)
+	t.Parallel()
+	timed := segment() // 10 warehouses (1 GB) loaded, 90 s run, 10 min warm-up
+	timed.Warmup = spec.Duration(10 * time.Minute)
+	big := segment() // 1000 warehouses (100 GB) loaded, an hour of load
+	big.Workload.Params["scale_factor"] = float64(1000)
+	big.Run.Duration = spec.Duration(time.Hour)
+	noLoad := big
+	noLoad.Steps = []string{"workload"}
+	skipped := big
+	skipped.Steps, skipped.NoSteps = nil, []string{"load_data"}
+	iterations := segment()
+	iterations.Warmup = spec.Duration(10 * time.Minute)
+	iterations.Run = spec.RunParams{Executor: spec.ExecutorSharedIterations, Iterations: 10}
+	explicit := big
+	explicit.Timeout = spec.Duration(2 * time.Hour)
+	for _, tc := range []struct {
+		name string
+		seg  spec.Segment
+		want time.Duration
+	}{
+		// 1.5 × duration + warm-up + margin + 3 min per loaded GB.
+		{"timed segment loading 1 GB", timed, 135*time.Second + 10*time.Minute + 30*time.Minute + 3*time.Minute},
+		// CockroachDB spent 55 min loading TPC-C 1000 WH and the old bound
+		// (2 h) cut the hour of load that followed.
+		{"timed segment loading 100 GB", big, 90*time.Minute + 30*time.Minute + 300*time.Minute},
+		{"steps without the load", noLoad, 90*time.Minute + 30*time.Minute},
+		{"load skipped by no_steps", skipped, 90*time.Minute + 30*time.Minute},
+		{"iterations", iterations, 24*time.Hour + 10*time.Minute},
+		{"explicit timeout wins", explicit, 2 * time.Hour},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			if got := Bound(tc.seg, 30*time.Minute, 24*time.Hour); got != tc.want {
+				t.Errorf("bound = %s, want %s", got, tc.want)
+			}
+		})
 	}
 }
 

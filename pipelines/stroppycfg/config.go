@@ -19,6 +19,7 @@ import (
 	"maps"
 	"path"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -311,7 +312,22 @@ func Bound(seg spec.Segment, margin, iterationsCeiling time.Duration) time.Durat
 		return iterationsCeiling + seg.Warmup.Std()
 	}
 	d := seg.Run.Duration.Std()
-	return d + d/2 + seg.Warmup.Std() + margin
+	return d + d/2 + seg.Warmup.Std() + margin + loadAllowance(seg)
+}
+
+// loadPerGB is the time a segment's data load may take per GB of its
+// built-in population on top of the margin; CockroachDB loaded TPC-C
+// 1000 WH (100 GB) in 55 minutes.
+const loadPerGB = 3 * time.Minute
+
+// loadAllowance is the time the segment's own data load may take: none when
+// its steps leave the load out.
+func loadAllowance(seg spec.Segment) time.Duration {
+	if (len(seg.Steps) > 0 && !slices.Contains(seg.Steps, "load_data")) || slices.Contains(seg.NoSteps, "load_data") {
+		return 0
+	}
+	gb, _ := spec.SegmentDataGB(seg)
+	return time.Duration(gb * float64(loadPerGB))
 }
 
 func logLevel(seg spec.Segment) string {

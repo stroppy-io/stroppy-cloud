@@ -5506,6 +5506,7 @@ const (
 	ErrorReasonPatroniImageRequired                ErrorReason = "patroni_image_required"
 	ErrorReasonPatroniRequiresHaproxy              ErrorReason = "patroni_requires_haproxy"
 	ErrorReasonPdfExportIsNotAvailableYet          ErrorReason = "pdf_export_is_not_available_yet"
+	ErrorReasonPicodataDataExceedsMemtx            ErrorReason = "picodata_data_exceeds_memtx"
 	ErrorReasonPicodataScaleExceedsMemory          ErrorReason = "picodata_scale_exceeds_memory"
 	ErrorReasonPlatformAdminRequired               ErrorReason = "platform_admin_required"
 	ErrorReasonProfileIsNotVerified                ErrorReason = "profile_is_not_verified"
@@ -5747,6 +5748,7 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonPatroniImageRequired,
 		ErrorReasonPatroniRequiresHaproxy,
 		ErrorReasonPdfExportIsNotAvailableYet,
+		ErrorReasonPicodataDataExceedsMemtx,
 		ErrorReasonPicodataScaleExceedsMemory,
 		ErrorReasonPlatformAdminRequired,
 		ErrorReasonProfileIsNotVerified,
@@ -6087,6 +6089,8 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 	case ErrorReasonPatroniRequiresHaproxy:
 		return []byte(s), nil
 	case ErrorReasonPdfExportIsNotAvailableYet:
+		return []byte(s), nil
+	case ErrorReasonPicodataDataExceedsMemtx:
 		return []byte(s), nil
 	case ErrorReasonPicodataScaleExceedsMemory:
 		return []byte(s), nil
@@ -6666,6 +6670,9 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 		return nil
 	case ErrorReasonPdfExportIsNotAvailableYet:
 		*s = ErrorReasonPdfExportIsNotAvailableYet
+		return nil
+	case ErrorReasonPicodataDataExceedsMemtx:
+		*s = ErrorReasonPicodataDataExceedsMemtx
 		return nil
 	case ErrorReasonPicodataScaleExceedsMemory:
 		*s = ErrorReasonPicodataScaleExceedsMemory

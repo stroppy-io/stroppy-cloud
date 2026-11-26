@@ -128,3 +128,29 @@ func TestDatabaseStorageIgnoresSidecars(t *testing.T) {
 		}
 	}
 }
+
+func TestSegmentDataGB(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		script string
+		params map[string]any
+		gb     float64
+		known  bool
+	}{
+		{"tpcc/tx", map[string]any{"scale_factor": float64(1000)}, 100, true},
+		{"tpcc/procs", map[string]any{"scale_factor": float64(200)}, 20, true},
+		{"tpcb/tx", map[string]any{"scale_factor": float64(1000)}, 15, true},
+		{"tpch/tx", map[string]any{"scale_factor": float64(10)}, 10, true},
+		{"tpcds", map[string]any{"scale_factor": 0.1}, 0.25, true}, // fixed dimensions
+		{"tpcc/tx", map[string]any{}, 0.1, true},                   // scale factor 1 by default
+		{"simple", map[string]any{}, 0, false},
+	} {
+		t.Run(tc.script, func(t *testing.T) {
+			t.Parallel()
+			gb, known := SegmentDataGB(Segment{Workload: WorkloadParams{Script: tc.script, Params: tc.params}})
+			if gb != tc.gb || known != tc.known {
+				t.Errorf("SegmentDataGB = %v, %v; want %v, %v", gb, known, tc.gb, tc.known)
+			}
+		})
+	}
+}

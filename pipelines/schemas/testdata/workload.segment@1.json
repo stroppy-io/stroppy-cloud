@@ -1643,7 +1643,7 @@
       }
     },
     {
-      "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.",
+      "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses 1.5 × duration + warmup + 30 min + 3 min per GB the segment loads, or 24h for iterations.",
       "duration": {
         "gt": "0s",
         "lte": "604800s"

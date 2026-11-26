@@ -131,7 +131,9 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   stroppy (SIGTERM, 10 с на отчёт, затем kill) на собственном дедлайне:
   брошенная нагрузка не должна грузить базу под следующим сегментом.
 - Сегменты workload — последовательно, `AtMostOnce`, таймаут
-  `duration*1.5 + warmup + 30m` по умолчанию; явный segment.timeout
+  `duration*1.5 + warmup + 30m + 3 мин на ГБ загружаемых данных`
+  (`spec.SegmentDataGB`, если шаги сегмента включают `load_data`) по
+  умолчанию; явный segment.timeout
   задаёт deadline activity после отдельного idle wait warmup.
 - `Keep` → `ToStand(infra.Root, KeepFor)` после результата; иначе cleanup
   interceptor Graphene сносит всё каскадом от корня прогона (YC — его SG,

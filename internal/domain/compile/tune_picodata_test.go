@@ -25,7 +25,11 @@ func picoCase(version string, params map[string]any) tuneCase {
 	if _, ok := params["instances_per_machine"]; !ok {
 		params["instances_per_machine"] = 1
 	}
-	return tuneCase{kind: catalog.Picodata, version: version, params: params, protocol: catalog.ProtoPicodata}
+	// TPC-C at 10 warehouses (1 GB) fits the smallest memtx the tests pick;
+	// the default 100 does not fit a stock 2 GB arena, which the recipe
+	// refuses (TestPicodataRefusesDataBeyondMemtx).
+	segment := `{"name":"main","workload":{"script":"tpcc/tx","scale_factor":10},"run":{"executor":"constant-vus","vus":128,"duration":"10m"}}`
+	return tuneCase{kind: catalog.Picodata, version: version, params: params, protocol: catalog.ProtoPicodata, segment: segment}
 }
 
 // Tuning auto starts one memtx instance per vCPU: a single 8-vCPU
@@ -96,8 +100,9 @@ func TestPicodataMotionRowsOfAnalyticWorkloads(t *testing.T) {
 	}{
 		{"SF 0.1 on M with 8 instances", base(tpch(0.1), "M", 8, nil), "sql_motion_row_max = 660134"},
 		{"SF 1 on XL with 16 instances", base(tpch(1), "XL", 16, nil), "sql_motion_row_max = 6601337"},
-		{"an explicit limit is kept at SF 10", base(tpch(10), "XL", 32, map[string]any{"sql_motion_row_max": 7777}), "sql_motion_row_max = 7777"},
-		{"stock leaves the engine default", base(tpch(10), "XL", 32, map[string]any{"tuning": "stock"}), ""},
+		// SF 10 needs the arenas of all 32 instances to hold its data.
+		{"an explicit limit is kept at SF 10", base(tpch(10), "XL", 32, map[string]any{"sql_motion_row_max": 7777, "tiers": picoTiers(32, 1, nil)}), "sql_motion_row_max = 7777"},
+		{"stock leaves the engine default", base(tpch(10), "XL", 32, map[string]any{"tuning": "stock", "memtx_memory_mb": 1024, "tiers": picoTiers(32, 1, nil)}), ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out, _ := compileTuned(t, tc.tc)
@@ -404,5 +409,39 @@ func TestPicodataStockUnchanged(t *testing.T) {
 	}
 	if len(out.Tuned) != 0 {
 		t.Fatalf("stock tuned: %v", out.Tuned)
+	}
+}
+
+// memtx keeps every tuple in RAM: a TPC-C load the data tier's arenas cannot
+// hold is refused before the run (1000 warehouses on one 128 GB machine
+// failed its load with "Failed to allocate … for memtx_tuple").
+func TestPicodataRefusesDataBeyondMemtx(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name       string
+		warehouses int
+		refused    bool
+	}{
+		// 100 GB × 1.2 tuple overhead against a ~102 GB arena.
+		{"1000 warehouses on one XL", 1000, true},
+		{"500 warehouses on one XL", 500, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			c := picoCase("26.2", map[string]any{"tiers": picoTiers(1, 1, nil)})
+			c.size = "XL"
+			c.segment = fmt.Sprintf(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":%d},"run":{"executor":"constant-vus","vus":64,"duration":"10m"}}`, tc.warehouses)
+			_, _, err := compileTunedErr(t, c)
+			reason, params := errs.ReasonOf(err)
+			if !tc.refused {
+				if err != nil {
+					t.Fatalf("refused: %v", err)
+				}
+				return
+			}
+			if reason != "picodata_data_exceeds_memtx" || params["data_gb"] != "120" || params["tier"] != "default" {
+				t.Fatalf("reason %q %v (%v), want picodata_data_exceeds_memtx", reason, params, err)
+			}
+		})
 	}
 }
