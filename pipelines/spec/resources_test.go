@@ -111,3 +111,20 @@ func TestCapacityCoexistingFamiliesAndStaticDimensions(t *testing.T) {
 		t.Fatalf("coexisting estimate %+v", e)
 	}
 }
+
+// A sidecar of the database role without the data mount (CockroachDB's init
+// container) does not shrink the storage the database has: TPC-C 1000 WH on
+// a 302 GB disk was refused against the init container's 30 GB boot disk.
+func TestDatabaseStorageIgnoresSidecars(t *testing.T) {
+	t.Parallel()
+	r := capacityRun()
+	r.Machines[0].Disks[0].GB = 302
+	r.Containers[0].Kind = ContainerKindDatabase
+	r.Containers = append(r.Containers, Container{Name: "db-1-init", Role: "db", Kind: ContainerKindAddon, Machine: "db-1", Image: "init:1"})
+	r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":1000},"run":{"vus":1,"duration":"1m"}}`)}
+	for _, i := range CheckResources(r) {
+		if i.Code == "capacity_insufficient" {
+			t.Fatalf("the sidecar counted as the database's storage: %+v", i)
+		}
+	}
+}

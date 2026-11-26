@@ -288,6 +288,11 @@ func databaseStorage(r Run) map[string]float64 {
 		if strings.Contains(c.Name, "exporter") || (c.Role != "db" && !strings.HasPrefix(c.Role, "db-")) {
 			continue
 		}
+		// Only the database holds the data; a sidecar of its role (an init
+		// container, a helper) has no data mount and would count the boot disk.
+		if c.Kind != "" && c.Kind != ContainerKindDatabase {
+			continue
+		}
 		m, ok := r.MachineByName()[c.Machine]
 		if !ok {
 			continue
