@@ -280,6 +280,19 @@ func (c *compilation) proxysql() error {
 		// retry re-sends a statement the stalled backend may have applied.
 		// doc: https://proxysql.com/documentation/global-variables/mysql-variables/#mysql-query_retries_on_failure
 		t.set("query_retries_on_failure", 0)
+		// A member busy under a bulk load answers the health check late:
+		// ProxySQL's 800 ms × 3 took a live Group Replication writer offline
+		// and dropped its clients at TPC-C 1000 WH. 5 s × 10 leaves the
+		// member a minute before it counts as gone.
+		// doc: https://proxysql.com/documentation/global-variables/mysql-monitor-variables/#mysql-monitor_groupreplication_healthcheck_timeout
+		switch mode {
+		case "group":
+			t.set("monitor_groupreplication_healthcheck_timeout", proxysqlHealthcheckTimeoutMs)
+			t.set("monitor_groupreplication_healthcheck_max_timeout_count", proxysqlHealthcheckTimeouts)
+		case "galera":
+			t.set("monitor_galera_healthcheck_timeout", proxysqlHealthcheckTimeoutMs)
+			t.set("monitor_galera_healthcheck_max_timeout_count", proxysqlHealthcheckTimeouts)
+		}
 	}
 	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {
@@ -305,3 +318,10 @@ func (c *compilation) proxysql() error {
 	}
 	return nil
 }
+
+// The cluster health check ProxySQL runs under tuning auto: a slow answer
+// waits 5 s, and ten of them in a row take the member offline.
+const (
+	proxysqlHealthcheckTimeoutMs = 5000
+	proxysqlHealthcheckTimeouts  = 10
+)

@@ -280,3 +280,37 @@ func TestInnoDBConnectionsFollowThePool(t *testing.T) {
 		}
 	}
 }
+
+// ProxySQL takes a member offline after max_timeout_count health checks
+// slower than the timeout: under a TPC-C 1000 WH load the Group Replication
+// writer answered in more than 800 ms three times, ProxySQL set it
+// OFFLINE_HARD and dropped every client connection to a live primary.
+func TestProxySQLHealthCheckOutlastsLoad(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name   string
+		kind   catalog.DatabaseKind
+		params map[string]any
+		want   []string
+	}{
+		{"group replication", catalog.MySQL, map[string]any{"replicas": 2, "replication": "group", "proxysql": 1},
+			[]string{"monitor_groupreplication_healthcheck_timeout=5000\n", "monitor_groupreplication_healthcheck_max_timeout_count=10\n"}},
+		{"galera", catalog.MariaDB, map[string]any{"replication": "galera", "galera_nodes": 3, "proxysql": 1},
+			[]string{"monitor_galera_healthcheck_timeout=5000\n", "monitor_galera_healthcheck_max_timeout_count=10\n"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			version := "8.4"
+			if tc.kind == catalog.MariaDB {
+				version = "11.4"
+			}
+			out, _ := compileTuned(t, tuneCase{kind: tc.kind, version: version, protocol: catalog.ProtoMySQL, params: tc.params})
+			proxy := fileOf(out, "-proxysql", "/etc/proxysql.cnf")
+			for _, want := range tc.want {
+				if !strings.Contains(proxy, want) {
+					t.Errorf("proxysql.cnf lacks %q:\n%s", want, proxy)
+				}
+			}
+		})
+	}
+}

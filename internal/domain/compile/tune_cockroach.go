@@ -2,9 +2,11 @@ package compile
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // --- CockroachDB auto tuning ------------------------------------------------
@@ -88,12 +90,20 @@ var crdbClusterSettings = map[string]string{
 // doc: docs.cockroachlabs.com/docs/v24.3/cluster-settings — sql.txn.repeatable_read_isolation.enabled
 const crdbRepeatableRead = "sql.txn.repeatable_read_isolation.enabled"
 
-// crdbGCTTL is gc.ttlseconds of the default range: less MVCC garbage to
-// scan in a short measurement (the guide's 600; upstream 14400). 600 is
-// the smallest value the docs say is regularly tested.
+// crdbGCTTLFloor is the smallest gc.ttlseconds of the default range: less
+// MVCC garbage to scan in a short measurement (the guide's 600; upstream
+// 14400). 600 is the smallest value the docs say is regularly tested.
 //
 // doc: docs.cockroachlabs.com/docs/stable/configure-replication-zones — gc.ttlseconds
-const crdbGCTTL = 600
+const crdbGCTTLFloor = 600
+
+// crdbGCTTL keeps MVCC versions as long as the workload's load may take
+// (spec.LoadTimePerGB): a load transaction reading below the GC threshold
+// is refused, as a COPY into stock at TPC-C 1000 WH on three nodes was.
+func (c *compilation) crdbGCTTL() int {
+	load := spec.EstimateDataset(c.in.Workload.Segments).DataGB * spec.LoadTimePerGB.Seconds()
+	return max(crdbGCTTLFloor, int(math.Ceil(load)))
+}
 
 // tuneCockroachCluster fills the cluster-wide part of the schema: the SET
 // CLUSTER SETTING block and the default zone. A setting the database names
@@ -115,7 +125,7 @@ func (c *compilation) tuneCockroachCluster(schemaID string, overlay map[string]a
 	}
 	overlay["cluster_settings"] = settings
 	c.recordTuned(role, schemaID, "cluster_settings", settings)
-	t.set("gc_ttl_seconds", crdbGCTTL)
+	t.set("gc_ttl_seconds", c.crdbGCTTL())
 }
 
 // cockroach241 reports the 24.1 line.

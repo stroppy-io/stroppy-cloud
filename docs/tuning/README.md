@@ -216,6 +216,7 @@ VU на 16 соединениях runner'а L давали потолок 16 / �
 | `binlog_expire_logs_seconds` | 1 сутки | 30 суток |
 | ProxySQL `threads` | от vCPU прокси | 4 |
 | ProxySQL `query_retries_on_failure` | 0: запрос падает, а не выполняется дважды (повтор `CREATE INDEX` на замершем писателе давал `1061 Duplicate key name`) | 1 |
+| ProxySQL `monitor_groupreplication_healthcheck_*`, `monitor_galera_healthcheck_*` | таймаут 5000 мс, 10 таймаутов подряд: член кластера под массовой загрузкой отвечает на проверку дольше 800 мс, и ProxySQL переводил живого писателя Group Replication в `OFFLINE_HARD`, обрывая клиентов (TPC-C 1000 WH) | 800 мс, 3 |
 
 `innodb_dedicated_server` не используем: у 8.0 и 8.4 разные алгоритмы, и
 итоговые числа не видны в `effective_configs`.

@@ -102,7 +102,8 @@ func TestCockroachAutoClusterSettings(t *testing.T) {
 		"SET CLUSTER SETTING kv.range_merge.queue.enabled = false;",
 		"SET CLUSTER SETTING diagnostics.reporting.enabled = false;",
 		"SET CLUSTER SETTING sql.txn.repeatable_read_isolation.enabled = true;",
-		"ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = 600;",
+		// 100 warehouses (10 GB) load for up to 30 minutes.
+		"ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = 1800;",
 	} {
 		if !strings.Contains(sql, want) {
 			t.Errorf("settings.sql lacks %q:\n%s", want, sql)
@@ -124,7 +125,7 @@ func TestCockroachAutoClusterSettings(t *testing.T) {
 
 	// 24.1 has no REPEATABLE READ setting of its own: left alone there.
 	out, _ = compileTuned(t, tuneCase{kind: catalog.Cockroach, version: "24.1", params: map[string]any{"nodes": 1}})
-	if sql := fileOf(out, "-init", "/etc/stroppy/settings.sql"); strings.Contains(sql, "isolation") || !strings.Contains(sql, "gc.ttlseconds = 600") {
+	if sql := fileOf(out, "-init", "/etc/stroppy/settings.sql"); strings.Contains(sql, "isolation") || !strings.Contains(sql, "gc.ttlseconds = 1800") {
 		t.Errorf("24.1 settings.sql:\n%s", sql)
 	}
 }
@@ -222,5 +223,30 @@ func TestCockroachStockUnchanged(t *testing.T) {
 	}
 	if len(out.Tuned) != 0 {
 		t.Errorf("stock recorded auto values: %v", out.Tuned)
+	}
+}
+
+// GC must not collect what a load transaction still reads: a COPY into
+// stock at TPC-C 1000 WH on three nodes ran past the guide's 600 s and was
+// refused ("batch timestamp … must be after replica GC threshold").
+func TestCockroachGCOutlivesTheLoad(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name       string
+		warehouses int
+		want       string
+	}{
+		{"10 warehouses keep the guide's floor", 10, "gc.ttlseconds = 600;"},
+		{"1000 warehouses (100 GB)", 1000, "gc.ttlseconds = 18000;"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			c := tuneCase{kind: catalog.Cockroach, version: "25.4", params: map[string]any{"nodes": 3}}
+			c.segment = fmt.Sprintf(`{"name":"main","workload":{"script":"tpcc/tx","scale_factor":%d},"run":{"vus":64,"duration":"10m"}}`, tc.warehouses)
+			out, _ := compileTuned(t, c)
+			if sql := fileOf(out, "-init", "/etc/stroppy/settings.sql"); !strings.Contains(sql, tc.want) {
+				t.Errorf("settings.sql lacks %q:\n%s", tc.want, sql)
+			}
+		})
 	}
 }

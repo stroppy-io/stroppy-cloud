@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // ResourceIssue is a pre-provision finding, reusable by library previews and CLI.
@@ -28,6 +29,12 @@ type DatasetEstimate struct {
 	RecommendedGB int      `json:"recommended_gb"`
 	Unknown       []string `json:"unknown,omitempty"`
 }
+
+// LoadTimePerGB is the time a data load may take per GB of a built-in
+// population: segment deadlines and engine settings that must outlive a
+// load (CockroachDB's GC TTL) budget it. CockroachDB loaded TPC-C 1000 WH
+// (100 GB) in 55 minutes.
+const LoadTimePerGB = 3 * time.Minute
 
 // SegmentDataGB is the data a segment's built-in population makes (TPC-C
 // warehouses, TPC-B 100k accounts/branch, TPC-H/DS GB scale); false for a

@@ -85,7 +85,7 @@
 | `kv.range_merge.queue_enabled` | `false` | не в публичном списке CS | `false`: слияние диапазонов в окне замера не нужно. [офиц как практика гайда] |
 | `rocksdb.min_wal_sync_interval` | `500us` | не нашёл | см. 2.2 |
 | `kv.dist_sender.concurrency_limit` | `2016` | — | для 140k WH; на 100 WH не нужен. |
-| `ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = 600` | да | 4 ч (по умолчанию в версиях; не проверял) | снижает MVCC-мусор в коротком замере. [практика] |
+| `ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = max(600, 180 × ГБ данных)` | да | 4 ч (по умолчанию в версиях; не проверял) | меньше MVCC-мусора в коротком замере, но не меньше времени загрузки (`spec.LoadTimePerGB`, 3 мин/ГБ): транзакция COPY в `stock` на TPC-C 1000 WH на трёх нодах шла дольше 600 с и получила `batch timestamp … must be after replica GC threshold`. 100 складов — 1800, 1000 — 18000. [практика] |
 
 Прочее:
 | Настройка | Значение | Источник/статус |

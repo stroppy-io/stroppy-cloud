@@ -315,11 +315,6 @@ func Bound(seg spec.Segment, margin, iterationsCeiling time.Duration) time.Durat
 	return d + d/2 + seg.Warmup.Std() + margin + loadAllowance(seg)
 }
 
-// loadPerGB is the time a segment's data load may take per GB of its
-// built-in population on top of the margin; CockroachDB loaded TPC-C
-// 1000 WH (100 GB) in 55 minutes.
-const loadPerGB = 3 * time.Minute
-
 // loadAllowance is the time the segment's own data load may take: none when
 // its steps leave the load out.
 func loadAllowance(seg spec.Segment) time.Duration {
@@ -327,7 +322,7 @@ func loadAllowance(seg spec.Segment) time.Duration {
 		return 0
 	}
 	gb, _ := spec.SegmentDataGB(seg)
-	return time.Duration(gb * float64(loadPerGB))
+	return time.Duration(gb * float64(spec.LoadTimePerGB))
 }
 
 func logLevel(seg spec.Segment) string {

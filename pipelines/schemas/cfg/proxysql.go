@@ -147,6 +147,22 @@ func Proxysql2() *schemapb.Schema {
 			// doc: .../mysql-monitor-variables/#mysql-monitor_read_only_timeout
 			schemapb.Int64("monitor_read_only_timeout").Title("read_only check timeout").Group("Monitor").
 				Desc("Timeout of one read_only check.").Unit("ms").Gte(50).Lte(60000).Default(500),
+			// doc: .../mysql-monitor-variables/#mysql-monitor_groupreplication_healthcheck_timeout
+			schemapb.Int64("monitor_groupreplication_healthcheck_timeout").Title("Group Replication check timeout").Group("Monitor").
+				Desc("Timeout of one Group Replication health check of a member; a check slower than this counts towards max_timeout_count.").
+				Unit("ms").Gte(50).Lte(600000).Default(800),
+			// doc: .../mysql-monitor-variables/#mysql-monitor_groupreplication_healthcheck_max_timeout_count
+			schemapb.Int64("monitor_groupreplication_healthcheck_max_timeout_count").Title("Group Replication check timeouts").Group("Monitor").
+				Desc("Consecutive Group Replication health checks that may time out before ProxySQL takes the member offline and drops its connections.").
+				Gte(1).Lte(1000).Default(3),
+			// doc: .../mysql-monitor-variables/#mysql-monitor_galera_healthcheck_timeout
+			schemapb.Int64("monitor_galera_healthcheck_timeout").Title("Galera check timeout").Group("Monitor").
+				Desc("Timeout of one Galera health check of a node; a check slower than this counts towards max_timeout_count.").
+				Unit("ms").Gte(50).Lte(600000).Default(800),
+			// doc: .../mysql-monitor-variables/#mysql-monitor_galera_healthcheck_max_timeout_count
+			schemapb.Int64("monitor_galera_healthcheck_max_timeout_count").Title("Galera check timeouts").Group("Monitor").
+				Desc("Consecutive Galera health checks that may time out before ProxySQL takes the node offline and drops its connections.").
+				Gte(1).Lte(1000).Default(3),
 			// doc: .../mysql-variables/#mysql-ping_interval_server_msec
 			schemapb.Int64("ping_interval_server_msec").Title("Connection-pool ping interval").Group("Monitor").
 				Desc("How often idle pooled backend connections are pinged.").
@@ -330,6 +346,10 @@ mysql_variables=
     monitor_ping_interval={{{values.monitor_ping_interval}}}
     monitor_read_only_interval={{{values.monitor_read_only_interval}}}
     monitor_read_only_timeout={{{values.monitor_read_only_timeout}}}
+    monitor_groupreplication_healthcheck_timeout={{{values.monitor_groupreplication_healthcheck_timeout}}}
+    monitor_groupreplication_healthcheck_max_timeout_count={{{values.monitor_groupreplication_healthcheck_max_timeout_count}}}
+    monitor_galera_healthcheck_timeout={{{values.monitor_galera_healthcheck_timeout}}}
+    monitor_galera_healthcheck_max_timeout_count={{{values.monitor_galera_healthcheck_max_timeout_count}}}
     ping_interval_server_msec={{{values.ping_interval_server_msec}}}
     ping_timeout_server={{{values.ping_timeout_server}}}
 {{{values.custom_rendered}}}

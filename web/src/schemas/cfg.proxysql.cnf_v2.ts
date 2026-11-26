@@ -75,6 +75,14 @@ export interface CfgProxysqlCnf2 {
   monitor_read_only_interval?: number | string;
   /** read_only check timeout. Timeout of one read_only check. [ms] */
   monitor_read_only_timeout?: number | string;
+  /** Group Replication check timeout. Timeout of one Group Replication health check of a member; a check slower than this counts towards max_timeout_count. [ms] */
+  monitor_groupreplication_healthcheck_timeout?: number | string;
+  /** Group Replication check timeouts. Consecutive Group Replication health checks that may time out before ProxySQL takes the member offline and drops its connections. */
+  monitor_groupreplication_healthcheck_max_timeout_count?: number | string;
+  /** Galera check timeout. Timeout of one Galera health check of a node; a check slower than this counts towards max_timeout_count. [ms] */
+  monitor_galera_healthcheck_timeout?: number | string;
+  /** Galera check timeouts. Consecutive Galera health checks that may time out before ProxySQL takes the node offline and drops its connections. */
+  monitor_galera_healthcheck_max_timeout_count?: number | string;
   /** Connection-pool ping interval. How often idle pooled backend connections are pinged. [ms] */
   ping_interval_server_msec?: number | string;
   /** Connection-pool ping timeout. Timeout of one such ping. [ms] */
