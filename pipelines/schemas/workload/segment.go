@@ -18,9 +18,10 @@ import (
 )
 
 // stepPattern is a stroppy step id (drop_schema, create_schema, load_data,
-// workload_tx_new_order, ...).
-// doc: stroppy `help steps`
-const stepPattern = `^[a-z][a-z0-9_]*$`
+// workload_tx_new_order, ...); an execution graph's steps carry their path
+// (full/run_1/power_queries, power-query-only/prepare_streams).
+// doc: stroppy `help steps`; 6.5.0 workloads/tpch/README.md "Named execution modes"
+const stepPattern = `^[a-z][a-z0-9_-]*(/[a-z][a-z0-9_-]*)*$`
 
 // flagPattern is a typed stroppy parameter flag without the leading dashes
 // (`--load-workers` → load-workers).
@@ -177,6 +178,17 @@ func tpccFields() []schemapb.FieldDef {
 		schemapb.Str("warmup").Title("Warm-up traffic").Group("Transactions").
 			Desc("Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none.").
 			Pattern(goDurationPattern).MaxLen(32).Nullable(),
+		// doc: stroppy 6.5.0 workloads/tpcc/README.md "Strict terminal model".
+		schemapb.Choice("terminal_model").Title("Terminal model").Group("Transactions").
+			Desc("stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress.").
+			Opt(schemapb.StrV("stress"), "Stress").
+			Opt(schemapb.StrV("strict"), "Strict, ten terminals per warehouse").
+			Default(schemapb.StrV("stress")),
+		// doc: stroppy 6.5.0 `run tpcc/tx --help` — delivery-results; Stroppy
+		// never overwrites an existing file.
+		schemapb.Str("delivery_results").Title("Delivery results file").Group("Transactions").
+			Desc("JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.").
+			Pattern(filePattern).MaxLen(256).Default("tpcc-delivery.jsonl"),
 		sqlDialect(),
 		sqlFile("SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect."),
 	}
@@ -203,6 +215,17 @@ func tpchFields() []schemapb.FieldDef {
 		schemapb.Double("scale_factor").Title("Scale factor").Group("Data").
 			Desc("TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data.").
 			Gt(0).Lte(10000).Default(1),
+		// doc: stroppy 6.5.0 workloads/tpch/README.md "Named execution modes".
+		schemapb.Choice("mode").Title("Execution mode").Group("Queries").
+			Desc("legacy keeps the stream and refresh fields below. A named mode owns its schedule: full loads and runs the power and throughput tests twice and reports QphH@SF for a complete, valid run at a standard scale factor (1, 10, 30, 100…) on logged built-in SQL; power, throughput and their query-only variants run one phase; qualification compares SF=1 answers (mode). Named modes need generated streams, which YDB and Picodata lack.").
+			Opt(schemapb.StrV("legacy"), "Legacy").
+			Opt(schemapb.StrV("full"), "Full benchmark (QphH@SF)").
+			Opt(schemapb.StrV("power"), "Power test").
+			Opt(schemapb.StrV("throughput"), "Throughput test").
+			Opt(schemapb.StrV("power-query-only"), "Power queries only").
+			Opt(schemapb.StrV("throughput-query-only"), "Throughput queries only").
+			Opt(schemapb.StrV("qualification"), "Qualification").
+			Default(schemapb.StrV("legacy")),
 		loadWorkers(0).Desc("Workers used to load each table (loadWorkers); 0 = automatic."),
 		pgUnlogged(),
 		// doc: stroppy 6.4.0 `run tpch/tx --help` — streams, query-stream,
@@ -260,6 +283,14 @@ func tpcdsFields() []schemapb.FieldDef {
 			Desc("Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.").Gte(0).Nullable(),
 		schemapb.Int64("query_seed").Title("Query seed").Group("Queries").
 			Desc("Query generator seed of generated streams (querySeed). Unset keeps Stroppy's.").Nullable(),
+		// doc: stroppy 6.5.0 `run tpcds --help` — mode; benchmark is the
+		// sequence benchmark=true selects.
+		schemapb.Choice("mode").Title("Execution mode").Group("Queries").
+			Desc("legacy follows benchmark and the stream fields; queries runs the query set; benchmark runs the QphDS@SF sequence, as benchmark=true does (mode).").
+			Opt(schemapb.StrV("legacy"), "Legacy").
+			Opt(schemapb.StrV("queries"), "Queries").
+			Opt(schemapb.StrV("benchmark"), "Benchmark sequence (QphDS@SF)").
+			Default(schemapb.StrV("legacy")),
 		schemapb.Bool("validate_force").Title("Validate outside SF=1").Group("Queries").
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
 		// doc: stroppy 6.4.1 `run tpcds --help`, workloads/tpcds/README.md
@@ -480,14 +511,15 @@ func Segment() *schemapb.Schema {
 			segmentRule(
 				`!("workload" in this) || !("refresh_set" in this.workload) || this.workload.refresh_set == null || `+
 					`("refresh_functions" in this.workload && this.workload.refresh_functions == true) || `+
-					`("benchmark" in this.workload && this.workload.benchmark == true)`,
-				"refresh_set needs refresh_functions (TPC-H) or benchmark (TPC-DS)",
+					`("benchmark" in this.workload && this.workload.benchmark == true) || `+
+					`("mode" in this.workload && this.workload.mode != null && this.workload.mode != "legacy" && this.workload.mode != "queries")`,
+				"refresh_set needs refresh_functions or a named mode (TPC-H), or the benchmark (TPC-DS)",
 			).ID("refresh-set-needs-functions"),
 			// doc: stroppy 6.4.1 workloads/tpcds/README.md "Benchmark coverage":
 			// streams even and at least 4; custom schema/query files, an explicit
 			// query stream and unlogged loading are rejected before setup.
 			segmentRule(
-				`!("workload" in this) || !("benchmark" in this.workload) || this.workload.benchmark != true || (`+
+				`!("workload" in this) || !(("benchmark" in this.workload && this.workload.benchmark == true) || (this.workload.script == "tpcds" && "mode" in this.workload && this.workload.mode == "benchmark")) || (`+
 					`(!("streams" in this.workload) || this.workload.streams == null || (this.workload.streams >= 4 && this.workload.streams % 2 == 0)) && `+
 					`(!("query_stream" in this.workload) || this.workload.query_stream == null) && `+
 					`(!("pg_unlogged" in this.workload) || this.workload.pg_unlogged != true) && `+
@@ -495,6 +527,35 @@ func Segment() *schemapb.Schema {
 					`(!("sql_file" in this.workload) || this.workload.sql_file == null))`,
 				"benchmark needs an even number of streams of at least 4 and no query_stream, pg_unlogged, schema_file or sql_file",
 			).ID("tpcds-benchmark-shape"),
+			segmentRule(
+				`!("workload" in this) || this.workload.script != "tpcds" || !("benchmark" in this.workload) || this.workload.benchmark != true || `+
+					`!("mode" in this.workload) || this.workload.mode == null || this.workload.mode != "queries"`,
+				"benchmark=true contradicts mode queries",
+			).ID("tpcds-benchmark-mode"),
+			// doc: stroppy 6.5.0 workloads/tpch/README.md and stream_selection.go:
+			// named modes reject --refresh-functions and --query-stream and keep
+			// the default single-pass shared-iterations run; refreshing modes
+			// refuse unlogged loading; full refuses an explicit seed and any
+			// step filter (modes.go validateFullSelection).
+			segmentRule(
+				`!("workload" in this) || this.workload.script != "tpch/tx" || !("mode" in this.workload) || this.workload.mode == null || this.workload.mode == "legacy" || (`+
+					`(!("refresh_functions" in this.workload) || this.workload.refresh_functions != true) && `+
+					`(!("query_stream" in this.workload) || this.workload.query_stream == null) && `+
+					`(!("run" in this) || !("executor" in this.run) || this.run.executor == null || this.run.executor == "shared-iterations") && `+
+					`(!(this.workload.mode in ["power", "throughput", "full"]) || !("pg_unlogged" in this.workload) || this.workload.pg_unlogged != true) && `+
+					`(this.workload.mode != "full" || ((!("query_seed" in this.workload) || this.workload.query_seed == null) && `+
+					`(!("steps" in this) || size(this.steps) == 0) && (!("no_steps" in this) || size(this.no_steps) == 0))))`,
+				"a named TPC-H mode owns its schedule: shared iterations, no refresh_functions or query_stream, logged loading with refreshes; full also takes no query_seed or step filter",
+			).ID("tpch-mode-schedule"),
+			// doc: stroppy 6.5.0 workloads/tpcc: "strict terminal model requires
+			// constant-vus, transactional isolation, and fixed warehouses".
+			segmentRule(
+				`!("workload" in this) || !("terminal_model" in this.workload) || this.workload.terminal_model != "strict" || (`+
+					`(!("run" in this) || !("executor" in this.run) || this.run.executor == null || this.run.executor == "constant-vus") && `+
+					`(!("tx_isolation" in this.workload) || this.workload.tx_isolation == null || (this.workload.tx_isolation != "none" && this.workload.tx_isolation != "conn")) && `+
+					`(!("spread_warehouses" in this.workload) || this.workload.spread_warehouses != true))`,
+				"strict TPC-C needs the constant-VUs executor, a transactional isolation and fixed warehouses",
+			).ID("tpcc-strict-shape"),
 		).
 		MustBuild()
 }

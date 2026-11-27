@@ -18,6 +18,8 @@ segments of a result, never from logs.
     report (the canonical TPC-C metric); the last segment that has one.
   - qphds: TPC-DS QphDS@SF of a complete --benchmark sequence, as Stroppy
     reports it (tpcds_qphds of the segment); the last segment that has one.
+  - qphh: TPC-H QphH@SF of an eligible complete --mode full schedule, as
+    Stroppy reports it (tpch_qphh of the segment); the last segment that has one.
   - load_duration_seconds: wall time of the steps that build the database
     (schema, load, indexes, keys, procedures, statistics) over all segments.
   - query_geomean_ms, query_total_seconds: the single-stream pass of a query
@@ -32,6 +34,7 @@ segments of a result, never from logs.
 const (
 	HeadlineTPMC         = "tpmc"
 	HeadlineQphDS        = "qphds"
+	HeadlineQphH         = "qphh"
 	HeadlineLoadSeconds  = "load_duration_seconds"
 	HeadlineQueryGeomean = "query_geomean_ms"
 	HeadlineQueryTotal   = "query_total_seconds"
@@ -46,7 +49,7 @@ const HeadlineRev = 1
 func isLoadStep(name string) bool {
 	switch name {
 	case "create_schema", "create_schema_column", "set_unlogged", "load_data",
-		"create_indexes", "create_foreign_keys", "create_procedures", "set_logged", "analyze":
+		"create_indexes", "create_foreign_keys", "create_procedures", "create_terminal_procedures", "set_logged", "analyze":
 		return true
 	default:
 		return false
@@ -139,6 +142,9 @@ func deriveHeadline(h map[string]float64, segs []pipelinespec.SegmentResult) {
 		}
 		if v, ok := seg.Metrics["tpcds_qphds"]; ok && v.Value > 0 {
 			h[HeadlineQphDS] = v.Value
+		}
+		if v, ok := seg.Metrics["tpch_qphh"]; ok && v.Value > 0 {
+			h[HeadlineQphH] = v.Value
 		}
 		if geomean, total, ok := singleStream(seg, workers); ok {
 			h[HeadlineQueryGeomean], h[HeadlineQueryTotal] = geomean, total

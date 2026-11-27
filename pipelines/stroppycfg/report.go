@@ -167,6 +167,16 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 			if json.Unmarshal(payload.Data, &bench) == nil && bench.Score != nil {
 				summary.Metrics["tpcds_qphds"] = spec.MetricValue{Value: *bench.Score, Unit: "QphDS"}
 			}
+		case "tpch.benchmark":
+			// QphH@Size of an eligible complete --mode full schedule (the lower
+			// of its two runs); Stroppy leaves qphh_at_size out otherwise.
+			// doc: stroppy 6.5.0 workloads/tpch/mode_score.go benchmarkContribution.
+			var bench struct {
+				Score *float64 `json:"qphh_at_size"`
+			}
+			if json.Unmarshal(payload.Data, &bench) == nil && bench.Score != nil {
+				summary.Metrics["tpch_qphh"] = spec.MetricValue{Value: *bench.Score, Unit: "QphH"}
+			}
 		}
 	}
 	return doc, summary, nil

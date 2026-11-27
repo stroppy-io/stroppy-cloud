@@ -302,3 +302,62 @@ func TestConfigSeparatesSegmentsWithoutMutatingLabels(t *testing.T) {
 		t.Fatal("mutated caller labels")
 	}
 }
+
+// Strict TPC-C writes its deferred Delivery record into the workspace under
+// the configured name; stress and other scripts write none.
+func TestDeliveryResults(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name   string
+		params map[string]any
+		script string
+		want   string
+	}{
+		{"strict default name", map[string]any{"terminal_model": "strict"}, "tpcc/tx", "tpcc-delivery.jsonl"},
+		{"strict own name", map[string]any{"terminal_model": "strict", "delivery_results": "d-1.jsonl"}, "tpcc/procs", "d-1.jsonl"},
+		{"stress", map[string]any{"terminal_model": "stress", "delivery_results": "d-1.jsonl"}, "tpcc/tx", ""},
+		{"no model", map[string]any{}, "tpcc/tx", ""},
+		{"other script", map[string]any{"terminal_model": "strict"}, "tpcb/tx", ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			seg := spec.Segment{Workload: spec.WorkloadParams{Script: tc.script, Params: tc.params}}
+			if got := DeliveryResults(seg); got != tc.want {
+				t.Errorf("DeliveryResults = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+// A named TPC-H mode runs one worker per stream: the config leaves workers
+// and iterations to it, keeping the executor and timeouts.
+func TestConfigLeavesModeSchedule(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name string
+		mode string
+		want map[string]any
+	}{
+		{"full", "full", map[string]any{"executor": "shared-iterations", "queryTimeout": "1h0m0s"}},
+		{"legacy", "legacy", map[string]any{"executor": "shared-iterations", "vus": 1, "iterations": int64(1), "queryTimeout": "1h0m0s"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			seg := spec.Segment{Name: "q", Workload: spec.WorkloadParams{Script: "tpch/tx", Params: map[string]any{"mode": tc.mode, "refresh_functions": false}},
+				Run: spec.RunParams{Executor: spec.ExecutorSharedIterations, VUs: 1, Iterations: 1, QueryTimeout: spec.Duration(time.Hour)}}
+			cfg, err := Config(Input{Segment: seg, Workload: spec.Workload{DriverType: "postgres", URL: "postgres://x"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			params, _ := json.Marshal(cfg["params"])
+			if strings.Contains(string(params), "refreshFunctions") != (tc.mode == "legacy") {
+				t.Errorf("params %s: refreshFunctions belongs to legacy only", params)
+			}
+			got, _ := json.Marshal(cfg["run"])
+			want, _ := json.Marshal(tc.want)
+			if string(got) != string(want) {
+				t.Errorf("run %s, want %s", got, want)
+			}
+		})
+	}
+}

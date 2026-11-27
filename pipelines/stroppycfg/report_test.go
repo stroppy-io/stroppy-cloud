@@ -89,6 +89,37 @@ func TestTPCDSBenchmarkScore(t *testing.T) {
 	}
 }
 
+// Stroppy 6.5.0 TPC-H --mode full reports QphH@Size in its tpch.benchmark
+// workload report only for an eligible complete two-run schedule; the
+// segment carries it as tpch_qphh, never a score Stroppy withheld.
+func TestTPCHBenchmarkScore(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name, payload string
+		want          float64
+		present       bool
+	}{
+		{"eligible", `{"kind":"tpch.benchmark","schema":1,"status":"ok","data":{"mode":"full","eligible":true,"selected_run":2,"qphh_at_size":4321.5}}`, 4321.5, true},
+		{"withheld", `{"kind":"tpch.benchmark","schema":1,"status":"ok","data":{"mode":"full","eligible":false,"invalid_reasons":["unlogged loading is diagnostic"]}}`, 0, false},
+		{"failed contribution", `{"kind":"tpch.benchmark","schema":1,"status":"error","data":{"qphh_at_size":1}}`, 0, false},
+		{"other schema", `{"kind":"tpch.benchmark","schema":2,"status":"ok","data":{"qphh_at_size":1}}`, 0, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			raw, err := os.ReadFile("testdata/run-report.json")
+			require.NoError(t, err)
+			raw = []byte(strings.Replace(string(raw), `"workload_reports": []`, `"workload_reports": [`+tc.payload+`]`, 1))
+			_, summary, err := ParseReport(raw)
+			require.NoError(t, err)
+			got, ok := summary.Metrics["tpch_qphh"]
+			require.Equal(t, tc.present, ok)
+			if tc.present {
+				require.Equal(t, spec.MetricValue{Value: tc.want, Unit: "QphH"}, got)
+			}
+		})
+	}
+}
+
 // Stroppy 6.2 writes envelope schema 4: the fields read here are unchanged.
 func TestRunReportSchema4(t *testing.T) {
 	raw, err := os.ReadFile("testdata/run-report-v4.json")

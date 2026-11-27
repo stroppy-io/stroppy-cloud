@@ -23,7 +23,7 @@ func noopSteps(raw json.RawMessage) (json.RawMessage, error) {
 	wl, _ := segment["workload"].(map[string]any) //nolint:errcheck // absent = no script
 	script, _ := wl["script"].(string)            //nolint:errcheck // absent = no steps
 	known := map[string]bool{}
-	for _, s := range workload.Steps(script) {
+	for _, s := range workload.Steps(script, workload.Mode(script, wl)) {
 		known[s] = true
 	}
 	skip, _ := segment["no_steps"].([]any) //nolint:errcheck // absent = none

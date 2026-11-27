@@ -161,6 +161,9 @@ func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addr
 		if res.ReportPath != "" {
 			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-report", Path: res.ReportPath})
 		}
+		if res.DeliveryPath != "" {
+			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-delivery", Path: res.DeliveryPath})
+		}
 		if res.Result.Status != spec.SegmentCompleted {
 			events.Emit(ctx, events.SegmentFailed, events.Payload{"segment": seg.Name, "index": i, "status": string(res.Result.Status), "error": res.Result.Error})
 			return out, fmt.Errorf("segment %s %s: %s", seg.Name, res.Result.Status, res.Result.Error)

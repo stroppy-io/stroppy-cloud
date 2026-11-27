@@ -9,6 +9,8 @@ export interface SystemStroppyCatalog1ItemItemItem {
   title?: string;
   /** Phase. Where the step sits in a run: preparing, measuring, cleaning up. */
   phase?: "bootstrap" | "workload" | "teardown";
+  /** Modes. Values of the script's mode parameter (terminal_model, mode) the step runs in; empty when it runs in every mode. */
+  modes?: Array<string>;
 }
 
 /** object  */

@@ -14,6 +14,16 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 FIXTURES = ROOT / "pipelines/stroppycfg/testdata"
 
+# Every step-graph mode of the workload schema (workload.Modes), resolved by
+# `stroppy probe --resolved`: a mode changes which steps run. Strict TPC-C
+# needs constant VUs; the TPC-DS benchmark an even stream count of at least 4.
+STRICT_RUN = ("--executor", "constant-vus", "--duration", "10m", "--vus", "8")
+MODE_PROBES = (
+    [(s, "--terminal-model", m, STRICT_RUN) for s in ("tpcc/tx", "tpcc/procs") for m in ("stress", "strict")]
+    + [("tpch/tx", "--mode", m, ()) for m in ("legacy", "qualification", "power", "power-query-only", "throughput", "throughput-query-only", "full")]
+    + [("tpcds", "--mode", m, ("--streams", "4") if m == "benchmark" else ()) for m in ("legacy", "queries", "benchmark")]
+)
+
 
 def capture(*args, cwd=None):
     return subprocess.check_output(args, cwd=cwd, timeout=60)
@@ -29,7 +39,16 @@ def main():
     binary = (args.binary or source / "build/stroppy").resolve()
     probe = capture(str(binary), "probe", "-o", "json")
     native_schema = (source / "docs/jsonschema/run.schema.json").read_bytes()
-    fixtures = {"stroppy-probe.json": probe, "stroppy-run.schema.json": native_schema}
+    modes = {}
+    for script, flag, mode, extra in MODE_PROBES:
+        resolved = json.loads(capture(str(binary), "probe", script, "-d", "pg", flag, mode, *extra, "--resolved", "-o", "json"))
+        steps = resolved["workloads"][0]["steps"]
+        modes[f"{script} {mode}"] = [{"name": s["name"], "measured": bool(s.get("measured"))} for s in steps]
+    fixtures = {
+        "stroppy-probe.json": probe,
+        "stroppy-run.schema.json": native_schema,
+        "stroppy-probe-modes.json": (json.dumps(modes, indent=1, sort_keys=True) + "\n").encode(),
+    }
     if args.refresh:
         for name, data in fixtures.items():
             (FIXTURES / name).write_bytes(data)

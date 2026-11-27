@@ -92,8 +92,10 @@ func StroppyCatalog() *schemapb.Schema {
 								schemapb.Object("",
 									// doc: stroppy `help steps` — drop_schema,
 									// create_schema, load_data, and the workload steps.
+									// An execution graph's step carries its path
+									// (stroppy 6.5.0 full/run_1/power_queries).
 									schemapb.Str("id").Title("Step id").
-										Pattern(`^[a-z][a-z0-9_]*$`).MaxLen(64).Required(),
+										Pattern(`^[a-z][a-z0-9_-]*(/[a-z][a-z0-9_-]*)*$`).MaxLen(64).Required(),
 									schemapb.Str("title").Title("Title").MaxLen(128),
 									schemapb.Choice("phase").Title("Phase").
 										Desc("Where the step sits in a run: preparing, measuring, cleaning up.").
@@ -101,6 +103,9 @@ func StroppyCatalog() *schemapb.Schema {
 										Opt(schemapb.StrV("workload"), "Workload").
 										Opt(schemapb.StrV("teardown"), "Teardown").
 										Default(schemapb.StrV("workload")),
+									schemapb.List("modes", schemapb.Str("").Pattern(`^[a-z][a-z0-9-]*$`).MaxLen(32)).Title("Modes").
+										Desc("Values of the script's mode parameter (terminal_model, mode) the step runs in; empty when it runs in every mode.").
+										MaxItems(16).Unique(),
 								).Strict(),
 							).Title("Steps").
 								Desc("Steps the script declares; the segment form filters on them.").

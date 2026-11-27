@@ -387,6 +387,10 @@ components:
               title: { type: string }
               description: { type: string }
               phase: { type: string, enum: [bootstrap, workload, teardown] }
+              modes:
+                type: array
+                description: Values of the script's mode parameter (`terminal_model` for TPC-C, `mode` for TPC-H and TPC-DS) the step runs in; absent when it runs in every mode. The values are the workload schema's own choices.
+                items: { type: string }
         params:
           type: array
           description: Typed parameters the script declares, as probed from the build (`stroppy probe -o json`).

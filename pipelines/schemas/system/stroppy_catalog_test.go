@@ -16,6 +16,7 @@ func script(id string) map[string]any {
 			map[string]any{"id": "create_schema", "phase": "bootstrap"},
 			map[string]any{"id": "load_data", "phase": "bootstrap"},
 			map[string]any{"id": "workload_tx_new_order", "phase": "workload"},
+			map[string]any{"id": "full/run_1/power_queries", "phase": "workload", "modes": []any{"full"}},
 		},
 		"params": []any{
 			map[string]any{"name": "scale-factor", "config": "scaleFactor", "type": "int", "default": int64(1), "description": "Number of warehouses.", "env": "SCALE_FACTOR"},

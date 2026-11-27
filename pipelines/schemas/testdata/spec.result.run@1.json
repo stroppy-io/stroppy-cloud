@@ -390,7 +390,7 @@
       "title": "Segments"
     },
     {
-      "description": "Graphene artifact references (artifact/\u003cid\u003e): raw stroppy output, the report.",
+      "description": "Graphene artifact references (artifact/\u003cid\u003e): raw stroppy output, the report, the strict TPC-C Delivery record.",
       "group": "Result",
       "list": {
         "items": [
@@ -401,7 +401,7 @@
             }
           }
         ],
-        "maxItems": "195",
+        "maxItems": "259",
         "unique": true
       },
       "name": "artifacts",

@@ -38,6 +38,7 @@ const LATIN_BY_DESIGN = new Set([
   'onboarding.concepts.provider.sample',
   'catalog.metrics.tpmc.title',
   'catalog.metrics.qphds.title',
+  'catalog.metrics.qphh.title',
   'public.export.md',
   'public.export.json',
   'public.export.csv',

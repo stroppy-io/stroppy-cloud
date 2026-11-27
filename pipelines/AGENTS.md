@@ -282,7 +282,7 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
 чекаут `~/devel/github/stroppy-io/stroppy` (`stroppy probe -o json`,
 `stroppy run <workload> --help`, `stroppy help config-file|drivers|steps`).
 
-- Образ: `ghcr.io/stroppy-io/stroppy:v6.4.3.75` (тег = релиз + номер сборки),
+- Образ: `ghcr.io/stroppy-io/stroppy:v6.5.0.76` (тег = релиз + номер сборки),
   entrypoint `stroppy`, WORKDIR `/workspace`; контейнер на host-сети,
   директория сегмента примонтирована как `/workspace`.
 - Команда: `run -f /workspace/stroppy-config.json --log-mode production
@@ -302,6 +302,15 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
   Старые образы используют полный файл лога с bench summary/compliance.
   Отчёты failed/canceled сохраняются; completed_with_errors проходит обычные
   thresholds. Пайплайн управляет report CLI-флагами. OTLP остаётся независимым.
+- Шаги зависят от режима скрипта: `terminal_model` у TPC-C (`stress`,
+  `strict`), `mode` у TPC-H и TPC-DS (`benchmark=true` у TPC-DS — режим
+  `benchmark`). `workload.Modes`/`Steps`/`Measured` — инвентарь каждого
+  режима; фильтр шагов сегмента проверяется по шагам выбранного режима.
+  Источник — `stroppy probe <script> --resolved` каждого режима, фикстура
+  `stroppycfg/testdata/stroppy-probe-modes.json` (`check_contract.py`).
+- Strict TPC-C пишет отложенные Delivery в `delivery_results` (по умолчанию
+  `tpcc-delivery.jsonl`) в каталоге сегмента; файл — артефакт
+  `stroppy-<segment>-delivery` на 30 дней.
 - Baseline: `stroppy baseline --json --no-save --download always [...]` до
   сегментов на runner-машине; отчёт schema 1 → `result.baseline`; fail
   вердикта не валит прогон.
@@ -325,9 +334,13 @@ The pipeline copies native `tps`, `iterations_per_second`, `queries_per_second`
 and `measurement_seconds`, adding units without computing throughput. Workloads
 without logical transactions do not report TPS. Full metrics and workload-specific
 reports remain available alongside the compact headline. A TPC-DS `--benchmark`
-run (stroppy 6.4.3) whose `tpcds.benchmark` workload report carries
+run whose `tpcds.benchmark` workload report carries
 `qphds_at_sf` adds it as the segment metric `tpcds_qphds` (unit QphDS); Stroppy
 omits the score for an incomplete or failed sequence, and so does the segment.
+A TPC-H `--mode full` run (stroppy 6.5.0) whose `tpch.benchmark` report carries
+`qphh_at_size` adds it as `tpch_qphh` (unit QphH); Stroppy reports it only for an
+eligible complete two-run schedule (standard scale factor, enough streams,
+logged built-in SQL, a real database).
 
 Native Stroppy fixes are temporarily tested on YC using development images built
 from the working tree (now preserved in Stroppy PR #166), with inputs pinned to immutable image digests.
@@ -353,7 +366,7 @@ Run results allow 2048 metrics per segment (`SegmentMetricsMax`: a query-set
 workload projects nine values per query histogram, TPC-DS has 103 statements)
 and 64 segments, so aggregate metrics must not reuse the per-segment cap. Each
 segment also carries the report's step timings (`steps`) and the measured
-step's `workers`, outside the inline report, which is dropped when large. Artifact capacity is config + log + report per segment
+step's `workers`, outside the inline report, which is dropped when large. Artifact capacity is config + log + report + strict Delivery record per segment
 plus the optional baseline log and two managed-readiness artifacts. Preserve every native metric instead of truncating.
 
 SDK 0.2.5 bounds OTLP metric requests to 2 MiB by splitting complete protobuf

@@ -119,8 +119,8 @@ func ResultRun() *schemapb.Schema {
 
 			schemapb.List("artifacts", schemapb.Str("").MinLen(1).MaxLen(256)).
 				Title("Artifacts").Group("Result").
-				Desc("Graphene artifact references (artifact/<id>): raw stroppy output, the report.").
-				MaxItems(3*64+3).Unique(),
+				Desc("Graphene artifact references (artifact/<id>): raw stroppy output, the report, the strict TPC-C Delivery record.").
+				MaxItems(4*64+3).Unique(),
 
 			// doc: `stroppy baseline --json` — schema 1 report.
 			schemapb.Object("baseline",

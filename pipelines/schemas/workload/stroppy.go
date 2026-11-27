@@ -222,6 +222,12 @@ func Stroppy() *schemapb.Schema {
 			schemapb.Rule(`!("driver" in root) || !("default_insert_method" in root.driver) || root.driver.default_insert_method != "columnar" || root.protocol in ["pg", "cockroach", "ydb_grpc", "ydb_grpcs", "noop"]`, "columnar insert requires the PostgreSQL, CockroachDB, YDB or noop driver").ID("columnar-driver"),
 			schemapb.Rule(`!(root.protocol in ["ydb_grpc", "ydb_grpcs"]) || root.segments.all(s, s.workload.script != "tpcds" || ((! ("query_stream" in s.workload) || s.workload.query_stream == null) && (!("streams" in s.workload) || s.workload.streams == 1)))`, "YDB TPC-DS supports the baked query set only").ID("tpcds-ydb-baked"),
 			schemapb.Rule(`root.protocol != "picodata" || root.segments.all(s, s.workload.script != "tpcds" || ("no_steps" in s && "workload" in s.no_steps) || ("steps" in s && size(s.steps) > 0 && !("workload" in s.steps)))`, "Picodata TPC-DS supports loading only; exclude the workload step").ID("tpcds-picodata-load-only"),
+			// doc: stroppy 6.5.0 workloads/tpch/stream_selection.go
+			// streamDriverSupported — postgres, crdb, mysql drivers run named modes.
+			schemapb.Rule(`root.protocol in ["pg", "mysql", "cockroach"] || root.segments.all(s, s.workload.script != "tpch/tx" || !("mode" in s.workload) || s.workload.mode == null || s.workload.mode == "legacy")`, "named TPC-H modes need generated query streams: PostgreSQL, MySQL or CockroachDB").ID("tpch-mode-protocol"),
+			// doc: stroppy 6.5.0 workloads/tpcc: Picodata has no transactional
+			// isolation, which the strict terminal model needs.
+			schemapb.Rule(`root.protocol != "picodata" || root.segments.all(s, !(s.workload.script in ["tpcc/tx", "tpcc/procs"]) || !("terminal_model" in s.workload) || s.workload.terminal_model != "strict")`, "strict TPC-C needs a transactional isolation, which Picodata lacks").ID("tpcc-strict-picodata"),
 			schemapb.Rule(
 				`!("connection" in root) || !("protocol" in root) || `+
 					`root.connection.kind == (root.protocol.startsWith("ydb") ? "ydb" : root.protocol)`,

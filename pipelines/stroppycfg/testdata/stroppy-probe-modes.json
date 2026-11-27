@@ -1,0 +1,530 @@
+{
+ "tpcc/procs stress": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_procedures"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "create_foreign_keys"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_population"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  }
+ ],
+ "tpcc/procs strict": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_procedures"
+  },
+  {
+   "measured": false,
+   "name": "create_terminal_procedures"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "create_foreign_keys"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_population"
+  },
+  {
+   "measured": false,
+   "name": "initialize_terminals"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  },
+  {
+   "measured": false,
+   "name": "delivery_results"
+  }
+ ],
+ "tpcc/tx stress": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "create_foreign_keys"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_population"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  }
+ ],
+ "tpcc/tx strict": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "create_foreign_keys"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_population"
+  },
+  {
+   "measured": false,
+   "name": "initialize_terminals"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  },
+  {
+   "measured": false,
+   "name": "delivery_results"
+  }
+ ],
+ "tpcds benchmark": [
+  {
+   "measured": false,
+   "name": "generate_maintenance"
+  },
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "prepare_maintenance"
+  },
+  {
+   "measured": true,
+   "name": "power"
+  },
+  {
+   "measured": true,
+   "name": "throughput_1"
+  },
+  {
+   "measured": false,
+   "name": "maintenance_1"
+  },
+  {
+   "measured": true,
+   "name": "throughput_2"
+  },
+  {
+   "measured": false,
+   "name": "maintenance_2"
+  }
+ ],
+ "tpcds legacy": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_answers"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  }
+ ],
+ "tpcds queries": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_answers"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  }
+ ],
+ "tpch/tx full": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "full/prepare_streams"
+  },
+  {
+   "measured": true,
+   "name": "full/run_1/power_queries"
+  },
+  {
+   "measured": true,
+   "name": "full/run_1/power_rf1"
+  },
+  {
+   "measured": true,
+   "name": "full/run_1/power_rf2"
+  },
+  {
+   "measured": true,
+   "name": "full/run_1/throughput_queries"
+  },
+  {
+   "measured": true,
+   "name": "full/run_1/throughput_refresh"
+  },
+  {
+   "measured": true,
+   "name": "full/run_2/power_queries"
+  },
+  {
+   "measured": true,
+   "name": "full/run_2/power_rf1"
+  },
+  {
+   "measured": true,
+   "name": "full/run_2/power_rf2"
+  },
+  {
+   "measured": true,
+   "name": "full/run_2/throughput_queries"
+  },
+  {
+   "measured": true,
+   "name": "full/run_2/throughput_refresh"
+  }
+ ],
+ "tpch/tx legacy": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_answers"
+  },
+  {
+   "measured": true,
+   "name": "workload"
+  }
+ ],
+ "tpch/tx power": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "power/prepare_streams"
+  },
+  {
+   "measured": true,
+   "name": "power/run_1/power_queries"
+  },
+  {
+   "measured": true,
+   "name": "power/run_1/power_rf1"
+  },
+  {
+   "measured": true,
+   "name": "power/run_1/power_rf2"
+  }
+ ],
+ "tpch/tx power-query-only": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "power-query-only/prepare_streams"
+  },
+  {
+   "measured": true,
+   "name": "power-query-only/run_1/power_queries"
+  }
+ ],
+ "tpch/tx qualification": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "validate_answers"
+  }
+ ],
+ "tpch/tx throughput": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "throughput/prepare_streams"
+  },
+  {
+   "measured": true,
+   "name": "throughput/run_1/throughput_queries"
+  },
+  {
+   "measured": true,
+   "name": "throughput/run_1/throughput_refresh"
+  }
+ ],
+ "tpch/tx throughput-query-only": [
+  {
+   "measured": false,
+   "name": "drop_schema"
+  },
+  {
+   "measured": false,
+   "name": "create_schema"
+  },
+  {
+   "measured": false,
+   "name": "load_data"
+  },
+  {
+   "measured": false,
+   "name": "create_indexes"
+  },
+  {
+   "measured": false,
+   "name": "analyze"
+  },
+  {
+   "measured": false,
+   "name": "throughput-query-only/prepare_streams"
+  },
+  {
+   "measured": true,
+   "name": "throughput-query-only/run_1/throughput_queries"
+  }
+ ]
+}

@@ -109,6 +109,19 @@
     }
   },
   {
+    "name": "tpcc-strict",
+    "workload": {
+      "script": "tpcc/tx",
+      "terminal_model": "strict",
+      "delivery_results": "delivery.jsonl"
+    },
+    "run": {
+      "executor": "constant-vus",
+      "vus": 2,
+      "duration": "10s"
+    }
+  },
+  {
     "name": "tpcc-dialect",
     "workload": {
       "script": "tpcc/procs",
@@ -119,6 +132,25 @@
       "vus": 1,
       "iterations": 3
     }
+  },
+  {
+    "name": "tpcc-procs-strict",
+    "workload": {
+      "script": "tpcc/procs",
+      "terminal_model": "strict",
+      "delivery_results": "delivery-procs.jsonl"
+    },
+    "run": {
+      "executor": "constant-vus",
+      "vus": 2,
+      "duration": "10s"
+    },
+    "steps": [
+      "create_terminal_procedures",
+      "initialize_terminals",
+      "workload",
+      "delivery_results"
+    ]
   },
   {
     "name": "tpcc-tx",
@@ -219,11 +251,25 @@
     }
   },
   {
+    "name": "tpch-full",
+    "workload": {
+      "script": "tpch/tx",
+      "scale_factor": 1,
+      "mode": "full"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 1
+    }
+  },
+  {
     "name": "tpcds-dialect",
     "workload": {
       "script": "tpcds",
       "scale_factor": 0.01,
-      "sql_dialect": "pg"
+      "sql_dialect": "pg",
+      "mode": "queries"
     },
     "run": {
       "executor": "shared-iterations",

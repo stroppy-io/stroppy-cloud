@@ -186,6 +186,9 @@ type StroppyStep struct {
 	Title       string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`
 	Phase       string `json:"phase,omitempty"`
+	// Modes are the values of the script's mode parameter (workload.ModeParam)
+	// the step runs in; empty when it runs in every mode.
+	Modes []string `json:"modes,omitempty"`
 }
 
 // StroppyParam is one typed flag of a script.

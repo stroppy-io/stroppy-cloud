@@ -56,3 +56,28 @@ func TestSimulatedNativeReportArtifact(t *testing.T) {
 		})
 	}
 }
+
+// A strict TPC-C segment's deferred Delivery record is published beside its
+// report and kept as long as the logs.
+func TestSimulatedDeliveryArtifact(t *testing.T) {
+	s := newSim(t)
+	run := noopRun()
+	wf := pipelinetestWorkflow(s)
+	s.converge(t, run, map[string]string{"runner-1": "10.130.0.20"})
+	runner := s.agent(run, "runner-1")
+	res := completed("smoke", 3)
+	res.LogPath = ""
+	res.DeliveryPath = "/ws/stroppy/smoke/tpcc-delivery.jsonl"
+	s.w.OnAgentActivity(runner, activities.NameRunSegment, mock.Anything, mock.Anything).Return(res, nil).Once()
+	s.w.File(runner, res.DeliveryPath, []byte(`{"warehouse":1,"carrier":3}`+"\n"))
+	s.w.Env.ExecuteWorkflow(wf, run)
+	require.NoError(t, s.w.Env.GetWorkflowError())
+	var result spec.Result
+	require.NoError(t, s.w.Env.GetWorkflowResult(&result))
+	name := "artifact/8f1c3f2a-stroppy-smoke-delivery"
+	require.Contains(t, result.Artifacts, name)
+	item, ok := s.w.Resource(ref.OwnerRef(name))
+	require.True(t, ok)
+	require.True(t, s.w.Env.Now().Add(logArtifactRetention).Equal(item.KeepUntil))
+	s.w.AssertNoLeaks(t)
+}

@@ -2,6 +2,7 @@ package catalog_test
 
 import (
 	"context"
+	"slices"
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -144,7 +145,7 @@ func TestScriptRatingMetric(t *testing.T) {
 	}
 	want := map[string]string{
 		"tpcc/tx": "tpmc", "tpcc/procs": "tpmc", "tpcb/tx": "tps", "tpcb/procs": "tps",
-		"tpch/tx": "query_geomean_ms", "tpcds": "qphds", "simple": "qps", "banking": "tps",
+		"tpch/tx": "qphh", "tpcds": "qphds", "simple": "qps", "banking": "tps",
 		"execute_sql": "", "baseline": "", "banking/inject": "",
 	}
 	for script, metric := range want {
@@ -159,4 +160,54 @@ func TestScriptRatingMetric(t *testing.T) {
 			t.Errorf("%s rates by %q, which is not a rating-eligible metric", script, metric)
 		}
 	}
+}
+
+// A mode changes which steps a script runs: the catalog lists the steps of
+// every mode in run order, each naming the modes it belongs to.
+func TestStroppyStepsCarryTheirModes(t *testing.T) {
+	t.Parallel()
+	steps := map[string]catalog.StroppyStep{}
+	var order []string
+	for _, s := range scriptOf(t, "tpcc/procs").Steps {
+		steps[s.ID] = s
+		order = append(order, s.ID)
+	}
+	want := []string{"drop_schema", "create_schema", "create_procedures", "create_terminal_procedures", "load_data", "create_indexes",
+		"create_foreign_keys", "analyze", "validate_population", "initialize_terminals", "workload", "delivery_results"}
+	if !slices.Equal(order, want) {
+		t.Fatalf("tpcc/procs steps %v", order)
+	}
+	if len(steps["workload"].Modes) != 0 || steps["workload"].Phase != "workload" {
+		t.Errorf("workload: %+v", steps["workload"])
+	}
+	if !slices.Equal(steps["initialize_terminals"].Modes, []string{"strict"}) {
+		t.Errorf("initialize_terminals: %+v", steps["initialize_terminals"])
+	}
+	var full []string
+	for _, s := range scriptOf(t, "tpch/tx").Steps {
+		if slices.Equal(s.Modes, []string{"full"}) && s.Phase == "workload" {
+			full = append(full, s.ID)
+		}
+	}
+	if len(full) != 10 {
+		t.Errorf("tpch full measured steps %v", full)
+	}
+}
+
+func scriptOf(t *testing.T, id string) catalog.StroppyScript {
+	t.Helper()
+	reg := schemas.New()
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, ok := c.StroppyVersion("")
+	if !ok {
+		t.Fatal("no default stroppy version")
+	}
+	s, ok := v.Script(id)
+	if !ok {
+		t.Fatalf("no script %s", id)
+	}
+	return s
 }

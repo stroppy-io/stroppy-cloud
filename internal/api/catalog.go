@@ -278,6 +278,7 @@ func stroppyVersionOf(v catalog.StroppyVersion) oas.StroppyCatalogVersionsItem {
 			if st.Phase != "" {
 				item.Phase = oas.NewOptStroppyScriptStepsItemPhase(oas.StroppyScriptStepsItemPhase(st.Phase))
 			}
+			item.Modes = st.Modes
 			script.Steps = append(script.Steps, item)
 		}
 		for _, p := range s.Params {

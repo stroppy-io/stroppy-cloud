@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	workloadschema "github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -80,6 +81,13 @@ func Config(in Input) (map[string]any, error) {
 	run, err := RunObject(seg.Run)
 	if err != nil {
 		return nil, fmt.Errorf("segment %s: %w", seg.Name, err)
+	}
+	if ownsSchedule(seg.Workload) {
+		delete(run, "vus")
+		delete(run, "iterations")
+		// Any explicit refreshFunctions, false included, conflicts with the
+		// mode's own refreshes; the schema already refuses true.
+		delete(params, "refreshFunctions")
 	}
 	driver, err := Driver(in)
 	if err != nil {
@@ -200,6 +208,14 @@ func RunObject(r spec.RunParams) (map[string]any, error) {
 		out["drainTimeout"] = r.DrainTimeout
 	}
 	return out, nil
+}
+
+// ownsSchedule is a workload whose mode fixes its workers and iterations: a
+// named TPC-H mode refuses any other than its own (one per stream).
+// doc: stroppy 6.5.0 workloads/tpch/stream_selection.go — "run-policy
+// overrides cannot change the schedule".
+func ownsSchedule(w spec.WorkloadParams) bool {
+	return w.Script == "tpch/tx" && workloadschema.Mode(w.Script, w.Params) != "legacy"
 }
 
 // Driver renders drivers.default: type and URL from the workload, every other key
@@ -323,6 +339,23 @@ func loadAllowance(seg spec.Segment) time.Duration {
 	}
 	gb, _ := spec.SegmentDataGB(seg)
 	return time.Duration(gb * float64(spec.LoadTimePerGB))
+}
+
+// deliveryResultsDefault is Stroppy's own deliveryResults name.
+// doc: stroppy 6.5.0 `run tpcc/tx --help` — delivery-results.
+const deliveryResultsDefault = "tpcc-delivery.jsonl"
+
+// DeliveryResults is the workspace file a strict TPC-C segment records its
+// deferred Delivery outcomes in; empty for any other segment.
+func DeliveryResults(seg spec.Segment) string {
+	script := seg.Workload.Script
+	if workloadschema.Mode(script, seg.Workload.Params) != "strict" || workloadschema.ModeParam(script) != "terminal_model" {
+		return ""
+	}
+	if name := seg.Workload.Params["delivery_results"]; name != nil && name != "" {
+		return fmt.Sprint(name)
+	}
+	return deliveryResultsDefault
 }
 
 func logLevel(seg spec.Segment) string {

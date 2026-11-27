@@ -93,6 +93,16 @@ func TestDerivedHeadline(t *testing.T) {
 			want: map[string]float64{HeadlineQphDS: 12345},
 		},
 		{
+			name: "QphH@SF of a full TPC-H schedule",
+			segs: []pipelinespec.SegmentResult{{Name: "full", Status: pipelinespec.SegmentCompleted, Metrics: map[string]pipelinespec.MetricValue{"tpch_qphh": {Value: 4321.5, Unit: "QphH"}}}},
+			want: map[string]float64{HeadlineQphH: 4321.5},
+		},
+		{
+			name:   "no score from Stroppy, no QphH",
+			segs:   []pipelinespec.SegmentResult{{Name: "full", Status: pipelinespec.SegmentFailed, Metrics: map[string]pipelinespec.MetricValue{"iterations_total": {Value: 1}}}},
+			absent: []string{HeadlineQphH},
+		},
+		{
 			name:   "no score from Stroppy, no QphDS",
 			segs:   []pipelinespec.SegmentResult{{Name: "benchmark", Status: pipelinespec.SegmentFailed, Metrics: map[string]pipelinespec.MetricValue{"iterations_total": {Value: 1}}}},
 			absent: []string{HeadlineQphDS},

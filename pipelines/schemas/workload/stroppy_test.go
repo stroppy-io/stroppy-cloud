@@ -56,6 +56,16 @@ func TestStroppy(t *testing.T) {
 			{Value: with(map[string]any{"driver": map[string]any{"default_insert_method": "copy"}}), Code: "CHOICE_NOT_ALLOWED", Path: "driver.default_insert_method"},
 			{Value: with(map[string]any{"baseline": map[string]any{"enabled": true, "tiers": []any{"gpu"}}}), Code: "CHOICE_NOT_ALLOWED", Path: "baseline.tiers[0]"},
 			{Value: with(map[string]any{"protocol": "mysql", "driver": map[string]any{"default_insert_method": "columnar"}}), Code: "RULE_VIOLATED", Path: ""},
+			// stroppy 6.5.0: named TPC-H modes need generated streams (not YDB,
+			// Picodata or noop); strict TPC-C a transactional isolation (not Picodata).
+			{Value: with(map[string]any{"protocol": "ydb_grpc", "segments": []any{map[string]any{
+				"name": "full", "workload": map[string]any{"script": "tpch/tx", "mode": "full"},
+				"run": map[string]any{"executor": "shared-iterations", "iterations": int64(1)},
+			}}}), Code: "RULE_VIOLATED", Path: ""},
+			{Value: with(map[string]any{"protocol": "picodata", "segments": []any{map[string]any{
+				"name": "strict", "workload": map[string]any{"script": "tpcc/tx", "terminal_model": "strict"},
+				"run": map[string]any{"executor": "constant-vus", "duration": "60s"},
+			}}}), Code: "RULE_VIOLATED", Path: ""},
 		},
 	})
 }

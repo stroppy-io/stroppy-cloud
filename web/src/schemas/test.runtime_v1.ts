@@ -404,6 +404,10 @@ export interface TestRuntime1SegmentWorkloadTpccProcs {
   spread_warehouses?: boolean;
   /** Warm-up traffic. Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none. */
   warmup?: string | null;
+  /** Terminal model. stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress. */
+  terminal_model?: "stress" | "strict";
+  /** Delivery results file. JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. */
+  delivery_results?: string;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
   sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;
   /** SQL file. SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect. */
@@ -433,6 +437,10 @@ export interface TestRuntime1SegmentWorkloadTpccTx {
   spread_warehouses?: boolean;
   /** Warm-up traffic. Unmeasured traffic before the workload step (warmup), a duration like 2m: caches and plans settle before measurement starts. Unset = none. */
   warmup?: string | null;
+  /** Terminal model. stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress. */
+  terminal_model?: "stress" | "strict";
+  /** Delivery results file. JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. */
+  delivery_results?: string;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
   sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;
   /** SQL file. SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect. */
@@ -454,6 +462,8 @@ export interface TestRuntime1SegmentWorkloadTpcds {
   query_stream?: number | string | null;
   /** Query seed. Query generator seed of generated streams (querySeed). Unset keeps Stroppy's. */
   query_seed?: number | string | null;
+  /** Execution mode. legacy follows benchmark and the stream fields; queries runs the query set; benchmark runs the QphDS@SF sequence, as benchmark=true does (mode). */
+  mode?: "legacy" | "queries" | "benchmark";
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
   validate_force?: boolean;
   /** Benchmark sequence. Load, one power stream, two throughput tests of `streams` streams and two data maintenance tests; reports QphDS@SF for a complete successful run (benchmark). PostgreSQL, Greenplum family, MySQL and MariaDB. */
@@ -475,6 +485,8 @@ export interface TestRuntime1SegmentWorkloadTpchTx {
   script: "tpch/tx";
   /** Scale factor. TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data. */
   scale_factor?: number;
+  /** Execution mode. legacy keeps the stream and refresh fields below. A named mode owns its schedule: full loads and runs the power and throughput tests twice and reports QphH@SF for a complete, valid run at a standard scale factor (1, 10, 30, 100…) on logged built-in SQL; power, throughput and their query-only variants run one phase; qualification compares SF=1 answers (mode). Named modes need generated streams, which YDB and Picodata lack. */
+  mode?: "legacy" | "full" | "power" | "throughput" | "power-query-only" | "throughput-query-only" | "qualification";
   /** Load workers. Workers used to load each table (loadWorkers); 0 = automatic. */
   load_workers?: number | string;
   /** Unlogged tables while loading. Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only. */

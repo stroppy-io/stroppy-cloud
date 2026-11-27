@@ -149,7 +149,7 @@ export interface SpecResultRun1 {
   metrics?: Record<string, SpecResultRun1MetricsValue>;
   /** Segments. One entry per workload segment, in execution order. */
   segments?: Array<SpecResultRun1Item>;
-  /** Artifacts. Graphene artifact references (artifact/<id>): raw stroppy output, the report. */
+  /** Artifacts. Graphene artifact references (artifact/<id>): raw stroppy output, the report, the strict TPC-C Delivery record. */
   artifacts?: Array<string>;
   /** Baseline. Runner machine self-check from `stroppy baseline`, when the workload asked for one. */
   baseline?: SpecResultRun1Baseline;

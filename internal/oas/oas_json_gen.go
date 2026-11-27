@@ -19502,6 +19502,8 @@ func (s *MetricKey) Decode(d *jx.Decoder) error {
 		*s = MetricKeyTpmc
 	case MetricKeyQphds:
 		*s = MetricKeyQphds
+	case MetricKeyQphh:
+		*s = MetricKeyQphh
 	case MetricKeyQueryGeomeanMs:
 		*s = MetricKeyQueryGeomeanMs
 	case MetricKeyQueryTotalSeconds:
@@ -45760,13 +45762,24 @@ func (s *StroppyScriptStepsItem) encodeFields(e *jx.Encoder) {
 			s.Phase.Encode(e)
 		}
 	}
+	{
+		if s.Modes != nil {
+			e.FieldStart("modes")
+			e.ArrStart()
+			for _, elem := range s.Modes {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
+	}
 }
 
-var jsonFieldsNameOfStroppyScriptStepsItem = [4]string{
+var jsonFieldsNameOfStroppyScriptStepsItem = [5]string{
 	0: "id",
 	1: "title",
 	2: "description",
 	3: "phase",
+	4: "modes",
 }
 
 // Decode decodes StroppyScriptStepsItem from json.
@@ -45819,6 +45832,25 @@ func (s *StroppyScriptStepsItem) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"phase\"")
+			}
+		case "modes":
+			if err := func() error {
+				s.Modes = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.Modes = append(s.Modes, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"modes\"")
 			}
 		default:
 			return d.Skip()

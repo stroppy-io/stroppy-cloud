@@ -1974,6 +1974,42 @@
                   },
                   {
                     "choice": {
+                      "default": {
+                        "stringValue": "stress"
+                      },
+                      "options": [
+                        {
+                          "label": "Stress",
+                          "value": {
+                            "stringValue": "stress"
+                          }
+                        },
+                        {
+                          "label": "Strict, ten terminals per warehouse",
+                          "value": {
+                            "stringValue": "strict"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress.",
+                    "group": "Transactions",
+                    "name": "terminal_model",
+                    "title": "Terminal model"
+                  },
+                  {
+                    "description": "JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.",
+                    "group": "Transactions",
+                    "name": "delivery_results",
+                    "string": {
+                      "default": "tpcc-delivery.jsonl",
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "title": "Delivery results file"
+                  },
+                  {
+                    "choice": {
                       "options": [
                         {
                           "label": "PostgreSQL",
@@ -2197,6 +2233,42 @@
                   },
                   {
                     "choice": {
+                      "default": {
+                        "stringValue": "stress"
+                      },
+                      "options": [
+                        {
+                          "label": "Stress",
+                          "value": {
+                            "stringValue": "stress"
+                          }
+                        },
+                        {
+                          "label": "Strict, ten terminals per warehouse",
+                          "value": {
+                            "stringValue": "strict"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress.",
+                    "group": "Transactions",
+                    "name": "terminal_model",
+                    "title": "Terminal model"
+                  },
+                  {
+                    "description": "JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.",
+                    "group": "Transactions",
+                    "name": "delivery_results",
+                    "string": {
+                      "default": "tpcc-delivery.jsonl",
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "title": "Delivery results file"
+                  },
+                  {
+                    "choice": {
                       "options": [
                         {
                           "label": "PostgreSQL",
@@ -2336,6 +2408,37 @@
                     "title": "Query seed"
                   },
                   {
+                    "choice": {
+                      "default": {
+                        "stringValue": "legacy"
+                      },
+                      "options": [
+                        {
+                          "label": "Legacy",
+                          "value": {
+                            "stringValue": "legacy"
+                          }
+                        },
+                        {
+                          "label": "Queries",
+                          "value": {
+                            "stringValue": "queries"
+                          }
+                        },
+                        {
+                          "label": "Benchmark sequence (QphDS@SF)",
+                          "value": {
+                            "stringValue": "benchmark"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "legacy follows benchmark and the stream fields; queries runs the query set; benchmark runs the QphDS@SF sequence, as benchmark=true does (mode).",
+                    "group": "Queries",
+                    "name": "mode",
+                    "title": "Execution mode"
+                  },
+                  {
                     "bool": {
                       "default": false
                     },
@@ -2459,6 +2562,61 @@
                     "group": "Data",
                     "name": "scale_factor",
                     "title": "Scale factor"
+                  },
+                  {
+                    "choice": {
+                      "default": {
+                        "stringValue": "legacy"
+                      },
+                      "options": [
+                        {
+                          "label": "Legacy",
+                          "value": {
+                            "stringValue": "legacy"
+                          }
+                        },
+                        {
+                          "label": "Full benchmark (QphH@SF)",
+                          "value": {
+                            "stringValue": "full"
+                          }
+                        },
+                        {
+                          "label": "Power test",
+                          "value": {
+                            "stringValue": "power"
+                          }
+                        },
+                        {
+                          "label": "Throughput test",
+                          "value": {
+                            "stringValue": "throughput"
+                          }
+                        },
+                        {
+                          "label": "Power queries only",
+                          "value": {
+                            "stringValue": "power-query-only"
+                          }
+                        },
+                        {
+                          "label": "Throughput queries only",
+                          "value": {
+                            "stringValue": "throughput-query-only"
+                          }
+                        },
+                        {
+                          "label": "Qualification",
+                          "value": {
+                            "stringValue": "qualification"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "legacy keeps the stream and refresh fields below. A named mode owns its schedule: full loads and runs the power and throughput tests twice and reports QphH@SF for a complete, valid run at a standard scale factor (1, 10, 30, 100…) on logged built-in SQL; power, throughput and their query-only variants run one phase; qualification compares SF=1 answers (mode). Named modes need generated streams, which YDB and Picodata lack.",
+                    "group": "Queries",
+                    "name": "mode",
+                    "title": "Execution mode"
                   },
                   {
                     "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
@@ -2737,7 +2895,7 @@
                 "string": {
                   "maxLen": "64",
                   "minLen": "1",
-                  "pattern": "^[a-z][a-z0-9_]*$"
+                  "pattern": "^[a-z][a-z0-9_-]*(/[a-z][a-z0-9_-]*)*$"
                 }
               }
             ],
@@ -2756,7 +2914,7 @@
                 "string": {
                   "maxLen": "64",
                   "minLen": "1",
-                  "pattern": "^[a-z][a-z0-9_]*$"
+                  "pattern": "^[a-z][a-z0-9_-]*(/[a-z][a-z0-9_-]*)*$"
                 }
               }
             ],
@@ -2897,7 +3055,7 @@
       },
       "rules": [
         {
-          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"validate_source\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"validate_source\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"banking\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))) \u0026\u0026 (s.workload.script != \"banking/inject\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))))",
+          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"tpcc/tx\" || (\"terminal_model\" in s.workload \u0026\u0026 s.workload.terminal_model != null ? s.workload.terminal_model : \"stress\") != \"stress\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/tx\" || (\"terminal_model\" in s.workload \u0026\u0026 s.workload.terminal_model != null ? s.workload.terminal_model : \"stress\") != \"strict\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"initialize_terminals\",\"workload\",\"delivery_results\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"initialize_terminals\",\"workload\",\"delivery_results\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (\"terminal_model\" in s.workload \u0026\u0026 s.workload.terminal_model != null ? s.workload.terminal_model : \"stress\") != \"stress\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (\"terminal_model\" in s.workload \u0026\u0026 s.workload.terminal_model != null ? s.workload.terminal_model : \"stress\") != \"strict\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"create_terminal_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"initialize_terminals\",\"workload\",\"delivery_results\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"create_terminal_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"initialize_terminals\",\"workload\",\"delivery_results\"]))) \u0026\u0026 (s.workload.script != \"tpcb/tx\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/procs\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"legacy\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"qualification\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"power\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"power/prepare_streams\",\"power/run_1/power_queries\",\"power/run_1/power_rf1\",\"power/run_1/power_rf2\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"power/prepare_streams\",\"power/run_1/power_queries\",\"power/run_1/power_rf1\",\"power/run_1/power_rf2\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"power-query-only\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"power-query-only/prepare_streams\",\"power-query-only/run_1/power_queries\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"power-query-only/prepare_streams\",\"power-query-only/run_1/power_queries\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"throughput\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"throughput/prepare_streams\",\"throughput/run_1/throughput_queries\",\"throughput/run_1/throughput_refresh\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"throughput/prepare_streams\",\"throughput/run_1/throughput_queries\",\"throughput/run_1/throughput_refresh\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"throughput-query-only\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"throughput-query-only/prepare_streams\",\"throughput-query-only/run_1/throughput_queries\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"throughput-query-only/prepare_streams\",\"throughput-query-only/run_1/throughput_queries\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\") != \"full\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"full/prepare_streams\",\"full/run_1/power_queries\",\"full/run_1/power_rf1\",\"full/run_1/power_rf2\",\"full/run_1/throughput_queries\",\"full/run_1/throughput_refresh\",\"full/run_2/power_queries\",\"full/run_2/power_rf1\",\"full/run_2/power_rf2\",\"full/run_2/throughput_queries\",\"full/run_2/throughput_refresh\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"full/prepare_streams\",\"full/run_1/power_queries\",\"full/run_1/power_rf1\",\"full/run_1/power_rf2\",\"full/run_1/throughput_queries\",\"full/run_1/throughput_refresh\",\"full/run_2/power_queries\",\"full/run_2/power_rf1\",\"full/run_2/power_rf2\",\"full/run_2/throughput_queries\",\"full/run_2/throughput_refresh\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true ? \"benchmark\" : (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\")) != \"legacy\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true ? \"benchmark\" : (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\")) != \"queries\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true ? \"benchmark\" : (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null ? s.workload.mode : \"legacy\")) != \"benchmark\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"generate_maintenance\",\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"prepare_maintenance\",\"power\",\"throughput_1\",\"maintenance_1\",\"throughput_2\",\"maintenance_2\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"generate_maintenance\",\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"analyze\",\"prepare_maintenance\",\"power\",\"throughput_1\",\"maintenance_1\",\"throughput_2\",\"maintenance_2\"]))) \u0026\u0026 (s.workload.script != \"simple\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"baseline\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\",\"cleanup\"]))) \u0026\u0026 (s.workload.script != \"execute_sql\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"validate_source\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"validate_source\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"banking\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))) \u0026\u0026 (s.workload.script != \"banking/inject\" || \"\" != \"\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"setup_injection\",\"drop_schema\",\"create_schema\",\"load_data\",\"transfer\",\"verify\"]))))",
           "id": "known-workload-steps",
           "message": "step must be an executable Stroppy step of the selected workload"
         },
@@ -2917,14 +3075,29 @@
           "message": "stroppy rejects sql_dialect together with sql_file"
         },
         {
-          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"refresh_set\" in s.workload) || s.workload.refresh_set == null || (\"refresh_functions\" in s.workload \u0026\u0026 s.workload.refresh_functions == true) || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true))",
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"refresh_set\" in s.workload) || s.workload.refresh_set == null || (\"refresh_functions\" in s.workload \u0026\u0026 s.workload.refresh_functions == true) || (\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true) || (\"mode\" in s.workload \u0026\u0026 s.workload.mode != null \u0026\u0026 s.workload.mode != \"legacy\" \u0026\u0026 s.workload.mode != \"queries\"))",
           "id": "refresh-set-needs-functions",
-          "message": "refresh_set needs refresh_functions (TPC-H) or benchmark (TPC-DS)"
+          "message": "refresh_set needs refresh_functions or a named mode (TPC-H), or the benchmark (TPC-DS)"
         },
         {
-          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"benchmark\" in s.workload) || s.workload.benchmark != true || ((!(\"streams\" in s.workload) || s.workload.streams == null || (s.workload.streams \u003e= 4 \u0026\u0026 s.workload.streams % 2 == 0)) \u0026\u0026 (!(\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"pg_unlogged\" in s.workload) || s.workload.pg_unlogged != true) \u0026\u0026 (!(\"schema_file\" in s.workload) || s.workload.schema_file == null) \u0026\u0026 (!(\"sql_file\" in s.workload) || s.workload.sql_file == null)))",
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !((\"benchmark\" in s.workload \u0026\u0026 s.workload.benchmark == true) || (s.workload.script == \"tpcds\" \u0026\u0026 \"mode\" in s.workload \u0026\u0026 s.workload.mode == \"benchmark\")) || ((!(\"streams\" in s.workload) || s.workload.streams == null || (s.workload.streams \u003e= 4 \u0026\u0026 s.workload.streams % 2 == 0)) \u0026\u0026 (!(\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"pg_unlogged\" in s.workload) || s.workload.pg_unlogged != true) \u0026\u0026 (!(\"schema_file\" in s.workload) || s.workload.schema_file == null) \u0026\u0026 (!(\"sql_file\" in s.workload) || s.workload.sql_file == null)))",
           "id": "tpcds-benchmark-shape",
           "message": "benchmark needs an even number of streams of at least 4 and no query_stream, pg_unlogged, schema_file or sql_file"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"tpcds\" || !(\"benchmark\" in s.workload) || s.workload.benchmark != true || !(\"mode\" in s.workload) || s.workload.mode == null || s.workload.mode != \"queries\")",
+          "id": "tpcds-benchmark-mode",
+          "message": "benchmark=true contradicts mode queries"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"tpch/tx\" || !(\"mode\" in s.workload) || s.workload.mode == null || s.workload.mode == \"legacy\" || ((!(\"refresh_functions\" in s.workload) || s.workload.refresh_functions != true) \u0026\u0026 (!(\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"run\" in s) || !(\"executor\" in s.run) || s.run.executor == null || s.run.executor == \"shared-iterations\") \u0026\u0026 (!(s.workload.mode in [\"power\", \"throughput\", \"full\"]) || !(\"pg_unlogged\" in s.workload) || s.workload.pg_unlogged != true) \u0026\u0026 (s.workload.mode != \"full\" || ((!(\"query_seed\" in s.workload) || s.workload.query_seed == null) \u0026\u0026 (!(\"steps\" in s) || size(s.steps) == 0) \u0026\u0026 (!(\"no_steps\" in s) || size(s.no_steps) == 0)))))",
+          "id": "tpch-mode-schedule",
+          "message": "a named TPC-H mode owns its schedule: shared iterations, no refresh_functions or query_stream, logged loading with refreshes; full also takes no query_seed or step filter"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || !(\"terminal_model\" in s.workload) || s.workload.terminal_model != \"strict\" || ((!(\"run\" in s) || !(\"executor\" in s.run) || s.run.executor == null || s.run.executor == \"constant-vus\") \u0026\u0026 (!(\"tx_isolation\" in s.workload) || s.workload.tx_isolation == null || (s.workload.tx_isolation != \"none\" \u0026\u0026 s.workload.tx_isolation != \"conn\")) \u0026\u0026 (!(\"spread_warehouses\" in s.workload) || s.workload.spread_warehouses != true)))",
+          "id": "tpcc-strict-shape",
+          "message": "strict TPC-C needs the constant-VUs executor, a transactional isolation and fixed warehouses"
         }
       ],
       "strict": true

@@ -425,6 +425,9 @@ func TestMPPStatementMemCountsBenchmarkStreams(t *testing.T) {
 	seg := func(workload string) string {
 		return `{"name":"benchmark","workload":{"script":"tpcds","scale_factor":10` + workload + `},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
 	}
+	tpch := func(workload string) string {
+		return `{"name":"benchmark","workload":{"script":"tpch/tx",` + workload + `},"run":{"executor":"shared-iterations","vus":1,"iterations":1}}`
+	}
 	for _, tc := range []struct {
 		name, segment, want string
 	}{
@@ -432,6 +435,12 @@ func TestMPPStatementMemCountsBenchmarkStreams(t *testing.T) {
 		{"default streams", seg(`,"benchmark":true`), "1350MB"},
 		{"six streams", seg(`,"benchmark":true,"streams":6`), "900MB"}, // 0.75 × 7200 / 6
 		{"query set without benchmark", seg(``), "5400MB"},             // one VU, one session
+		{"benchmark mode", seg(`,"mode":"benchmark"`), "1350MB"},
+		// TPC-H throughput runs S query sessions and one refresh session; full
+		// mode at SF10 needs at least three streams (stroppy 6.5.0 tpch README).
+		{"tpch full SF10", tpch(`"mode":"full","scale_factor":10`), "1350MB"},       // 0.75 × 7200 / (3 + 1)
+		{"tpch throughput six streams", tpch(`"mode":"throughput","streams":6`), "771MB"}, // 0.75 × 7200 / 7
+		{"tpch power", tpch(`"mode":"power","scale_factor":10`), "5400MB"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()

@@ -268,7 +268,7 @@
                                                 "required": true,
                                                 "string": {
                                                   "maxLen": "64",
-                                                  "pattern": "^[a-z][a-z0-9_]*$"
+                                                  "pattern": "^[a-z][a-z0-9_-]*(/[a-z][a-z0-9_-]*)*$"
                                                 },
                                                 "title": "Step id"
                                               },
@@ -308,6 +308,23 @@
                                                 "description": "Where the step sits in a run: preparing, measuring, cleaning up.",
                                                 "name": "phase",
                                                 "title": "Phase"
+                                              },
+                                              {
+                                                "description": "Values of the script's mode parameter (terminal_model, mode) the step runs in; empty when it runs in every mode.",
+                                                "list": {
+                                                  "items": [
+                                                    {
+                                                      "string": {
+                                                        "maxLen": "32",
+                                                        "pattern": "^[a-z][a-z0-9-]*$"
+                                                      }
+                                                    }
+                                                  ],
+                                                  "maxItems": "16",
+                                                  "unique": true
+                                                },
+                                                "name": "modes",
+                                                "title": "Modes"
                                               }
                                             ],
                                             "strict": true

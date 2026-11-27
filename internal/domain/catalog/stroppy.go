@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"slices"
 	"strings"
 
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
@@ -11,8 +12,8 @@ import (
 // StroppyRelease is the one Stroppy release the platform runs; a workload of
 // an earlier one is moved to it by migration.
 const (
-	StroppyRelease = "6.4.3"
-	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.4.3.75"
+	StroppyRelease = "6.5.0"
+	stroppyImage   = "ghcr.io/stroppy-io/stroppy:v6.5.0.76"
 )
 
 // The schemas own parameter descriptions and defaults. Catalog only adds build
@@ -30,7 +31,7 @@ func stroppy() StroppyCatalog {
 		{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Protocols: procs, RatingMetric: "tpmc"},
 		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all, RatingMetric: "tps"},
 		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs, RatingMetric: "tps"},
-		{ID: "tpch/tx", Title: "TPC-H", Protocols: all, RatingMetric: "query_geomean_ms"},
+		{ID: "tpch/tx", Title: "TPC-H", Protocols: all, RatingMetric: "qphh", Description: "QphH@SF comes from the full mode on PostgreSQL, MySQL, MariaDB, the Greenplum family and CockroachDB; YDB and Picodata have no generated query streams."},
 		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, RatingMetric: "qphds", Description: "Picodata: load only. YDB: baked queries only. MySQL: baked queries only (generated streams lack queries 51 and 97)."},
 		{ID: "simple", Title: "Simple key-value", Protocols: all, RatingMetric: "qps"},
 		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
@@ -53,13 +54,7 @@ func stroppy() StroppyCatalog {
 	}
 	for i := range scripts {
 		sc := &scripts[i]
-		for _, name := range workload.Steps(sc.ID) {
-			phase := "bootstrap"
-			if name == workload.MeasuredStep(sc.ID) {
-				phase = "workload"
-			}
-			sc.Steps = append(sc.Steps, StroppyStep{ID: name, Phase: phase})
-		}
+		sc.Steps = scriptSteps(sc.ID)
 		for _, f := range variants[sc.ID].GetFields() {
 			if f.GetName() != "script" {
 				sc.Params = append(sc.Params, schemaParam(f, "workload"))
@@ -116,4 +111,42 @@ func schemaParam(f *schemapb.Schema_Field, scope string) StroppyParam {
 		p.DefaultDescription = f.GetDescription()
 	}
 	return p
+}
+
+// scriptSteps lists the steps of every mode of a script in run order, each
+// with the modes it runs in; a step of every mode lists none.
+func scriptSteps(script string) []StroppyStep {
+	modes := workload.Modes(script)
+	var out []StroppyStep
+	at := map[string]int{}
+	for _, mode := range modes {
+		prev := -1
+		for _, name := range workload.Steps(script, mode) {
+			i, ok := at[name]
+			if !ok {
+				phase := "bootstrap"
+				if workload.Measured(script, mode, name) {
+					phase = "workload"
+				}
+				i = prev + 1
+				out = slices.Insert(out, i, StroppyStep{ID: name, Phase: phase})
+				for k, v := range at {
+					if v >= i {
+						at[k] = v + 1
+					}
+				}
+				at[name] = i
+			}
+			if mode != "" {
+				out[i].Modes = append(out[i].Modes, mode)
+			}
+			prev = i
+		}
+	}
+	for i := range out {
+		if len(out[i].Modes) == len(modes) {
+			out[i].Modes = nil
+		}
+	}
+	return out
 }

@@ -10957,6 +10957,7 @@ const (
 	MetricKeyLoadDurationSeconds                       MetricKey = "load_duration_seconds"
 	MetricKeyTpmc                                      MetricKey = "tpmc"
 	MetricKeyQphds                                     MetricKey = "qphds"
+	MetricKeyQphh                                      MetricKey = "qphh"
 	MetricKeyQueryGeomeanMs                            MetricKey = "query_geomean_ms"
 	MetricKeyQueryTotalSeconds                         MetricKey = "query_total_seconds"
 	MetricKeyNodeCPUUsage                              MetricKey = "node_cpu_usage"
@@ -10999,6 +11000,7 @@ func (MetricKey) AllValues() []MetricKey {
 		MetricKeyLoadDurationSeconds,
 		MetricKeyTpmc,
 		MetricKeyQphds,
+		MetricKeyQphh,
 		MetricKeyQueryGeomeanMs,
 		MetricKeyQueryTotalSeconds,
 		MetricKeyNodeCPUUsage,
@@ -11058,6 +11060,8 @@ func (s MetricKey) MarshalText() ([]byte, error) {
 	case MetricKeyTpmc:
 		return []byte(s), nil
 	case MetricKeyQphds:
+		return []byte(s), nil
+	case MetricKeyQphh:
 		return []byte(s), nil
 	case MetricKeyQueryGeomeanMs:
 		return []byte(s), nil
@@ -11157,6 +11161,9 @@ func (s *MetricKey) UnmarshalText(data []byte) error {
 		return nil
 	case MetricKeyQphds:
 		*s = MetricKeyQphds
+		return nil
+	case MetricKeyQphh:
+		*s = MetricKeyQphh
 		return nil
 	case MetricKeyQueryGeomeanMs:
 		*s = MetricKeyQueryGeomeanMs
@@ -29766,6 +29773,10 @@ type StroppyScriptStepsItem struct {
 	Title       OptString                      `json:"title"`
 	Description OptString                      `json:"description"`
 	Phase       OptStroppyScriptStepsItemPhase `json:"phase"`
+	// Values of the script's mode parameter (`terminal_model` for TPC-C, `mode` for TPC-H and TPC-DS)
+	// the step runs in; absent when it runs in every mode. The values are the workload schema's own
+	// choices.
+	Modes []string `json:"modes"`
 }
 
 // GetID returns the value of ID.
@@ -29788,6 +29799,11 @@ func (s *StroppyScriptStepsItem) GetPhase() OptStroppyScriptStepsItemPhase {
 	return s.Phase
 }
 
+// GetModes returns the value of Modes.
+func (s *StroppyScriptStepsItem) GetModes() []string {
+	return s.Modes
+}
+
 // SetID sets the value of ID.
 func (s *StroppyScriptStepsItem) SetID(val string) {
 	s.ID = val
@@ -29806,6 +29822,11 @@ func (s *StroppyScriptStepsItem) SetDescription(val OptString) {
 // SetPhase sets the value of Phase.
 func (s *StroppyScriptStepsItem) SetPhase(val OptStroppyScriptStepsItemPhase) {
 	s.Phase = val
+}
+
+// SetModes sets the value of Modes.
+func (s *StroppyScriptStepsItem) SetModes(val []string) {
+	s.Modes = val
 }
 
 type StroppyScriptStepsItemPhase string

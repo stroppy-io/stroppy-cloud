@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -92,14 +93,39 @@ func (c *compilation) peakVUs() int {
 // benchmarkStreamDefault).
 const tpcdsBenchmarkStreams = 4
 
-// benchmarkStreams is the sessions a TPC-DS benchmark opens beside its one
-// VU: each throughput phase runs one worker per query stream. 0 for any
-// other segment, whose sessions are its VUs.
+// tpchMinStreams is the fewest throughput streams TPC-H allows from each
+// standard scale factor up; a named mode runs that many unless the segment
+// sets streams.
+// doc: stroppy 6.5.0 workloads/tpch/README.md "Named execution modes" (TPC-H 5.3.4).
+var tpchMinStreams = []struct {
+	sf      float64
+	streams int
+}{{1, 2}, {10, 3}, {30, 4}, {100, 5}, {300, 6}, {1000, 7}, {3000, 8}, {10000, 9}, {30000, 10}, {100000, 11}}
+
+// benchmarkStreams is the sessions a benchmark schedule opens beside its one
+// VU: a TPC-DS benchmark runs one worker per query stream, a TPC-H
+// throughput phase S query sessions and one refresh session. 0 for any other
+// segment, whose sessions are its VUs.
 func benchmarkStreams(w spec.WorkloadParams) int {
-	if w.Script != "tpcds" || w.Params["benchmark"] != true {
+	mode := workload.Mode(w.Script, w.Params)
+	switch {
+	case w.Script == "tpcds" && mode == "benchmark":
+		return intParam(w.Params, "streams", tpcdsBenchmarkStreams)
+	case w.Script == "tpch/tx" && (mode == "full" || mode == "throughput" || mode == "throughput-query-only"):
+		streams := tpchMinStreams[0].streams
+		for _, row := range tpchMinStreams {
+			if numberOf(w.Params["scale_factor"]) >= row.sf {
+				streams = row.streams
+			}
+		}
+		streams = intParam(w.Params, "streams", streams)
+		if mode == "throughput-query-only" {
+			return streams
+		}
+		return streams + 1
+	default:
 		return 0
 	}
-	return intParam(w.Params, "streams", tpcdsBenchmarkStreams)
 }
 
 // analyticScript is a decision-support script: few long queries over the

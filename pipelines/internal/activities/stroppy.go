@@ -70,6 +70,8 @@ type RunSegmentResult struct {
 	// LogPath is the full stroppy output on the machine.
 	LogPath    string `json:"log_path,omitempty"`
 	ReportPath string `json:"report_path,omitempty"`
+	// DeliveryPath is the strict TPC-C deferred Delivery record (JSONL).
+	DeliveryPath string `json:"delivery_path,omitempty"`
 }
 
 // RunSegment runs ON THE RUNNER MACHINE's agent container: writes the
@@ -136,8 +138,13 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		LogPath:    out.LogPath,
 	}
 	out.ReportPath = reportPath
-	if info, err := os.Stat(reportPath); err == nil && info.Mode().IsRegular() {
+	if regularFile(reportPath) {
 		res.ReportPath = reportPath
+	}
+	if name := stroppycfg.DeliveryResults(seg); name != "" {
+		if p := filepath.Join(dir, name); regularFile(p) {
+			res.DeliveryPath = p
+		}
 	}
 	res.Result.Status, res.Result.Error = segmentOutcome(ctx, &seg, &out, &res.Result)
 	if out.LogPath != "" {
@@ -574,4 +581,9 @@ func lastLines(path string) string {
 		lines = lines[len(lines)-n:]
 	}
 	return strings.Join(lines, "\n")
+}
+
+func regularFile(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.Mode().IsRegular()
 }

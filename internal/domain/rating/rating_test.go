@@ -22,7 +22,7 @@ func TestScenarioMetric(t *testing.T) {
 	}{
 		{"tpcc/tx", "tpmc"},
 		{"tpcc/procs+tpcc/tx", "tpmc"},
-		{"tpch/tx", "query_geomean_ms"},
+		{"tpch/tx", "qphh"},
 		{"tpcb/tx", "tps"},
 		{"tpcc/tx+tpch/tx", ""},
 		{"execute_sql", ""},
