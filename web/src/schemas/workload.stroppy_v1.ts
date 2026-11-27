@@ -115,7 +115,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpccProcs {
   warmup?: string | null;
   /** Terminal model. stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress. */
   terminal_model?: "stress" | "strict";
-  /** Delivery results file. JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. */
+  /** Delivery results file. JSONL file name in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. A bare name ending in .jsonl. */
   delivery_results?: string;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
   sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;
@@ -148,7 +148,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpccTx {
   warmup?: string | null;
   /** Terminal model. stress: every VU is a terminal running transactions back to back. strict: ten terminals per warehouse with TPC-C keying and think times (pacing always on), VUs bound the workers executing them; needs the constant-VUs executor, a transactional isolation and fixed home warehouses (terminalModel). Strict tpmC is capped near 12.6 per warehouse and does not compare with stress. */
   terminal_model?: "stress" | "strict";
-  /** Delivery results file. JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. */
+  /** Delivery results file. JSONL file name in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. A bare name ending in .jsonl. */
   delivery_results?: string;
   /** SQL dialect. Built-in SQL dialect (sqlDialect); unset selects by driver. CockroachDB 24.1 needs crdb24. Not with sql_file. */
   sql_dialect?: "pg" | "mysql" | "pico" | "ydb" | "ydb_no_indexes" | "tidb" | "crdb" | "crdb24" | null;

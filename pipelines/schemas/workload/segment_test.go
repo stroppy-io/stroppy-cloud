@@ -159,6 +159,9 @@ func TestSegment(t *testing.T) {
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "terminal_model": "strict", "tx_isolation": "none"}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "terminal_model": "strict", "spread_warehouses": true}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "terminal_model": "batch"}), Code: "CHOICE_NOT_ALLOWED", Path: "workload.terminal_model"},
+			// The agent uploads the Delivery record: a bare name, never a path.
+			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "delivery_results": "../../etc/passwd.jsonl"}), Code: "PATTERN_MISMATCH", Path: "workload.delivery_results"},
+			{Value: withWorkload(map[string]any{"script": "tpcc/tx", "delivery_results": ".hidden.jsonl"}), Code: "PATTERN_MISMATCH", Path: "workload.delivery_results"},
 			// A named TPC-H mode owns its schedule.
 			{Value: withWorkload(map[string]any{"script": "tpch/tx", "mode": "full", "refresh_functions": true}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: withWorkload(map[string]any{"script": "tpch/tx", "mode": "power", "query_stream": int64(0)}), Code: "RULE_VIOLATED", Path: ""},

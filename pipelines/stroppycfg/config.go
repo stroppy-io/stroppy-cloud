@@ -346,16 +346,23 @@ func loadAllowance(seg spec.Segment) time.Duration {
 const deliveryResultsDefault = "tpcc-delivery.jsonl"
 
 // DeliveryResults is the workspace file a strict TPC-C segment records its
-// deferred Delivery outcomes in; empty for any other segment.
+// deferred Delivery outcomes in; empty for any other segment and for a name
+// that is not a bare file name (the schema refuses those; the agent uploads
+// this file, so a path must never leave the workspace).
 func DeliveryResults(seg spec.Segment) string {
 	script := seg.Workload.Script
 	if workloadschema.Mode(script, seg.Workload.Params) != "strict" || workloadschema.ModeParam(script) != "terminal_model" {
 		return ""
 	}
-	if name := seg.Workload.Params["delivery_results"]; name != nil && name != "" {
-		return fmt.Sprint(name)
+	v := seg.Workload.Params["delivery_results"]
+	if v == nil || v == "" {
+		return deliveryResultsDefault
 	}
-	return deliveryResultsDefault
+	name := fmt.Sprint(v)
+	if name != path.Base(name) || strings.HasPrefix(name, ".") || strings.ContainsRune(name, '\\') {
+		return ""
+	}
+	return name
 }
 
 func logLevel(seg spec.Segment) string {

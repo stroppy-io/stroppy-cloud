@@ -813,13 +813,13 @@
                     "title": "Terminal model"
                   },
                   {
-                    "description": "JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.",
+                    "description": "JSONL file name in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. A bare name ending in .jsonl.",
                     "group": "Transactions",
                     "name": "delivery_results",
                     "string": {
                       "default": "tpcc-delivery.jsonl",
-                      "maxLen": "256",
-                      "pattern": "^[A-Za-z0-9._/-]+$"
+                      "maxLen": "128",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.jsonl$"
                     },
                     "title": "Delivery results file"
                   },
@@ -1072,13 +1072,13 @@
                     "title": "Terminal model"
                   },
                   {
-                    "description": "JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.",
+                    "description": "JSONL file name in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. A bare name ending in .jsonl.",
                     "group": "Transactions",
                     "name": "delivery_results",
                     "string": {
                       "default": "tpcc-delivery.jsonl",
-                      "maxLen": "256",
-                      "pattern": "^[A-Za-z0-9._/-]+$"
+                      "maxLen": "128",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.jsonl$"
                     },
                     "title": "Delivery results file"
                   },

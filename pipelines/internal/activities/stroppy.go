@@ -583,7 +583,9 @@ func lastLines(path string) string {
 	return strings.Join(lines, "\n")
 }
 
+// regularFile is a plain file, not a symlink: the stroppy container writes
+// the workspace, and the agent must not follow a link it planted out of it.
 func regularFile(path string) bool {
-	info, err := os.Stat(path)
+	info, err := os.Lstat(path)
 	return err == nil && info.Mode().IsRegular()
 }

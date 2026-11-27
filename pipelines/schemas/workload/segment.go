@@ -31,6 +31,10 @@ const flagPattern = `^[a-z][a-z0-9-]*$`
 // filePattern is a SQL file path on the runner.
 const filePattern = `^[A-Za-z0-9._/-]+$`
 
+// workspaceFilePattern is a bare file name in the segment workspace: the
+// agent uploads it, so it never names a path outside the workspace.
+const workspaceFilePattern = `^[A-Za-z0-9][A-Za-z0-9._-]*\.jsonl$`
+
 // goDuration is a Go duration string (time.ParseDuration): 30s, 1m30s.
 const goDuration = `([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+`
 
@@ -187,8 +191,8 @@ func tpccFields() []schemapb.FieldDef {
 		// doc: stroppy 6.5.0 `run tpcc/tx --help` — delivery-results; Stroppy
 		// never overwrites an existing file.
 		schemapb.Str("delivery_results").Title("Delivery results file").Group("Transactions").
-			Desc("JSONL file in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact.").
-			Pattern(filePattern).MaxLen(256).Default("tpcc-delivery.jsonl"),
+			Desc("JSONL file name in the segment workspace where strict mode records every deferred Delivery (deliveryResults); kept as the segment's delivery artifact. A bare name ending in .jsonl.").
+			Pattern(workspaceFilePattern).MaxLen(128).Default("tpcc-delivery.jsonl"),
 		sqlDialect(),
 		sqlFile("SQL file on the runner replacing the dialect (sqlFile); built-in dialects are sql_dialect."),
 	}

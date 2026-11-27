@@ -318,6 +318,9 @@ func TestDeliveryResults(t *testing.T) {
 		{"stress", map[string]any{"terminal_model": "stress", "delivery_results": "d-1.jsonl"}, "tpcc/tx", ""},
 		{"no model", map[string]any{}, "tpcc/tx", ""},
 		{"other script", map[string]any{"terminal_model": "strict"}, "tpcb/tx", ""},
+		{"path outside the workspace", map[string]any{"terminal_model": "strict", "delivery_results": "../../etc/passwd"}, "tpcc/tx", ""},
+		{"absolute path", map[string]any{"terminal_model": "strict", "delivery_results": "/etc/passwd"}, "tpcc/tx", ""},
+		{"dot name", map[string]any{"terminal_model": "strict", "delivery_results": ".."}, "tpcc/tx", ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
